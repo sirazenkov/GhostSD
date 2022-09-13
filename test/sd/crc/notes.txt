@@ -1,4 +1,0 @@
-Scripts:
-	test.sh - launches GHDL simulation of the crc7 module and generates a waveform. All artifacts are stored in work directory.
-	wave.sh - opens the waveform in GTKWave
-	clear.sh - cleans out the artifacts and removes the work directory
