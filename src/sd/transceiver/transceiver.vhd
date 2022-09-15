@@ -10,18 +10,21 @@ use ieee.std_logic_1164.all;
 
 entity transceiver is
 	port(
-	irst : in std_logic;
+	irst : in std_logic; -- Global reset
 	iclk : in std_logic;
 
 	-- SD Bus
 	icmd_sd : in std_logic;				-- CMD line
 	iodata_sd : inout std_logic_vector(3 downto 0); -- D[3:0] line
+	oclk_sd : out std_logic;			-- CLK line
 
 	-- Control ports
 	isend_cmd : in std_logic;
 	ircv_resp : in std_logic;
 	isend_block : in std_logic;
 	ircv_block : in std_logic;	
+	
+	isel_clk : in std_logic; -- Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
 
 	-- Received/Sent Data
 	icmd : in std_logic_vector(47 downto 0);	-- Command for SD
@@ -32,6 +35,7 @@ entity transceiver is
 end entity;
 
 architecture Mixed of transceiver is
+	signal clk_18MHz, clk_281kHz : std_logic;
 	component crc7 is
 		port(
                	idata : in std_logic;
@@ -40,6 +44,24 @@ architecture Mixed of transceiver is
                	ocrc : out std_logic_vector(6 downto 0)
         	);
 	end component;
+
+	component clock_divider is
+		port(
+		irst : in std_logic;
+		iclk : in std_logic;
+		ofastclk : in std_logic;	
+		oslowclk : in std_logic
+		);
+	end component;
 begin
-	
+	clk_div : clock_divider
+	generic map(DIV => 4);
+	port map(
+		irst => irst,
+		iclk => iclk,
+		ofastclk => clk_18MHz,
+		oslowclk => clk_281kHz
+	);
+
+
 end architecture;
