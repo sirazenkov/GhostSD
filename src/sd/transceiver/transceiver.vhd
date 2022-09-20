@@ -11,18 +11,21 @@ use ieee.std_logic_1164.all;
 entity transceiver is
 	port(
 	irst : in std_logic; -- Global reset
-	iclk : in std_logic;
+	iclk : in std_logic; -- System clock (72 MHz)
 
 	-- SD Bus
-	icmd_sd : in std_logic;				-- CMD line
+	iocmd_sd : inout std_logic;			-- CMD line
 	iodata_sd : inout std_logic_vector(3 downto 0); -- D[3:0] line
 	oclk_sd : out std_logic;			-- CLK line
 
 	-- Control ports
-	isend_cmd : in std_logic;
-	ircv_resp : in std_logic;
-	isend_block : in std_logic;
-	ircv_block : in std_logic;	
+		-- Actions
+	isend_cmd : in std_logic;	-- Send command
+	ircv_resp : in std_logic;	-- Receive response
+	isend_block : in std_logic;	-- Send block
+	ircv_block : in std_logic;	-- Receive block
+		-- Response
+	odone : out std_logic;
 	
 	isel_clk : in std_logic; -- Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
 
@@ -35,7 +38,6 @@ entity transceiver is
 end entity;
 
 architecture Mixed of transceiver is
-	signal clk_18MHz, clk_281kHz : std_logic;
 	component crc7 is
 		port(
                	idata : in std_logic;
@@ -53,9 +55,12 @@ architecture Mixed of transceiver is
 		oslowclk : in std_logic
 		);
 	end component;
+	type state is (IDLE, SEND_CMD, SEND_BLOCK, RECV_RESP, RCV_BLOCK);
+	signal current_state : state := IDLE;
+	signal clk_18MHz, clk_281kHz : std_logic;
+	signal data_bit_counter, cmd_bit_counter : std_logic_vector;
 begin
 	clk_div : clock_divider
-	generic map(DIV => 4);
 	port map(
 		irst => irst,
 		iclk => iclk,
@@ -63,5 +68,32 @@ begin
 		oslowclk => clk_281kHz
 	);
 
+	oclk_sd <= clk_18MHz when isel_clk else clk_281kHz;
 
+	process(iclk, irst) is begin
+		if(irst) then
+			odone <= '0';	
+
+			data_bit_counter <= (others => '0');
+			cmd_bit_counter <= (others => '0');
+		elsif(rising_edge(iclk)) then
+			case current_state is
+				when IDLE =>
+					if(isend_cmd) then
+						current_state <= SEND_CMD;
+					elsif(isend_block) then
+						current_state <= SEND_BLOCK;
+					elsif(ircv_resp) then
+						current_state <= RCV_RESP;
+					elsif(ircv_block) then
+						current_state <= RCV_BLOCK;
+					end if;
+				when SEND_CMD =>
+				when SEND_BLOCK =>
+				when RCV_RESP =>
+				when RCV_BLOCK =>
+				when others => current_state <= IDLE;
+			end case;			
+		end if;
+	end process;
 end architecture;
