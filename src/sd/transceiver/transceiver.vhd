@@ -30,7 +30,8 @@ entity transceiver is
 	isel_clk : in std_logic; -- Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
 
 	-- Received/Sent Data
-	icmd : in std_logic_vector(47 downto 0);	-- Command for SD
+	icmd_index : in std_logic_vector(5 downto 0);	-- Command index
+	icmd_arg : in std_logic_vector(31 downto 0);	-- Command argument 
 	ioblock : inout std_logic_vector(127 downto 0); -- GOST cipher block (128 bits)
 	oresp : out std_logic_vector(135 downto 0);	-- SD response
 	ovalid : out std_logic				-- Block or response valid
