@@ -60,8 +60,13 @@ architecture Mixed of transceiver is
 		oslowclk : in std_logic
 		);
 	end component;
-	type state is (IDLE, BARE_CMD, CMD_RESP, CMD_READ, CMD_WRITE);
-	signal current_state : state := IDLE;
+	type transceiver_state is (IDLE, BARE_CMD, CMD_RESP, CMD_READ, CMD_WRITE, DONE);
+	signal current_state : transceiver_state := IDLE;
+
+	type line_state is (IDLE, WAITING_START, RECEIVING, SENDING, DONE);
+	signal CMD_state : line_state := IDLE;
+	signal D_state : line_state := IDLE;
+
 	signal clk_18MHz, clk_281kHz : std_logic;
 	signal data_bit_counter, cmd_bit_counter : std_logic_vector;
 begin
@@ -92,12 +97,43 @@ begin
 							when 6D"17" => current_state <= CMD_READ;
 							when 6D"24" => current_state <= CMD_WRITE;
 						end case;
-				when SEND_CMD =>
-				when SEND_BLOCK =>
-				when RCV_RESP =>
-				when RCV_BLOCK =>
+					end if;
+				when BARE_CMD => current_state <= DONE when CMD_state = DONE else BARE_CMD;
+				when CMD_RESP => current_state <= DONE when CMD_state = DONE else CMD_RESP;
+				when CMD_READ => current_state <= DONE when D_state = DONE else CMD_READ;
+				when CMD_WRITE => current_state <= DONE when D_state = DONE else CMD_WRITE;
 				when others => current_state <= IDLE;
 			end case;			
 		end if;
 	end process;
+
+	process(iclk, irst) is begin
+		if(irst) then
+			CMD_state <= IDLE;
+		elsif(rising_edge(iclk)) then
+			case CMD_state is
+				when IDLE => 
+				when WAITING_START => 
+				when SENDING => 
+				when RECEIVEING => 
+				when DONE => 
+			end case;	
+		end if;
+	end process;
+
+	process(iclk, irst) is begin
+		if(irst) then
+			D_state <= IDLE;
+		elsif(rising_edge(iclk)) then
+			case D_state is
+				when IDLE => 
+				when WAITING_START => 
+				when SENDING => 
+				when RECEIVEING => 
+				when DONE => 
+			end case;	
+		end if;
+	end process;
+
+	odone <= current_state = DONE;
 end architecture;
