@@ -19,12 +19,7 @@ entity transceiver is
 	oclk_sd : out std_logic;			-- CLK line
 
 	-- Control ports
-		-- Actions
-	isend_cmd : in std_logic;	-- Send command
-	ircv_resp : in std_logic;	-- Receive response
-	isend_block : in std_logic;	-- Send block
-	ircv_block : in std_logic;	-- Receive block
-		-- Response
+	istart_transaction : in std_logic;
 	odone : out std_logic;
 	
 	isel_clk : in std_logic; -- Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
@@ -48,6 +43,15 @@ architecture Mixed of transceiver is
         	);
 	end component;
 
+	component crc16 is
+		port(
+               	idata : in std_logic;
+               	iclk : in std_logic;
+               	irst : in std_logic;
+               	ocrc : out std_logic_vector(15 downto 0)
+        	);
+	end component;
+
 	component clock_divider is
 		port(
 		irst : in std_logic;
@@ -56,7 +60,7 @@ architecture Mixed of transceiver is
 		oslowclk : in std_logic
 		);
 	end component;
-	type state is (IDLE, SEND_CMD, SEND_BLOCK, RECV_RESP, RCV_BLOCK);
+	type state is (IDLE, BARE_CMD, CMD_RESP, CMD_READ, CMD_WRITE);
 	signal current_state : state := IDLE;
 	signal clk_18MHz, clk_281kHz : std_logic;
 	signal data_bit_counter, cmd_bit_counter : std_logic_vector;
@@ -80,15 +84,14 @@ begin
 		elsif(rising_edge(iclk)) then
 			case current_state is
 				when IDLE =>
-					if(isend_cmd) then
-						current_state <= SEND_CMD;
-					elsif(isend_block) then
-						current_state <= SEND_BLOCK;
-					elsif(ircv_resp) then
-						current_state <= RCV_RESP;
-					elsif(ircv_block) then
-						current_state <= RCV_BLOCK;
-					end if;
+					if(istart_transaction) then
+						case (icmd_index) is
+							when 6D"0" => current_state <= BARE_CMD;
+							when 6D"8" | 6D"41" | 6D"2" | 6D"3" | 6D"7" | 6D"16"=> 
+								current_state <= CMD_RESP;
+							when 6D"17" => current_state <= CMD_READ;
+							when 6D"24" => current_state <= CMD_WRITE;
+						end case;
 				when SEND_CMD =>
 				when SEND_BLOCK =>
 				when RCV_RESP =>
