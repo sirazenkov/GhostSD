@@ -28,7 +28,7 @@ entity transceiver is
 	icmd_index : in std_logic_vector(5 downto 0);	-- Command index
 	icmd_arg : in std_logic_vector(31 downto 0);	-- Command argument 
 	ioblock : inout std_logic_vector(127 downto 0); -- GOST cipher block (128 bits)
-	oresp : out std_logic_vector(135 downto 0);	-- SD response
+	oresp : out std_logic_vector(135 downto 0);	-- Received response
 	ovalid : out std_logic				-- Block or response valid
     	);
 end entity;
@@ -112,11 +112,18 @@ begin
 			CMD_state <= IDLE;
 		elsif(rising_edge(iclk)) then
 			case CMD_state is
-				when IDLE => 
-				when WAITING_START => 
+				when IDLE =>
+					if(current_state != IDLE) then
+						CMD_state <= SENDING;
+					end if;
 				when SENDING => 
+					if(counter = D"48")
+						CMD_state <= IDLE when (current_state = BARE_CMD) 
+							     else WAITING_START;
+					end if;
+				when WAITING_START => if(iocmd_sd = '0') then CMD_STATE <= RECEIVING; 
 				when RECEIVEING => 
-				when DONE => 
+				when others => CMD_state <= IDLE;
 			end case;	
 		end if;
 	end process;
@@ -127,10 +134,10 @@ begin
 		elsif(rising_edge(iclk)) then
 			case D_state is
 				when IDLE => 
-				when WAITING_START => 
 				when SENDING => 
+				when WAITING_START => 
 				when RECEIVEING => 
-				when DONE => 
+				when others => CMD_state <= IDLE;
 			end case;	
 		end if;
 	end process;
