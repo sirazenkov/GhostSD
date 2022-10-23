@@ -5,7 +5,7 @@
 //description: CRC (cyclic redundancy check) with x^7 + x^3 + 1 polynomial
 //========================================================================
 
-module crc7 is
+module crc7
 	(
 	input idata,
     	input iclk,
@@ -16,11 +16,13 @@ module crc7 is
 	reg [6:0] crc;
 	wire main_xor;
 
+	integer i;
+
 	assign main_xor = idata ^ crc[6];
 
 	always @(posedge iclk) begin
 		if(irst == 1'b1)
-			crc <= (others => 1'b0);
+			crc <= 7'b0;
 		else begin
 			for(i = 0; i < 7; i = i + 1) begin
 				if(i == 0) 
