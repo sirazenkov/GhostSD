@@ -27,6 +27,7 @@ module transceiver
 	// Received Data
 	inout [127:0] ioblock,	// GOST cipher block (128 bits)
 	output [31:0] oresp,	// Received response
+	output crc_fail,	// At least one CRC check failed
 	output ovalid		// Block or response valid
     	);
 
@@ -51,15 +52,16 @@ module transceiver
 		.irst(irst),
 		.iclk(clk_sd),
 
+		.iocmd_sd(iocmd_sd),
+
+		.isend(send_data),
+		.ifinish(),
+
 		.icmd_index(icmd_index),
 		.icmd_arg(icmd_arg),
 		
 		.oresp(oresp),
-
-		.iocmd_sd(iocmd_sd),
-		
-		.isend(send_data),
-		.ircv(rcv_data),
+		.ocrc_fail(),
 
 		.odone(cmd_done)	
 	);
@@ -68,7 +70,7 @@ module transceiver
 	assign send_data = (istart == 1'b1) & (icmd_index == ) & (cmd_done == 1'b1;
 	assign rcv_data = istart & icmd_index;
 
-	// D line driver
+	// D lines driver
 	d_driver d_driver_inst
 	(
 		.iclk()

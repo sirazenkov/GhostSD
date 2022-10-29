@@ -10,23 +10,23 @@ module cmd_driver
 	input irst,		// Global reset
 	input iclk,		// System clock
 
+	inout iocmd_sd,		// CMD line
+
+	input isend,		// Send command
+	input ifinish,		// Send GO_INACTIVE_STATE (CMD15) command
+
 	input [6:0] icmd_index,	// Command index
-	input [31:0] icmd_arg,	// Command argument
+	input [31:0] icmd_arg,	// Command argument	
 
 	output [0:135] oresp,	// Received response
-
-	inout iocmd_sd,		// CMD line
-	
-	input isend,		// Send command
-	input ircv,		// Receive response
-
+	output ocrc_failed,	// Response's CRC check failed
 	output odone		// Operation done
 	);
 
 	localparam
 		IDLE = ,
-		BARE_CMD = ,
 		CMD_RESP = ,
+		FINISH = ,
 		DONE = ;
 
 	always @(posedge iclk) begin
