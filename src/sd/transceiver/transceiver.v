@@ -16,7 +16,7 @@ module transceiver
 	inout [3:0] iodata_sd,	// D[3:0] line
 	output oclk_sd,		// CLK line
 
-	input istart, // Start Command [Response [Data]] transaction
+	input istart, // Start Command-Response[-Data] transaction
 	
 	input isel_clk, // Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
 
@@ -46,6 +46,7 @@ module transceiver
 	assign clk_sd = (isel_clk == 1'b1) clk_18MHz ? clk_281kHz;
 	assign oclk_sd = clk_sd;
 
+
 	// CMD line driver
 	cmd_driver cmd_driver_inst
 	(
@@ -55,7 +56,6 @@ module transceiver
 		.iocmd_sd(iocmd_sd),
 
 		.isend(send_data),
-		.ifinish(),
 
 		.icmd_index(icmd_index),
 		.icmd_arg(icmd_arg),
