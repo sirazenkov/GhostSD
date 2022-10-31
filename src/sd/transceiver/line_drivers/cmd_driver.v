@@ -24,19 +24,19 @@ module cmd_driver
 
 
 	wire rst_crc;
-	wire [6:0] crc;
+	wire crc;
 	
 	assign rst_crc = irst | (counter == 8'h00);
 
 	crc7 crc7_inst
 	(
-		.idata(),
-		.iclk(iclk),
 		.irst(rst_crc),
+		.iclk(iclk),
+		.idata(),
 		.ocrc(crc)
 	);
 
-	localparam
+	localparam [:]
 		IDLE = ,
 		PREP_CMD = ,
 		SEND_CMD = ,

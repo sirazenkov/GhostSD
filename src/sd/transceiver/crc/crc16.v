@@ -7,10 +7,13 @@
 
 module crc16
 	(
-	input idata,
-	input iclk,
 	input irst,
-	output [15:0] ocrc
+	input iclk,
+	
+	input idata,
+
+	input iunload,	// Shift out the CRC
+	output ocrc
 	);
 
 	reg [15:0] crc;
@@ -27,7 +30,7 @@ module crc16
 			for(i = 0; i < 16; i = i + 1) begin
 				if(i == 0)
 					crc[i] <= main_xor;
-				else if(i == 5 || i == 12)
+				else if(~iunload & (i == 5 || i == 12))
 					crc[i] <= main_xor ^ crc[i-1];
 				else
 					crc[i] <= crc[i-1];
@@ -35,5 +38,5 @@ module crc16
 		end
 	end
 
-	assign ocrc = crc;
+	assign ocrc = crc[15];
 endmodule

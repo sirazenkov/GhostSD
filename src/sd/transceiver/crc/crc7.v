@@ -7,10 +7,13 @@
 
 module crc7
 	(
-	input idata,
-    	input iclk,
 	input irst,
-	output [6:0] ocrc	
+    	input iclk,
+
+	input idata,
+
+	input iunload,	// Shift out the CRC
+	output ocrc	
 	);
 
 	reg [6:0] crc;
@@ -27,7 +30,7 @@ module crc7
 			for(i = 0; i < 7; i = i + 1) begin
 				if(i == 0) 
 					crc[i] <= main_xor;
-				else if(i == 3)
+				else if(i == 3 & ~iunload)
 					crc[i] <= main_xor ^ crc[i-1];
 				else
 					crc[i] <= crc[i-1];
@@ -35,5 +38,5 @@ module crc7
 		end
 	end 
 
-	assign ocrc = crc;
+	assign ocrc = crc[6];
 endmodule
