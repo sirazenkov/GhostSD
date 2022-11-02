@@ -61,7 +61,6 @@ module transceiver
 		.icmd_arg(icmd_arg),
 		
 		.oresp(oresp),
-		.ocrc_fail(),
 
 		.odone(cmd_done)	
 	);
