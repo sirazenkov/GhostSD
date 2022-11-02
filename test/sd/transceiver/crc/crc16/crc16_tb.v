@@ -45,6 +45,8 @@ module crc16_tb;
 
 	initial
 	begin
+		$display("Starting CRC16 testbench...");
+
 		// Reset
 		#HALF_PERIOD;		
 		rst = 1'b1;

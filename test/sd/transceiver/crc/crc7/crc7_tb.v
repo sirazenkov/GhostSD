@@ -54,6 +54,8 @@ module crc7_tb;
 
 	initial
 	begin
+		$display("Starting CRC7 testbench...");
+
 		// Reset
 		#HALF_PERIOD;		
 		rst = 1'b1;
