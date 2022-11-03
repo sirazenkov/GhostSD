@@ -65,7 +65,7 @@ module cmd_driver
 		else
 		begin
                         case(state)
-				IDLE :  
+				IDLE : 
 				begin
 					if(istart == 1'b1 || crc_failed == 1'b1)
 					begin
@@ -73,7 +73,7 @@ module cmd_driver
 
 						counter <= 8'd40;
 						cmd_index <= icmd_index;
-						cmd_content <= {1'b0, 1'b1, icmd_index, icmd_arg, 80{1'b0}};
+						cmd_content <= {1'b0, 1'b1, icmd_index, icmd_arg, {80{1'b0}}};
 						crc_failed <= 1'b0;
 					end
 				end
@@ -101,10 +101,14 @@ module cmd_driver
 						end
 				end
 				WAIT_RESP : 
-					if(iocmd == 1'b0)
+				begin
+					if(iocmd_sd == 1'b0)
+					begin
 						counter <= (cmd_index == 6'd2 || cmd_index == 6'd9) ? 
 					8'd121 : 8'd33;
 						state <= RCV_RESP;
+					end
+				end
 				RCV_RESP :
 				begin
 					counter <= counter - 1'b1;
@@ -126,14 +130,14 @@ module cmd_driver
 						state <= IDLE;
 				end
                                 default : state <= IDLE;
-                        end case;
+                        endcase
 		end
         end
 
 	assign iocmd_sd = (state == SEND_CMD) ? cmd_content[119] : 
 			(state == SEND_CRC) ? ((counter > 8'h00) ? crc : 1'b1) :
 			1'bz;
-	assign oresp = resp_content;
+	assign oresp = cmd_content;
 	assign odone = (state == IDLE) && !(crc_failed);
 
 endmodule
