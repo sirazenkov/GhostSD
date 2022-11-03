@@ -12,7 +12,7 @@ module cmd_driver
 
 	inout iocmd_sd,		// CMD line
 
-	input isend,		// Send command
+	input istart,		// Start transaction (command[-response])
 
 	input [5:0] icmd_index,	// Command index
 	input [31:0] icmd_arg,	// Command argument	
@@ -67,7 +67,7 @@ module cmd_driver
                         case(state)
 				IDLE :  
 				begin
-					if(isend == 1'b1)
+					if(istart == 1'b1 || crc_failed == 1'b1)
 					begin
 						state <= SEND_CMD;
 
