@@ -19,9 +19,9 @@ module crc7_tb;
 	localparam MSG_LEN = 40;
 	localparam CRC_LEN = 7;
 
-	reg data, clk, rst = 1'b0, unload = 1'b0;
+	reg data = 1'b0, clk, rst = 1'b0, unload = 1'b0;
 	wire crc;
-	reg [CRC_LEN-1:0] crc_reg;
+	reg [CRC_LEN-1:0] crc_reg = {CRC_LEN{1'b0}};
 
 	integer i;
 
@@ -57,62 +57,66 @@ module crc7_tb;
 		$display("Starting CRC7 testbench...");
 
 		// Reset
-		#HALF_PERIOD;		
 		rst = 1'b1;
-		#PERIOD;		
+		@(posedge clk);
 		rst = 1'b0;
 		
 		// Passing CMD0
 		for(i = 0; i < MSG_LEN; i = i + 1)
 		begin
 			data = CMD0[MSG_LEN-1-i]; 
-			#PERIOD;	
+			@(posedge clk);
 		end
 		
 		unload = 1'b1;
 		for(i = 0; i < CRC_LEN; i = i + 1)
-			#PERIOD;	
+			@(posedge clk);
 		unload = 1'b0;
 
+		#HALF_PERIOD;
 		if(crc_reg != 7'b1001010)
 			$display("Wrong CMD0 checksum!");
 		
 		// Reset
+		@(posedge clk);
                 rst = 1'b1;
-                #PERIOD;
+		@(posedge clk);
                 rst = 1'b0;
 		
 		// Passing CMD17
 		for(i = 0; i < MSG_LEN; i = i + 1)
 		begin
 			data = CMD17[MSG_LEN-1-i]; 
-			#PERIOD;	
+			@(posedge clk);
 		end
 
 		unload = 1'b1;
 		for(i = 0; i < CRC_LEN; i = i + 1)
-			#PERIOD;	
+			@(posedge clk);
 		unload = 1'b0;
 
+		#HALF_PERIOD;
 		if(crc_reg != 7'b0101010)
 			$display("Wrong CMD17 checksum!");
 
 		// Reset
+		@(posedge clk);
                 rst = 1'b1;
-                #PERIOD;
+		@(posedge clk);
                 rst = 1'b0;
 		
 		// Passing RESP17
 		for(i = 0; i < MSG_LEN; i = i + 1)
 		begin
 			data = RESP17[MSG_LEN-1-i]; 
-			#PERIOD;	
+			@(posedge clk);
 		end
 
 		unload = 1'b1;
 		for(i = 0; i < CRC_LEN; i = i + 1)
-			#PERIOD;	
-		
+			@(posedge clk);
+
+		#HALF_PERIOD;
 		if(crc_reg != 7'b0110011)
 			$display("Wrong RESP17 checksum!");
 
