@@ -21,6 +21,12 @@ module cmd_driver
 	output odone		// Operation done
 	);
 
+	reg start_sh;
+	wire start;
+	always @(posedge iclk)
+		start_sh <= istart;
+	assign start = (istart == 1'b1) && (start_sh == 1'b0);
+
 	wire rst_crc;
 	reg unload = 1'b0;
 	wire crc;
@@ -50,6 +56,8 @@ module cmd_driver
 	reg [119:0] cmd_content = {120{1'b0}};
 	reg [5:0] cmd_index = {6{1'b0}};
 
+	wire long_response = cmd_index == 6'd2 || cmd_index == 6'd9;
+
 	reg crc_failed = 1'b0;
 
 	always @(posedge iclk) begin
@@ -67,7 +75,7 @@ module cmd_driver
                         case(state)
 				IDLE : 
 				begin
-					if(istart == 1'b1 || crc_failed == 1'b1)
+					if(start == 1'b1 || crc_failed == 1'b1)
 					begin
 						state <= SEND_CMD;
 
@@ -85,13 +93,13 @@ module cmd_driver
 					begin
 						state <= SEND_CRC;
 						unload <= 1'b1;
-						counter <= 8'd7;
+						counter <= 8'd8;
 					end
 				end
 				SEND_CRC : 
 				begin
 					counter <= counter - 1'b1;
-					if(counter == 8'h00)
+					if(counter == 8'h01)
 					begin
 						unload <= 1'b0;
 						if(cmd_index == 6'd15)
@@ -104,8 +112,7 @@ module cmd_driver
 				begin
 					if(iocmd_sd == 1'b0)
 					begin
-						counter <= (cmd_index == 6'd2 || cmd_index == 6'd9) ? 
-					8'd127 : 8'd39;
+						counter <= long_response ? 8'd127 : 8'd39;
 						state <= RCV_RESP;
 					end
 				end
@@ -126,17 +133,23 @@ module cmd_driver
 					if(iocmd_sd != crc)
 						crc_failed <= 1'b1;
 					if(counter == 8'h01)
+					begin
 						unload <= 1'b0;
 						state <= IDLE;
+					end
 				end
                                 default : state <= IDLE;
                         endcase
 		end
         end
 
-	assign iocmd_sd = (state == SEND_CMD) ? cmd_content[119] : 
-			(state == SEND_CRC) ? ((counter > 8'h00) ? crc : 1'b1) :
-			1'bz;
+	assign iocmd_sd = (state == SEND_CMD) ? cmd_content[119] : (
+				(state == SEND_CRC) ?
+					((counter > 8'h01) ?
+						((counter > 8'd120) ? 1'b0 
+						: crc) :
+					1'b1) :
+				1'bz);
 	assign oresp = cmd_content;
 	assign odone = (state == IDLE) && !(crc_failed);
 
