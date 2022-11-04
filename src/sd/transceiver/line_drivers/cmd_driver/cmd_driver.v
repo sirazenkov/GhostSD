@@ -1,9 +1,9 @@
-//=======================================================================
+//===============================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
 //description: CMD line driver
-//========================================================================
+//===============================
 
 module cmd_driver
 	(

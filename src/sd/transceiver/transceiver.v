@@ -1,9 +1,9 @@
-//=======================================================================
+//================================================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
 //description: SD interface transceiver top module
-//========================================================================
+//================================================
 
 module transceiver
 
@@ -25,7 +25,7 @@ module transceiver
 	input [31:0] icmd_arg,	// Command argument 
 
 	// Received Data
-	inout [127:0] ioblock,	// GOST cipher block (128 bits)
+	inout [63:0] ioblock,	// GOST cipher block (64 bits)
 	output [31:0] oresp,	// Received response
 	output crc_fail,	// At least one CRC check failed
 	output ovalid		// Block or response valid
@@ -47,6 +47,8 @@ module transceiver
 	assign oclk_sd = clk_sd;
 
 
+	wire start_cmd, cmd_done;
+
 	// CMD line driver
 	cmd_driver cmd_driver_inst
 	(
@@ -55,7 +57,7 @@ module transceiver
 
 		.iocmd_sd(iocmd_sd),
 
-		.isend(send_data),
+		.istart(start_cmd),
 
 		.icmd_index(icmd_index),
 		.icmd_arg(icmd_arg),
@@ -65,17 +67,22 @@ module transceiver
 		.odone(cmd_done)	
 	);
 
-	wire send_data, rcv_data;
-	assign send_data = (istart == 1'b1) & (icmd_index == ) & (cmd_done == 1'b1;
-	assign rcv_data = istart & icmd_index;
+	wire start_d, send_rcv_data, d_done;
 
 	// D lines driver
 	d_driver d_driver_inst
 	(
-		.iclk()
-		.isend()
-		.ircv()
-		.iodata(ioblock)
+		.irst(irst),
+		.iclk(clk_sd),
+		
+		.iodata_sd(iodata_sd),
+
+		.istart(start_d),
+		.isend_rcv(),
+
+		.ioblock(ioblock),
+		.ocrc_fail(),
+		.odone(d_done)
 	);
 
 	assign ovalid = ;
