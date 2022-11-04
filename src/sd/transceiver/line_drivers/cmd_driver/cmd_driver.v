@@ -92,20 +92,20 @@ module cmd_driver
 				begin
 					counter <= counter - 1'b1;
 					if(counter == 8'h00)
+					begin
 						unload <= 1'b0;
 						if(cmd_index == 6'd15)
 							state <= IDLE;
 						else
-						begin
 							state <= WAIT_RESP;
-						end
+					end
 				end
 				WAIT_RESP : 
 				begin
 					if(iocmd_sd == 1'b0)
 					begin
 						counter <= (cmd_index == 6'd2 || cmd_index == 6'd9) ? 
-					8'd121 : 8'd33;
+					8'd127 : 8'd39;
 						state <= RCV_RESP;
 					end
 				end
