@@ -15,20 +15,15 @@ module round
 	input [63:0] iblock,
 	input [31:0] iround_key,
 
-	output oblock,
+	output [63:0] oblock,
 	output odone
         );
-
-	reg start_sh = 1'b0;
-        wire start;
-        always @(posedge iclk)
-                start_sh <= start;
-        assign start = (istart == 1'b1) && (start_sh == 1'b0);	
 
 	localparam [1:0]
 		IDLE = 2'b00,
 		ADD = 2'b01,
-		SBOX = 2'b11;
+		SBOX = 2'b11,
+		DONE = 2'b10;
 	reg state = IDLE;
 
 	reg [31:0] half_block = {32{1'b0}};
@@ -51,7 +46,7 @@ module round
 			case(state)
 				IDLE:
 				begin
-					if(start == 1'b1)
+					if(istart == 1'b1)
 					begin
 						half_block <= iblock[31:0] + iround_key;
 						state <= ADD;
@@ -66,12 +61,15 @@ module round
 				begin
 					half_block <= ((half_block << 11) | (half_block >> (32-11))) ^
 							iblock[63:32];
-					state <= IDLE;
+					state <= DONE;
 				end
+				DONE:
+					state <= IDLE;
 			endcase
 		end
 	end
 
-	assign odone = state == IDLE;
+	assign oblock = (iblock[31:0] << 32) | half_block;
+	assign odone = state == DONE;
 
 endmodule
