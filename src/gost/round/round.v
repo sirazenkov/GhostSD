@@ -24,7 +24,7 @@ module round
 		ADD = 2'b01,
 		SBOX = 2'b11,
 		DONE = 2'b10;
-	reg state = IDLE;
+	reg [1:0] state = IDLE;
 
 	reg [31:0] half_block = {32{1'b0}};
 	wire [31:0] s_box_output;

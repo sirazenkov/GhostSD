@@ -20,11 +20,9 @@ module gost
 	output odone
 	);
 
-	localparam [1:0]
-		IDLE = 2'b00,
-		ENC = 2'b01,
-		DEC = 2'b11,
-		DONE = 2'b10;
+	localparam
+		IDLE = 1'b0,
+		ENC_DEC = 1'b1;
 	reg state = IDLE;
 	wire start_round, round_done;
 	assign start_round = state == ENC_DEC; 
@@ -37,7 +35,7 @@ module gost
 
 	always @(posedge iclk)
 	begin
-		if(irst = 1'b1)
+		if(irst == 1'b1)
 		begin
 			state = IDLE;
 			counter = 5'b00000;
@@ -47,10 +45,11 @@ module gost
 			case(state)
 				IDLE:
 				begin
-					if(start == 1'b1)
+					if(istart == 1'b1)
 					begin
-						state <= ienc_dec == 1'b0 ? ENC : DEC;
+						state <= ENC_DEC;
 						counter <= ienc_dec == 1'b0 ? 5'b00000 : 5'b11111;	
+						block <= iblock;
 					end
 				end
 				ENC_DEC:
@@ -104,6 +103,7 @@ module gost
 		.odone(round_done)
 	);
 
+	assign oblock = block;
 	assign odone = state == IDLE;
 
 endmodule
