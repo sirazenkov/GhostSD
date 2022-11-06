@@ -15,7 +15,7 @@ module gost_tb;
 	reg clk, rst = 1'b0, start = 1'b0, enc_dec = 1'b0;
 	wire done;
 	
-	reg [255:0] key = 256'hFFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBCFDFEFF; 
+	reg [255:0] key = 256'hFFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF; 
 	reg [63:0] iblock = {64{1'b0}};
 	reg [63:0] plaintext = 64'hFEDCBA9876543210;
 	reg [63:0] ciphertext = 64'h4EE901E5C2D8CA3D;
@@ -80,6 +80,7 @@ module gost_tb;
 		start = 1'b0;
 		if(oblock != plaintext)
 			$display("Decryption failed!");
+		#PERIOD;
 
 		$display("End of test");
 		$finish;
