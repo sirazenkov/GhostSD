@@ -97,7 +97,7 @@ module gost
 		.istart(start_round),
 
 		.iblock(block),
-		.iround_key(round_key),
+		.ikey(round_key),
 
 		.oblock(round_oblock),
 		.odone(round_done)

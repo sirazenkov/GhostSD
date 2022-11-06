@@ -13,7 +13,7 @@ module round
 	input istart,
 
 	input [63:0] iblock,
-	input [31:0] iround_key,
+	input [31:0] ikey,
 
 	output [63:0] oblock,
 	output odone
@@ -48,7 +48,7 @@ module round
 				begin
 					if(istart == 1'b1)
 					begin
-						half_block <= iblock[31:0] + iround_key;
+						half_block <= iblock[31:0] + ikey;
 						state <= ADD;
 					end
 				end
