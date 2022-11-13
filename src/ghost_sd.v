@@ -5,7 +5,7 @@
 //description: Top module of GhostSD project
 //=======================================================================
 
-module top
+module ghost_sd
 	(
 	input iclk, // 72 MHz system clock
 	
@@ -19,6 +19,9 @@ module top
 				// ON - success
 	);
 
+	gost gost_inst
+	(
 	
+	);	
 
 endmodule
