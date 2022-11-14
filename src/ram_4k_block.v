@@ -5,7 +5,7 @@
 //description: 4Kb RAM memory block (1024x4)
 //==========================================
 
-module ram (idin, iaddr, iwrite_en, iclk, odout);
+module ram_4k_block (idin, iaddr, iwrite_en, iclk, odout);
 	parameter addr_width = 10;
 	parameter data_width = 4;
 	input [addr_width-1:0] iaddr;
