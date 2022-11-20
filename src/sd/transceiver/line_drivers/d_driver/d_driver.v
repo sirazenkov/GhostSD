@@ -7,8 +7,8 @@
 
 module d_driver
 	(
-	input irst,
-	input iclk,
+	input irst, // Global reset
+	input iclk, // SD clock
 
 	inout [3:0] iodata_sd,
 

@@ -9,7 +9,7 @@ module transceiver
 
 	(
 	input irst, // Global reset
-	input iclk, // System clock (72 MHz)
+	input iclk, // System clock (36 MHz)
 
 	// SD Bus
 	inout iocmd_sd,		// CMD line
@@ -34,7 +34,7 @@ module transceiver
 
 	wire clk_18MHz, clk_281kHz, clk_sd;
 
-	// Get 18 Mhz and 281.25 kHz clocks from 72 MHz system clock
+	// Get 18 Mhz and 281.25 kHz clocks from 36 MHz system clock
 	clock_divider clock_divider_inst
 	(
 		.irst(irst),

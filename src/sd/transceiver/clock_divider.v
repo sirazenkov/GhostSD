@@ -8,8 +8,8 @@
 module clock_divider
 		input irst,		// Global reset
 		input iclk, 		// Reference clock
-		output ofastclk,	// Divided by 4 clock
-       		output oslowclk		// Divided by 256 clock
+		output ofastclk,	// Divided by 2 clock
+       		output oslowclk		// Divided by 128 clock
 	    );
 
 	reg [7:0] counter = 7'b0; 
@@ -20,6 +20,6 @@ module clock_divider
 			counter <= counter + 1;	
 	end
 
-	assign ofastclk <= counter(3);
-	assign oslowclk <= counter(7);
+	assign ofastclk <= counter(0);
+	assign oslowclk <= counter(6);
 endmodule

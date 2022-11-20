@@ -8,7 +8,7 @@
 module cmd_driver
 	(
 	input irst,		// Global reset
-	input iclk,		// System clock
+	input iclk,		// SD clock
 
 	inout iocmd_sd,		// CMD line
 
