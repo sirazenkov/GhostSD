@@ -10,70 +10,164 @@ module d_driver
 	input irst,
 	input iclk,
 
-	inout [4:0] iodata_sd,
+	inout [3:0] iodata_sd,
 
-	input istart
-	input isend_rcv, // 0 - send, 1 - receive block of data
+	input istart,
 
-	inout [15:0] ioblock,
+	output [9:0] oaddr, // Data address in RAM
+
+	// RAM for received data
+	output [3:0] owdata,
+	output owe,
+	output owclke,
+
+	// RAM with processed data (for sending)
+	input [3:0] irdata,
+	output orclke,
+
 	output ocrc_fail,
 	output odone
 	);
 
-	reg start_sh = 1'b0;
-	wire start;
-	always @(posedge iclk)
-		start_sh <= start;
-	assign start = (istart == 1'b1) && (start_sh == 1'b0);
+
+	genvar i;
 
 	localparam [2:0]
 		IDLE = 3'b000,
-		WAIT_DATA = 3'b001
-		RECV = 3'b011,
-		SEND = 3'b010,
-		CRC_CHECK = 3'b110;
+		RECV_DATA = 3'b001,
+		CHECK_CRC = 3'b011,
+		WAIT_DATA = 3'b010,
+		SEND_DATA = 3'b110,
+		SEND_CRC = 3'b100;
 	reg [2:0] state = IDLE;
 
-	reg [63:0] block = {64{1'bz}};
-	assign ioblock = block;
+	reg [3:0] data = 4'h0;
+	reg [10:0] counter = {11{1'b0}};
+	reg crc_failed = 1'b0;
 
-	reg [4:0] counter = {5{1'b0}};
+	wire rst_crc;
+	reg unload = 1'b0;
+	wire [3:0] crc;
+	assign rst_crc = irst == 1'b1 or state == IDLE or state == WAIT_DATA;
+
+	generate
+		for(i = 0; i < 4; i = i + 1)
+		begin
+			crc16 crc16_inst
+			(
+			.irst(rst_crc),
+			.iclk(iclk),
+
+        		.idata(data[i]),
+
+        		.iunload(unload),
+			.ocrc(crc[i])
+			);
+		end
+	endgenerate
+
+	always @(posedge iclk)
+	begin
+		if(irst == 1'b1)	
+			data <= 4'h0;
+		if(state == IDLE or state == RECV_DATA or state == CHECK_CRC)
+			data <= iodata_sd;
+		else if(state == WAIT_DATA)
+			data <= 4'h0;	// Send start bit
+		else if((state == SEND_DATA and counter[10] == 1'b1) or state == SEND_CRC)
+		begin
+			if(counter == 11'd16)
+				data <= 4'hf;	// Send end bit
+			else
+				data <= crc;
+		end
+		else
+			data <= irdata;
+	end
 
 	always @(posedge iclk)
 	begin
 		if(irst == 1'b1)
 		begin
-			state = IDLE;
+			state <= IDLE;
+			counter <= {11{1'b0}};
+			unload <= 1'b0;
+			crc_failed <= 1'b0;
 		end
 		else
 		begin
 			case(state)
 				IDLE:
 				begin
-					if(start)
+					if(istart && data == 4'h0)
 					begin
-						if(isend_rcv == 1'b0)
-							state <= RECV;
-						else
-						begin
-							state <= SEND;
-						end
+						state <= RECV_DATA;
+						counter <= {11{1'b0}};
+						crc_failed <= 1'b0;
 					end
 				end
-				WAIT_DATA:
+				RECV_DATA:
 				begin
+					counter <= counter + 1'b1;
+					if(counter[10] == 1'b1)
+					begin
+						state <= CHECK_CRC;
+						counter <= {11{1'b0}};
+						unload <= 1'b1;
+					end
 				end
-				RECV:
+				CHECK_CRC: // Check CRC on the data lines
 				begin
+					if(counter == 11'd16)	
+					begin
+						state <= WAIT_DATA;
+					end
+					else if(crc != data)
+					begin
+						state <= IDLE;
+						crc_failed <= 1'b1;
+					end
+					counter <= counter + 1'b1;
 				end
-				SEND:
+				WAIT_DATA: // Wait until data is encrypted/decrypted
 				begin
+					if(istart)
+					begin
+						state <= SEND_DATA;
+						counter <= {11{1'b0}};
+					end
 				end
-				CHECK_CRC
+				SEND_DATA:
 				begin
+					counter <= counter + 1'b1;
+					if(counter[10] == 1'b1)
+					begin
+						state <= SEND_CRC;
+						unload <= 1'b1;
+						counter <= {11{1'b0}};
+					end
+				end
+				SEND_CRC:
+				begin
+					counter <= counter + 1'b1;
+					if(counter == 16'd16)
+					begin
+						state <= IDLE;
+						unload <= 1'b0;
+					end
 				end
 			endcase
 		end
 	end
+
+
+	assign iodata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hz;
+	assign owdata = data;
+	assign oaddr = counter[9:0];
+	assign odone = state == IDLE or state == WAIT_DATA;
+	assign owe = state == RECV_DATA;
+	assign owclke = state == RECV_DATA;
+	assign orclke = state == SEND_DATA;
+	assign ocrc_fail = crc_fail;
 
 endmodule
