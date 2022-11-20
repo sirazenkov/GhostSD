@@ -1,0 +1,5 @@
+read_verilog ../src/ghost_sd.v
+read_verilog ../src/gost/gost.v
+read_verilog ../src/gost/**/*.v
+synth_ice40 -top ghost_sd -json work/ghost_sd.json
+

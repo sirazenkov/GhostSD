@@ -1,0 +1,17 @@
+# System clock (72 MHz)
+set_io iclk D1
+
+# Buttons
+set_io irst A1 # Reset
+set_io istart E2 # Start
+
+# SD interface
+set_io oclk_sd E3
+set_io iocmd_sd B5
+set_io iodata_sd[0] E1
+set_io iodata_sd[1] C2
+set_io iodata_sd[2] B4
+set_io iodata_sd[3] C6
+
+# Status LED
+set_io status_led B6
