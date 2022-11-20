@@ -65,6 +65,8 @@ module cmd_driver
 		begin 
 			state <= IDLE;
 
+			unload <= 1'b0;
+
 			counter <= 8'h00;
 			cmd_index <= {6{1'b0}};
 			cmd_content <= {120{1'b0}};
