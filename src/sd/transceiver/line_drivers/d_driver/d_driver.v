@@ -18,12 +18,10 @@ module d_driver
 
 	// RAM for received data
 	output [3:0] owdata,
-	output owe,
-	output owclke,
+	output owrite_en,
 
 	// RAM with processed data (for sending)
 	input [3:0] irdata,
-	output orclke,
 
 	output ocrc_fail,
 	output odone
@@ -162,12 +160,12 @@ module d_driver
 
 
 	assign iodata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hz;
+
 	assign owdata = data;
 	assign oaddr = counter[9:0];
-	assign odone = state == IDLE or state == WAIT_DATA;
-	assign owe = state == RECV_DATA;
-	assign owclke = state == RECV_DATA;
-	assign orclke = state == SEND_DATA;
+	assign owrite_en = state == RECV_DATA;
+
 	assign ocrc_fail = crc_fail;
+	assign odone = state == IDLE or state == WAIT_DATA;
 
 endmodule

@@ -11,10 +11,17 @@ module sd
 	input iclk, // System clock (36 MHz)
 
 	input istart,
-	input iaction,	// 0- encrypt, 1 - decrypt
 
-	output [:] oresponse,
-	output [3:0] oblock,
+	output [9:0] oaddr, // Data address in RAM
+
+        // RAM for received data
+        output [3:0] owdata,
+        output owrite_en,
+
+        // RAM with processed data (for sending)
+        input [3:0] irdata,
+
+	output [31:0] oresponse,
 	output ovalid
 	);
 

@@ -20,15 +20,28 @@ module transceiver
 	
 	input isel_clk, // Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
 
-	// Sent Data
+	// Command & Response
 	input [5:0] icmd_index,	// Command index
 	input [31:0] icmd_arg,	// Command argument 
-
-	// Received Data
-	inout [63:0] ioblock,	// GOST cipher block (64 bits)
 	output [31:0] oresp,	// Received response
-	output crc_fail,	// At least one CRC check failed
-	output ovalid		// Block or response valid
+	output ovalid		// Valid response
+
+	output [9:0] oaddr, // Data address in RAM
+
+        // RAM for received data
+        output [3:0] owdata,
+        output owrite_en,
+
+        // RAM with processed data (for sending)
+        input [3:0] irdata,
+
+	input idata_start,
+        output odata_crc_fail,
+	output odata_done,
+		
+	input icmd_start,
+	output ocmd_crc_fail,	// At least one CRC check failed
+	output ocmd_done
     	);
 
 
@@ -46,9 +59,6 @@ module transceiver
 	assign clk_sd = (isel_clk == 1'b1) clk_18MHz ? clk_281kHz;
 	assign oclk_sd = clk_sd;
 
-
-	wire start_cmd, cmd_done;
-
 	// CMD line driver
 	cmd_driver cmd_driver_inst
 	(
@@ -57,17 +67,17 @@ module transceiver
 
 		.iocmd_sd(iocmd_sd),
 
-		.istart(start_cmd),
+		.istart(icmd_start),
 
 		.icmd_index(icmd_index),
 		.icmd_arg(icmd_arg),
 		
 		.oresp(oresp),
 
-		.odone(cmd_done)	
+		.odone(ocmd_done)	
 	);
 
-	wire start_d, send_rcv_data, d_done;
+	wire start_d;
 
 	// D lines driver
 	d_driver d_driver_inst
@@ -77,13 +87,16 @@ module transceiver
 		
 		.iodata_sd(iodata_sd),
 
-		.istart(start_d),
-		.isend_rcv(),
+		.istart(idata_start),
+		
+		.oaddr(oaddr),
+		.owdata(owdata),
+		.owrite_en(owrite_en),
+		.irdata(irdata),
 
-		.ioblock(ioblock),
-		.ocrc_fail(),
-		.odone(d_done)
+		.ocrc_fail(orc_fail),
+		.odone(odata_done)
 	);
 
-	assign ovalid = ;
 endmodule
+
