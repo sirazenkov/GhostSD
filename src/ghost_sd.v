@@ -24,6 +24,7 @@ module ghost_sd
 
 	localparam [255:0] key = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
 	localparam [63:0] IV = 64'hb97b7f467edaefd8;
+	
 	wire gost_done;
 	wire [63:0] res_block;
 	reg [63:0] block = IV;
@@ -43,6 +44,27 @@ module ghost_sd
         .odone(gost_done)
 	);
 
+	ram_4k_block raw_block
+	(
+		.waddr(),
+		.raddr(),
+ 		.din(),
+ 		.write_en(),
+		.wclk(),
+		rclk(iclk),
+ 		.dout()
+	);
+
+	ram_4k_block processed_block
+	(
+		.waddr(),
+		.raddr(),
+ 		.din(),
+ 		.write_en(),
+		.wclk(iclk),
+		.rclk(),
+ 		.dout()
+	);
 
 	always @(posedge iclk)
 	begin
