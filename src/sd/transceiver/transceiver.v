@@ -24,7 +24,7 @@ module transceiver
 	input [5:0] icmd_index,	// Command index
 	input [31:0] icmd_arg,	// Command argument 
 	output [31:0] oresp,	// Received response
-	output ovalid		// Valid response
+	output ovalid,		// Valid response
 
 	output [9:0] oaddr, // Data address in RAM
 
@@ -56,7 +56,7 @@ module transceiver
 		.oslowclk(clk_281kHz)
 	);
 
-	assign clk_sd = (isel_clk == 1'b1) clk_18MHz ? clk_281kHz;
+	assign clk_sd = isel_clk == 1'b1 ? clk_18MHz : clk_281kHz;
 	assign oclk_sd = clk_sd;
 
 	// CMD line driver
