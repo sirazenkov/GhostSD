@@ -51,7 +51,7 @@ module ghost_sd
  		.din(),
  		.write_en(),
 		.wclk(),
-		rclk(iclk),
+		.rclk(iclk),
  		.dout()
 	);
 

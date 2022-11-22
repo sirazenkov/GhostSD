@@ -6,11 +6,12 @@
 //========================================================================
 
 module clock_divider
-		input irst,		// Global reset
-		input iclk, 		// Reference clock
-		output ofastclk,	// Divided by 2 clock
-       		output oslowclk		// Divided by 128 clock
-	    );
+	(
+	input irst,		// Global reset
+	input iclk, 		// Reference clock
+	output ofastclk,	// Divided by 2 clock
+       	output oslowclk		// Divided by 128 clock
+	);
 
 	reg [7:0] counter = 7'b0; 
 	always @(posedge iclk) begin
@@ -20,6 +21,6 @@ module clock_divider
 			counter <= counter + 1;	
 	end
 
-	assign ofastclk <= counter(0);
-	assign oslowclk <= counter(6);
+	assign ofastclk = counter[0];
+	assign oslowclk = counter[6];
 endmodule
