@@ -1,4 +1,4 @@
-all: synth placeNroute timing 
+all: synth placeNroute timing bitstream
 
 synth: 
 	mkdir work
@@ -14,6 +14,9 @@ placeNroute:
 
 timing:
 	icetime -d lp1k work/ghost_sd.asc
+
+bitstream:
+	icepack work/ghost_sd.asc work/ghost_sd.bin
 
 program:
 	iceprog ghost_sd.bin
