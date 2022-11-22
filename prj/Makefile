@@ -13,13 +13,13 @@ placeNroute:
         --freq 36
 
 timing:
-	icetime -d lp1k work/ghost_sd.asc
+	icetime -d lp1k -P cm36 work/ghost_sd.asc
 
 bitstream:
 	icepack work/ghost_sd.asc work/ghost_sd.bin
 
 program:
-	iceprog ghost_sd.bin
+	icesprog ghost_sd.bin
 
 clean:
 	rm -rf work
