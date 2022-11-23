@@ -8,6 +8,8 @@ synth:
 	iverilog -o work/gost_tb gost_tb.v \
 		$(SRC_PATH)/gost.v \
 		$(SRC_PATH)/round/round.v \
+		$(SRC_PATH)/round/prefix_adder/prefix_adder.v \
+                $(SRC_PATH)/round/prefix_adder/gen_prop_cell.v \
 		$(SRC_PATH)/round/s_box.v
 
 # Launch simulation

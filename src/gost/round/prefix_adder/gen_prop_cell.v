@@ -7,9 +7,9 @@
 
 module gen_prop_cell
 	(
-	input ileft_gen, iright_gen;
-	input ileft_prop, iright_prop;
-	output ogen, oprop;
+	input ileft_gen, iright_gen,
+	input ileft_prop, iright_prop,
+	output ogen, oprop
 	);
 
 	assign ogen = (ileft_prop & iright_gen) | ileft_gen;
