@@ -7,8 +7,6 @@ synth:
 	mkdir work
 	iverilog -o work/round_tb round_tb.v \
 		$(SRC_PATH)/round.v \
-		$(SRC_PATH)/prefix_adder/prefix_adder.v \
-		$(SRC_PATH)/prefix_adder/gen_prop_cell.v \
 		$(SRC_PATH)/s_box.v
 
 # Launch simulation

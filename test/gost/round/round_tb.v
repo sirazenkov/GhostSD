@@ -62,7 +62,7 @@ module round_tb;
 
 		// Reset
 		rst = 1'b1;
-		#(PERIOD+1);
+		#PERIOD;
 		rst = 1'b0;
 		
 		for(i = 0; i < 31; i = i + 1)

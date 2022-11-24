@@ -27,13 +27,6 @@ module round
 	reg [1:0] state = IDLE;
 
 	reg [31:0] half_block = {32{1'b0}};
-	wire [31:0] sum;
-	prefix_adder prefix_adder_inst
-	(
-		.iA(iblock[31:0]),
-		.iB(ikey),
-		.osum(sum)
-	);
 
 	wire [31:0] s_box_output;
 	s_box s_box_inst
@@ -56,7 +49,7 @@ module round
 				begin
 					if(istart == 1'b1)
 					begin
-						half_block <= sum;
+						half_block <= iblock[31:0] + ikey;
 						state <= ADD;
 					end
 				end
