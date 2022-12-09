@@ -10,7 +10,8 @@ module cmd_driver
 	input irst,		// Global reset
 	input iclk,		// SD clock
 
-	inout iocmd_sd,		// CMD line
+	input icmd_sd,		// CMD line
+	output ocmd_sd,
 
 	input istart,		// Start transaction (command[-response])
 
@@ -37,7 +38,7 @@ module cmd_driver
 	(
 		.irst(rst_crc),
 		.iclk(iclk),
-		.idata(iocmd_sd),
+		.idata(cmd_sd),
 		.iunload(unload),
 		.ocrc(crc)
 	);
@@ -112,7 +113,7 @@ module cmd_driver
 				end
 				WAIT_RESP : 
 				begin
-					if(iocmd_sd == 1'b0)
+					if(icmd_sd == 1'b0)
 					begin
 						counter <= long_response ? 8'd127 : 8'd39;
 						state <= RCV_RESP;
@@ -121,7 +122,7 @@ module cmd_driver
 				RCV_RESP :
 				begin
 					counter <= counter - 1'b1;
-					cmd_content <= {cmd_content[118:0], iocmd_sd};
+					cmd_content <= {cmd_content[118:0], icmd_sd};
 					if(counter == 8'h01)
 					begin
 						counter <= 8'd7;
@@ -132,7 +133,7 @@ module cmd_driver
 				RCV_CRC :
 				begin
 					counter <= counter - 1'b1;
-					if(iocmd_sd != crc)
+					if(icmd_sd != crc)
 						crc_failed <= 1'b1;
 					if(counter == 8'h01)
 					begin
@@ -145,13 +146,13 @@ module cmd_driver
 		end
         end
 
-	assign iocmd_sd = (state == SEND_CMD) ? cmd_content[119] : (
+	assign ocmd_sd = (state == SEND_CMD) ? cmd_content[119] : (
 				(state == SEND_CRC) ?
 					((counter > 8'h01) ?
 						((counter > 8'd120) ? 1'b0 
 						: crc) :
 					1'b1) :
-				1'bz);
+				1'b1);
 	assign oresp = cmd_content;
 	assign odone = (state == IDLE) && !(crc_failed);
 

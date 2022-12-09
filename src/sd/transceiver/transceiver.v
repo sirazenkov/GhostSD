@@ -12,8 +12,10 @@ module transceiver
 	input iclk, // System clock (36 MHz)
 
 	// SD Bus
-	inout iocmd_sd,		// CMD line
-	inout [3:0] iodata_sd,	// D[3:0] line
+	input icmd_sd,		// CMD line
+	output icmd_sd,	
+	input [3:0] idata_sd,	// D[3:0] line
+	output [3:0] odata_sd,
 	output oclk_sd,		// CLK line
 
 	input istart, // Start Command-Response[-Data] transaction
@@ -65,7 +67,8 @@ module transceiver
 		.irst(irst),
 		.iclk(clk_sd),
 
-		.iocmd_sd(iocmd_sd),
+		.icmd_sd(icmd_sd),
+		.ocmd_sd(ocmd_sd),
 
 		.istart(icmd_start),
 
@@ -85,7 +88,8 @@ module transceiver
 		.irst(irst),
 		.iclk(clk_sd),
 		
-		.iodata_sd(iodata_sd),
+		.idata_sd(idata_sd),
+		.odata_sd(odata_sd),
 
 		.istart(idata_start),
 		

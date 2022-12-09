@@ -10,7 +10,9 @@ module d_driver
 	input irst, // Global reset
 	input iclk, // SD clock
 
-	inout [3:0] iodata_sd,
+	// D line
+	input [3:0] idata_sd,
+	output [3:0] odata_sd,
 
 	input istart,
 
@@ -64,21 +66,27 @@ module d_driver
 		end
 	endgenerate
 
+	assign odata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hz;
+
+	assign owdata = data;
+	assign oaddr = counter[9:0];
+	assign owrite_en = state == RECV_DATA;
+
+	assign ocrc_fail = crc_fail;
+	assign odone = state == IDLE or state == WAIT_DATA;
+
 	always @(posedge iclk)
 	begin
 		if(irst == 1'b1)	
 			data <= 4'h0;
 		if(state == IDLE or state == RECV_DATA or state == CHECK_CRC)
-			data <= iodata_sd;
+			data <= idata_sd;
 		else if(state == WAIT_DATA)
 			data <= 4'h0;	// Send start bit
-		else if((state == SEND_DATA and counter[10] == 1'b1) or state == SEND_CRC)
-		begin
-			if(counter == 11'd16)
-				data <= 4'hf;	// Send end bit
-			else
-				data <= crc;
-		end
+		else if((state == SEND_DATA and counter[10] == 1'b1)
+			data <= crc;	
+		else if(state == SEND_CRC and counter == 11'd16)
+			data <= 4'hf;	// Send end bit
 		else
 			data <= irdata;
 	end
@@ -159,13 +167,5 @@ module d_driver
 	end
 
 
-	assign iodata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hz;
-
-	assign owdata = data;
-	assign oaddr = counter[9:0];
-	assign owrite_en = state == RECV_DATA;
-
-	assign ocrc_fail = crc_fail;
-	assign odone = state == IDLE or state == WAIT_DATA;
 
 endmodule
