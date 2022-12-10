@@ -5,6 +5,9 @@ set_io iclk D1
 set_io irst A1 # Reset
 set_io istart E2 # Start
 
+#Switches
+set_io ienc_dec B3 # 0 - encrypt, 1 - decrypt 
+
 # SD interface
 set_io oclk_sd E3
 set_io iocmd_sd B5

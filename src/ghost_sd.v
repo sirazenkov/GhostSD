@@ -11,13 +11,15 @@ module ghost_sd
 	input irst, // Reset button
 	
 	input istart, // Start button
+	input ienc_dec, // 0 - encrypt, 1 - decrypt
 
 	// SD lines
 	inout iocmd_sd,		// CMD line
 	inout [3:0] iodata_sd,	// D[3:0] line
 	output oclk_sd,		// CLK line
 
-	output status_led	// Blinking - running operation
+	output status_led	// Blinking slow - waiting for start
+				// Blinking fast - running operation
 				// OFF - failed
 				// ON - success
 	);
@@ -43,7 +45,7 @@ module ghost_sd
         .oblock(res_block),
         .odone(gost_done)
 	);
-
+/*
 	ram_4k_block raw_block
 	(
 		.waddr(),
@@ -65,7 +67,7 @@ module ghost_sd
 		.rclk(),
  		.dout()
 	);
-
+*/
 	always @(posedge iclk)
 	begin
 		if(gost_done == 1'b1)
