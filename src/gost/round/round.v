@@ -21,9 +21,8 @@ module round
 
 	localparam [1:0]
 		IDLE = 2'b00,
-		ADD = 2'b01,
-		SBOX = 2'b11,
-		DONE = 2'b10;
+		BUSY = 2'b01,
+		DONE = 2'b11;
 	reg [1:0] state = IDLE;
 
 	reg [31:0] half_block = {32{1'b0}};
@@ -50,17 +49,12 @@ module round
 					if(istart == 1'b1)
 					begin
 						half_block <= iblock[31:0] + ikey;
-						state <= ADD;
+						state <= BUSY;
 					end
 				end
-				ADD:
+				BUSY:
 				begin
-					half_block <= s_box_output;
-					state <= SBOX;
-				end
-				SBOX:
-				begin
-					half_block <= ((half_block << 11) | (half_block >> (32-11))) ^
+					half_block <= ((s_box_output << 11) | (s_box_output >> (32-11))) ^
 							iblock[63:32];
 					state <= DONE;
 				end
@@ -74,3 +68,4 @@ module round
 	assign odone = state == DONE;
 
 endmodule
+
