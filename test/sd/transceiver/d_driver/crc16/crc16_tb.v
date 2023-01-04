@@ -62,16 +62,18 @@ module crc16_tb;
                 for(i = 0; i < CRC_LEN; i = i + 1)
                         #PERIOD;
 		
-		if(crc_reg != 16'h7FA1)
-			$display("Wrong checksum!");
-		
+		if(crc_reg != 16'h7FA1) begin
+			$display("Error: Wrong checksum!");
+			$finish;
+		end
+
 		// Reset
 		#HALF_PERIOD;		
 		rst = 1'b1;
 		#PERIOD;		
 		rst = 1'b0;
 
-		$display("End of test");
+		$display("Test passed");
 		$finish;
 	end
 endmodule

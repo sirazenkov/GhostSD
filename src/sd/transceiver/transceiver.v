@@ -13,7 +13,7 @@ module transceiver
 
 	// SD Bus
 	input icmd_sd,		// CMD line
-	output icmd_sd,	
+	output ocmd_sd,	
 	input [3:0] idata_sd,	// D[3:0] line
 	output [3:0] odata_sd,
 	output oclk_sd,		// CLK line
@@ -25,6 +25,7 @@ module transceiver
 	// Command & Response
 	input [5:0] icmd_index,	// Command index
 	input [31:0] icmd_arg,	// Command argument 
+	input ilong_resp,	// R2 response
 	output [31:0] oresp,	// Received response
 	output ovalid,		// Valid response
 
@@ -74,6 +75,7 @@ module transceiver
 
 		.icmd_index(icmd_index),
 		.icmd_arg(icmd_arg),
+		.ilong_resp(ilong_resp),
 		
 		.oresp(oresp),
 

@@ -1,24 +1,25 @@
-//=============================================================
+//========================================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
 //description: cmd_driver module testbench
-//=============================================================
+//========================================
 
 module cmd_driver_tb;
 
 	localparam PERIOD = 40;
 	localparam HALF_PERIOD = PERIOD / 2;
 	
-	reg clk, rst = 1'b0, cmd_sd_reg = 1'bz, start = 1'b0;
+	reg clk, rst = 1'b0, start = 1'b0;
 	reg [5:0] cmd_index;
 	reg [31:0] cmd_arg;
 
 	reg [46:0] correct_cmd;
-	reg [135:0] correct_resp;
+	reg [47:0] correct_resp;
 
-	wire [119:0] resp;
+	wire [31:0] resp;
 	wire cmd_sd, done;
+	reg resp_sd = 1'b1;
 
 	integer i;
 
@@ -30,18 +31,18 @@ module cmd_driver_tb;
 		#HALF_PERIOD;
 	end
 
-	assign cmd_sd = cmd_sd_reg;
-
 	cmd_driver uut(
 		.irst(rst),
 		.iclk(clk),
 
-		.iocmd_sd(cmd_sd),
+		.icmd_sd(resp_sd),
+		.ocmd_sd(cmd_sd),
 		
 		.istart(start),
 
 		.icmd_index(cmd_index),
 		.icmd_arg(cmd_arg),
+		.ilong_resp(1'b0),
 
 		.oresp(resp),
 		.odone(done)
@@ -73,29 +74,35 @@ module cmd_driver_tb;
 		cmd_arg = {32{1'b0}};
 		correct_cmd = {1'b1, 6'b010001, {32{1'b0}}, 7'b0101010, 1'b1};
 
-		@(cmd_sd == 1'b0);
-		#HALF_PERIOD;		
+		@(negedge cmd_sd);
+		#HALF_PERIOD;
 		for(i = 46; i >= 0; i = i - 1)
 		begin
 			#PERIOD;
-			if(cmd_sd != correct_cmd[i])
-				$display("Command check failed on bit %d", i);
+			if(cmd_sd != correct_cmd[i]) begin
+				$display("Error: Command check failed on bit %d", i);
+				$finish;
+			end
 		end
 
-		correct_resp = {1'b0, 1'b0, 6'b010001, 32'h00000900, 7'b0110011, 1'b1, {88{1'b0}}};
-		for(i = 135; i > 88; i = i - 1)
+		correct_resp = {1'b0, 1'b0, 6'b010001, 32'h00000900, 7'b0110011, 1'b1};
+		for(i = 47; i >= 0; i = i - 1)
 		begin
 			#PERIOD;
-			cmd_sd_reg = correct_resp[i];
+			resp_sd = correct_resp[i];
 		end
 
-		@(done == 1'b1);
-		cmd_sd_reg = 1'bz;
+		if(!done) begin
+			$display("Error: CMD driver didn't finish processing");
+			$finish;
+		end
 
-		if(resp != {{82{1'b0}}, correct_resp[133:96]})
-			$display("Wrong response!");
+		if(resp != correct_resp[39:8]) begin
+			$display("Error: Wrong response from CMD driver!");
+			$finish;
+		end
 
-		$display("End of test");
+		$display("Test passed");
 		$finish;
 	end
 endmodule

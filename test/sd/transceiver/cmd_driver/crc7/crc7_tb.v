@@ -74,9 +74,11 @@ module crc7_tb;
 		unload = 1'b0;
 
 		#HALF_PERIOD;
-		if(crc_reg != 7'b1001010)
-			$display("Wrong CMD0 checksum!");
-		
+		if(crc_reg != 7'b1001010) begin
+			$display("Error: Wrong CMD0 checksum!");
+			$finish;
+		end
+
 		// Reset
 		@(posedge clk);
                 rst = 1'b1;
@@ -96,8 +98,10 @@ module crc7_tb;
 		unload = 1'b0;
 
 		#HALF_PERIOD;
-		if(crc_reg != 7'b0101010)
-			$display("Wrong CMD17 checksum!");
+		if(crc_reg != 7'b0101010) begin
+			$display("Error: Wrong CMD17 checksum!");
+			$finish;
+		end
 
 		// Reset
 		@(posedge clk);
@@ -117,10 +121,12 @@ module crc7_tb;
 			@(posedge clk);
 
 		#HALF_PERIOD;
-		if(crc_reg != 7'b0110011)
-			$display("Wrong RESP17 checksum!");
+		if(crc_reg != 7'b0110011) begin
+			$display("Error: Wrong RESP17 checksum!");
+			$finish;
+		end
 
-		$display("End of test");
+		$display("Test passed");
 		$finish;
 	end
 endmodule
