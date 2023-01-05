@@ -42,7 +42,6 @@ module cmd_driver_tb;
 
 		.icmd_index(cmd_index),
 		.icmd_arg(cmd_arg),
-		.ilong_resp(1'b0),
 
 		.oresp(resp),
 		.odone(done)

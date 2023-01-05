@@ -6,7 +6,6 @@
 //================================================
 
 module transceiver
-
 	(
 	input irst, // Global reset
 	input iclk, // System clock (36 MHz)
@@ -17,19 +16,15 @@ module transceiver
 	input [3:0] idata_sd,	// D[3:0] line
 	output [3:0] odata_sd,
 	output oclk_sd,		// CLK line
-
-	input istart, // Start Command-Response[-Data] transaction
 	
 	input isel_clk, // Select CLK frequency: '1' - 18 MHz, '0'- 281.25 kHz
 
 	// Command & Response
 	input [5:0] icmd_index,	// Command index
 	input [31:0] icmd_arg,	// Command argument 
-	input ilong_resp,	// R2 response
 	output [31:0] oresp,	// Received response
-	output ovalid,		// Valid response
 
-	output [9:0] oaddr, // Data address in RAM
+	output [9:0] oaddr, 	// Data address in RAM
 
         // RAM for received data
         output [3:0] owdata,
@@ -38,15 +33,13 @@ module transceiver
         // RAM with processed data (for sending)
         input [3:0] irdata,
 
-	input idata_start,
+	input istart_d, 	// Start data passing
         output odata_crc_fail,
 	output odata_done,
-		
-	input icmd_start,
-	output ocmd_crc_fail,	// At least one CRC check failed
+
+	input istart_cmd,	// Start Command-Response transaction
 	output ocmd_done
     	);
-
 
 	wire clk_18MHz, clk_281kHz, clk_sd;
 
@@ -71,18 +64,15 @@ module transceiver
 		.icmd_sd(icmd_sd),
 		.ocmd_sd(ocmd_sd),
 
-		.istart(icmd_start),
+		.istart(istart_cmd),
 
 		.icmd_index(icmd_index),
 		.icmd_arg(icmd_arg),
-		.ilong_resp(ilong_resp),
 		
 		.oresp(oresp),
 
 		.odone(ocmd_done)	
 	);
-
-	wire start_d;
 
 	// D lines driver
 	d_driver d_driver_inst
@@ -93,8 +83,8 @@ module transceiver
 		.idata_sd(idata_sd),
 		.odata_sd(odata_sd),
 
-		.istart(idata_start),
-		
+		.istart(istart_d),
+
 		.oaddr(oaddr),
 		.owdata(owdata),
 		.owrite_en(owrite_en),

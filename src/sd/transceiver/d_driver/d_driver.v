@@ -34,11 +34,13 @@ module d_driver
 
 	localparam [2:0]
 		IDLE = 3'b000,
-		RECV_DATA = 3'b001,
-		CHECK_CRC = 3'b011,
-		WAIT_DATA = 3'b010,
-		SEND_DATA = 3'b110,
-		SEND_CRC = 3'b100;
+		WAIT_RCV = 3'b001
+		RCV_DATA = 3'b011,
+		CHECK_CRC = 3'b010,
+		WAIT_SEND = 3'b110,
+		SEND_DATA = 3'b100,
+		SEND_CRC = 3'b101,
+		BUSY = 3'b111;
 	reg [2:0] state = IDLE;
 
 	reg [3:0] data = 4'h0;
@@ -48,7 +50,7 @@ module d_driver
 	wire rst_crc;
 	reg unload = 1'b0;
 	wire [3:0] crc;
-	assign rst_crc = irst == 1'b1 or state == IDLE or state == WAIT_DATA;
+	assign rst_crc = irst == 1'b1 or state == IDLE or state == WAIT_SEND or state == WAIT_RCV;
 
 	generate
 		for(i = 0; i < 4; i = i + 1)
@@ -66,22 +68,22 @@ module d_driver
 		end
 	endgenerate
 
-	assign odata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hz;
+	assign odata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hF;
 
 	assign owdata = data;
 	assign oaddr = counter[9:0];
-	assign owrite_en = state == RECV_DATA;
+	assign owrite_en = state == RCV_DATA;
 
 	assign ocrc_fail = crc_fail;
-	assign odone = state == IDLE or state == WAIT_DATA;
+	assign odone = state == IDLE or state == WAIT_SEND;
 
 	always @(posedge iclk)
 	begin
 		if(irst == 1'b1)	
 			data <= 4'h0;
-		if(state == IDLE or state == RECV_DATA or state == CHECK_CRC)
+		if(state == IDLE or state == RCV_DATA or state == CHECK_CRC)
 			data <= idata_sd;
-		else if(state == WAIT_DATA)
+		else if(istart && state == WAIT_SEND)
 			data <= 4'h0;	// Send start bit
 		else if((state == SEND_DATA and counter[10] == 1'b1)
 			data <= crc;	
@@ -105,14 +107,19 @@ module d_driver
 			case(state)
 				IDLE:
 				begin
-					if(istart && data == 4'h0)
+					if(istart)
 					begin
-						state <= RECV_DATA;
+						state <= WAIT_RCV;
 						counter <= {11{1'b0}};
 						crc_failed <= 1'b0;
 					end
 				end
-				RECV_DATA:
+				WAIT_RCV:
+				begin
+					if(data == 4'h0)
+						state <= RCV_DATA;
+				end
+				RCV_DATA:
 				begin
 					counter <= counter + 1'b1;
 					if(counter[10] == 1'b1)
@@ -135,7 +142,7 @@ module d_driver
 					end
 					counter <= counter + 1'b1;
 				end
-				WAIT_DATA: // Wait until data is encrypted/decrypted
+				WAIT_SEND: // Wait until data is encrypted/decrypted
 				begin
 					if(istart)
 					begin
@@ -158,14 +165,17 @@ module d_driver
 					counter <= counter + 1'b1;
 					if(counter == 16'd16)
 					begin
-						state <= IDLE;
+						state <= BUSY;
 						unload <= 1'b0;
 					end
+				end
+				BUSY:
+				begin
+					if(idata_sd[0])		// SD card finished writing
+						state <= IDLE;
 				end
 			endcase
 		end
 	end
-
-
 
 endmodule

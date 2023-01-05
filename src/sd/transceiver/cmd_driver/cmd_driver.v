@@ -17,7 +17,6 @@ module cmd_driver
 
 	input [5:0] icmd_index,	// Command index
 	input [31:0] icmd_arg,	// Command argument	
-	input ilong_resp,	// R2 response
 
 	output [31:0] oresp,	// Received response
 	output odone		// Operation done
@@ -114,7 +113,7 @@ module cmd_driver
 				begin
 					if(icmd_sd == 1'b0)
 					begin
-						counter <= ilong_resp ? 8'd127 : 8'd39;
+						counter <= icmd_index == 6'd2 ? 8'd127 : 8'd39;
 						state <= RCV_RESP;
 					end
 				end
