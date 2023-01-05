@@ -29,12 +29,9 @@ module d_driver
 	output odone
 	);
 
-
-	genvar i;
-
 	localparam [2:0]
 		IDLE = 3'b000,
-		WAIT_RCV = 3'b001
+		WAIT_RCV = 3'b001,
 		RCV_DATA = 3'b011,
 		CHECK_CRC = 3'b010,
 		WAIT_SEND = 3'b110,
@@ -50,8 +47,9 @@ module d_driver
 	wire rst_crc;
 	reg unload = 1'b0;
 	wire [3:0] crc;
-	assign rst_crc = irst == 1'b1 or state == IDLE or state == WAIT_SEND or state == WAIT_RCV;
+	assign rst_crc = irst == 1'b1 || state == IDLE || state == WAIT_SEND || state == WAIT_RCV;
 
+	genvar i;
 	generate
 		for(i = 0; i < 4; i = i + 1)
 		begin
@@ -68,26 +66,26 @@ module d_driver
 		end
 	endgenerate
 
-	assign odata_sd = state == SEND_DATA or state == SEND_CRC ? data : 4'hF;
+	assign odata_sd = state == SEND_DATA || state == SEND_CRC ? data : 4'hF;
 
 	assign owdata = data;
 	assign oaddr = counter[9:0];
 	assign owrite_en = state == RCV_DATA;
 
 	assign ocrc_fail = crc_fail;
-	assign odone = state == IDLE or state == WAIT_SEND;
+	assign odone = state == IDLE || state == WAIT_SEND;
 
 	always @(posedge iclk)
 	begin
 		if(irst == 1'b1)	
 			data <= 4'h0;
-		if(state == IDLE or state == RCV_DATA or state == CHECK_CRC)
+		if(state == IDLE || state == RCV_DATA || state == CHECK_CRC)
 			data <= idata_sd;
 		else if(istart && state == WAIT_SEND)
 			data <= 4'h0;	// Send start bit
-		else if((state == SEND_DATA and counter[10] == 1'b1)
+		else if(state == SEND_DATA && counter[10] == 1'b1)
 			data <= crc;	
-		else if(state == SEND_CRC and counter == 11'd16)
+		else if(state == SEND_CRC && counter == 11'd16)
 			data <= 4'hf;	// Send end bit
 		else
 			data <= irdata;
