@@ -33,7 +33,8 @@ module transceiver
         // RAM with processed data (for sending)
         input [3:0] irdata,
 
-	input istart_d, 	// Start data passing
+	input istart_d_read, 	// Start reading data from SD
+	input istart_d_write, 	// Start writing data to SD
         output odata_crc_fail,
 	output odata_done,
 
@@ -83,7 +84,8 @@ module transceiver
 		.idata_sd(idata_sd),
 		.odata_sd(odata_sd),
 
-		.istart(istart_d),
+		.istart_read(istart_d_read),
+		.istart_write(istart_d_write),
 
 		.oaddr(oaddr),
 		.owdata(owdata),

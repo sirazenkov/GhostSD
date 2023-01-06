@@ -14,7 +14,8 @@ module d_driver
 	input [3:0] idata_sd,
 	output [3:0] odata_sd,
 
-	input istart,
+	input istart_read,
+	input istart_write,
 
 	output [9:0] oaddr, // Data address in RAM
 
@@ -81,7 +82,7 @@ module d_driver
 			data <= 4'h0;
 		if(state == IDLE || state == RCV_DATA || state == CHECK_CRC)
 			data <= idata_sd;
-		else if(istart && state == WAIT_SEND)
+		else if(istart_write && state == WAIT_SEND)
 			data <= 4'h0;	// Send start bit
 		else if(state == SEND_DATA && counter[10] == 1'b1)
 			data <= crc;	
@@ -105,7 +106,7 @@ module d_driver
 			case(state)
 				IDLE:
 				begin
-					if(istart)
+					if(istart_read)
 					begin
 						state <= WAIT_RCV;
 						counter <= {11{1'b0}};
@@ -142,7 +143,7 @@ module d_driver
 				end
 				WAIT_SEND: // Wait until data is encrypted/decrypted
 				begin
-					if(istart)
+					if(istart_write)
 					begin
 						state <= SEND_DATA;
 						counter <= {11{1'b0}};

@@ -19,8 +19,8 @@ module sd
 
 	input istart,		// Start SD card encryption/decryption
 
-	input iread,		// Read next block from SD card
-	input iwrite,		// Write processed block
+	output ogen_otp,	// Generate next block of the pad
+	input iotp_ready,	// One-time pad ready
 
 	output [9:0] oaddr, 	// Data address in RAM
 
@@ -43,7 +43,6 @@ module sd
 		CMD3 = 6'd3,
 		CMD7 = 6'd7,
 		ACMD6 = 6'd6,
-		WAIT = 6'd1,
 		CMD17 = 6'd17,
 		READ = 6'd19, 
 		CMD24 = 6'd24,
@@ -59,13 +58,15 @@ module sd
 			state <= next_state;
 	end
 
-	reg [31:0] arg = {32{1'b1}};
+	wire [31:0] arg;
 	reg [22:0] addr_sd = 23'd0;
 	
 	always_ff @(posedge iclk) begin
-		if(state == WRITE && next_state == WAIT)
+		if(irst)
+			addr_sd <= 23'd0;
+		else if(state == WRITE && next_state == READ)
 			addr_sd <= addr_sd + 1'b1;
-		else if(state == CMD17 && next_state == CMD15)
+		else if(next_state == CMD15)
 			addr_sd <= 23'd0;
 	end
 
@@ -96,8 +97,6 @@ module sd
 		next_state = state;
 		if(istart && state == IDLE)
 			next_state == CMD55;
-		else if(iread && state == WAIT)
-			next_state = CMD17;
 		else if(state == READ && data_done) begin
 			if(data_crc_failed)
 				next_state = CMD17;
@@ -105,7 +104,7 @@ module sd
 				next_state = CMD24;
 		end
 		else if(state == WRITE && data_done)
-			next_state = WAIT;
+			next_state = CMD17;
 		else if(cmd_done) begin
 			next_state = CMD24;
 			case(state)
@@ -131,7 +130,7 @@ module sd
 					next_state = CMD55;
 				ACMD6:
 					if(resp[12:9] == 4'd4)
-						next_state = WAIT;
+						next_state = READ;
 					else
 						next_state = IDLE;
 				CMD17: begin
@@ -176,20 +175,32 @@ module sd
 	always_ff @(posedge iclk) begin
 		if(irst)
 			start_cmd <= 1'b0;
-		else if(state != next_state && next_state != IDLE && next_state != READ && next_state != WRITE)
+		else if(state != next_state
+			&& next_state != IDLE
+			&& next_state != READ
+			&& next_state != WRITE)
 			start_cmd <= 1'b1;
 		else
 			start_cmd <= 1'b0;
 
-	reg start_d;
+	reg start_d_read, start_d_write;
 	always_ff @(posedge iclk) begin
-		if(irst)
-			start_d <= 1'b0;
-		else if(next_state == CMD17 || next_state == WRITE)
-			start_d <= 1'b1;
-		else
-			start_d <= 1'b0;
+		if(irst) begin
+			start_d_read <= 1'b0;	
+			start_d_write <= 1'b0;	
+		end
+		else if(state != next_state) begin
+		       	if(next_state == CMD17)
+				start_d_read <= 1'b1;
+			if(next_state == WRITE)
+				start_d_write <= 1'b1;
+		end
+		else begin
+			start_d_read <= 1'b0;
+			start_d_write <= 1'b0;
+		end
 	end
+	assign ogen_otp = start_d_read;
 
 	transceiver transceiver_inst
         (
@@ -213,7 +224,8 @@ module sd
         	.owrite_en(owrite_en),
         	.irdata(irdata),
 
-		.istart_d(start_d),
+		.istart_d_read(start_d_read),
+		.istart_d_write(start_d_write),
 		.oaddr_sd(addr_sd),
         	.odata_crc_fail(data_crc_fail),
         	.odata_done(data_done),
