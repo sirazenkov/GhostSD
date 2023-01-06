@@ -1,24 +1,21 @@
-//=============================================================
+//======================================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
-//description: cmd_driver module testbench
-//=============================================================
+//description: d_driver module testbench
+//======================================
 
-module cmd_driver_tb;
+module d_driver_tb;
 
 	localparam PERIOD = 40;
 	localparam HALF_PERIOD = PERIOD / 2;
 	
-	reg clk, rst = 1'b0, cmd_sd_reg = 1'bz, start = 1'b0;
-	reg [5:0] cmd_index;
-	reg [31:0] cmd_arg;
+	reg clk, rst, start_read = 1'b0, start_write = 1'b0;
+	reg [3:0] idata_sd, rdata;
 
-	reg [46:0] correct_cmd;
-	reg [135:0] correct_resp;
-
-	wire [119:0] resp;
-	wire cmd_sd, done;
+	wire write_en, crc_fail, done;
+	wire [3:0] odata_sd, wdata;
+	wire [9:0] addr;
 
 	integer i;
 
@@ -30,27 +27,29 @@ module cmd_driver_tb;
 		#HALF_PERIOD;
 	end
 
-	assign cmd_sd = cmd_sd_reg;
-
-	cmd_driver uut(
+	d_driver uut(
 		.irst(rst),
 		.iclk(clk),
 
-		.iocmd_sd(cmd_sd),
+		.idata_sd(idata_sd),
+		.odata_sd(odata_sd),
 		
-		.istart(start),
+		.istart_read(start_read),
+		.istart_write(start_write),
 
-		.icmd_index(cmd_index),
-		.icmd_arg(cmd_arg),
+		.oaddr(addr),
+		.owdata(wdata),
+		.owrite_en(write_en),
+		.irdata(rdata),
 
-		.oresp(resp),
+		.ocrc_fail(crc_fail),
 		.odone(done)
 	);
 
 	initial
 	begin
 		$dumpfile("work/wave.ocd");
-		$dumpvars(0, cmd_driver_tb);
+		$dumpvars(0, d_driver_tb);
 	end
 
 	initial
@@ -62,40 +61,16 @@ module cmd_driver_tb;
 		rst = 1'b0;
 
 		// Start
-		start = 1'b1;
+		start_read = 1'b1;
 	end
 
 	initial
 	begin
-		$display("Starting cmd_driver testbench...");
+		$display("Starting d_driver testbench...");
 
-		cmd_index = 6'b010001;
-		cmd_arg = {32{1'b0}};
-		correct_cmd = {1'b1, 6'b010001, {32{1'b0}}, 7'b0101010, 1'b1};
 
-		@(cmd_sd == 1'b0);
-		#HALF_PERIOD;		
-		for(i = 46; i >= 0; i = i - 1)
-		begin
-			#PERIOD;
-			if(cmd_sd != correct_cmd[i])
-				$display("Command check failed on bit %d", i);
-		end
 
-		correct_resp = {1'b0, 1'b0, 6'b010001, 32'h00000900, 7'b0110011, 1'b1, {88{1'b0}}};
-		for(i = 135; i > 88; i = i - 1)
-		begin
-			#PERIOD;
-			cmd_sd_reg = correct_resp[i];
-		end
-
-		@(done == 1'b1);
-		cmd_sd_reg = 1'bz;
-
-		if(resp != {{82{1'b0}}, correct_resp[133:96]})
-			$display("Wrong response!");
-
-		$display("End of test");
+		$display("Test passed");
 		$finish;
 	end
 endmodule

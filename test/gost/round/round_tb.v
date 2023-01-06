@@ -75,11 +75,13 @@ module round_tb;
 			#PERIOD;
 
 			@(done == 1'b1);
-			if(oblock != correct_oblock)
-				$display("Round %d failed!", i);
+			if(oblock != correct_oblock) begin
+				$display("Error: Round %d failed!", i);
+				$finish;
+			end
 		end
 
-		$display("End of test");
+		$display("Test passed");
 		$finish;
 	end
 endmodule

@@ -43,7 +43,7 @@ module d_driver
 
 	reg [3:0] data = 4'h0;
 	reg [10:0] counter = {11{1'b0}};
-	reg crc_failed = 1'b0;
+	reg crc_fail = 1'b0;
 
 	wire rst_crc;
 	reg unload = 1'b0;
@@ -99,7 +99,7 @@ module d_driver
 			state <= IDLE;
 			counter <= {11{1'b0}};
 			unload <= 1'b0;
-			crc_failed <= 1'b0;
+			crc_fail <= 1'b0;
 		end
 		else
 		begin
@@ -110,7 +110,7 @@ module d_driver
 					begin
 						state <= WAIT_RCV;
 						counter <= {11{1'b0}};
-						crc_failed <= 1'b0;
+						crc_fail <= 1'b0;
 					end
 				end
 				WAIT_RCV:
@@ -130,14 +130,12 @@ module d_driver
 				end
 				CHECK_CRC: // Check CRC on the data lines
 				begin
-					if(counter == 11'd16)	
-					begin
-						state <= WAIT_DATA;
-					end
+					if(counter == 11'd16)
+						state <= WAIT_SEND;
 					else if(crc != data)
 					begin
 						state <= IDLE;
-						crc_failed <= 1'b1;
+						crc_fail <= 1'b1;
 					end
 					counter <= counter + 1'b1;
 				end

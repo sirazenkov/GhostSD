@@ -1,6 +1,8 @@
-set sig_list [list clk rst start cmd_sd cmd_index\[5:0\] cmd_arg\[31:0\] cmd resp\[119:0\] done i]
+set sig_list [list clk rst start idata_sd\[3:0\] odata_sd\[3:0\] addr\[9:0\] wdata\[3:0\] write_en rdata\[3:0\] crc_fail done i]
 gtkwave::addSignalsFromList $sig_list
-gtkwave::highlightSignalsFromList "top.cmd_driver_tb.cmd_index\[5:0\]"
-gtkwave::highlightSignalsFromList "top.cmd_driver_tb.cmd_arg\[31:0\]"
-gtkwave::highlightSignalsFromList "top.cmd_driver_tb.resp\[119:0\]"
+gtkwave::highlightSignalsFromList "top.d_driver_tb.idata_sd\[3:0\]"
+gtkwave::highlightSignalsFromList "top.d_driver_tb.odata_sd\[3:0\]"
+gtkwave::highlightSignalsFromList "top.d_driver_tb.addr\[9:0\]"
+gtkwave::highlightSignalsFromList "top.d_driver_tb.wdata\[3:0\]"
+gtkwave::highlightSignalsFromList "top.d_driver_tb.rdata\[3:0\]"
 gtkwave::/Edit/Data_Format/Binary
