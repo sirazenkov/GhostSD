@@ -11,7 +11,6 @@ module gost
 	input iclk,
 	
 	input istart,
-	input ienc_dec, // 0 - encrypt, 1 - decrypt
 
 	input [255:0] ikey,
 	input [63:0] iblock,
@@ -22,10 +21,10 @@ module gost
 
 	localparam
 		IDLE = 1'b0,
-		ENC_DEC = 1'b1;
+		ENC = 1'b1;
 	reg state = IDLE;
 	wire start_round, round_done;
-	assign start_round = state == ENC_DEC; 
+	assign start_round = state == ENC; 
 
 	reg [4:0] counter = 5'd0;
 
@@ -47,20 +46,17 @@ module gost
 				begin
 					if(istart == 1'b1)
 					begin
-						state <= ENC_DEC;
-						counter <= ienc_dec == 1'b0 ? 5'b00000 : 5'b11111;	
+						state <= ENC;
+						counter <= 5'b00000;	
 						block <= iblock;
 					end
 				end
-				ENC_DEC:
+				ENC:
 				begin
 					if(round_done == 1'b1)
 					begin
-						counter <= ienc_dec == 1'b0 ? counter + 1'b1 :
-										counter - 1'b1;
-						if((ienc_dec == 1'b0 && counter == 5'b11111) ||
-						(ienc_dec == 1'b1 && counter == 5'b00000))
-						begin
+						counter <= counter + 1'b1;
+						if(counter == 5'b11111) begin
 							block <= (round_oblock[31:0] << 32) |
 								round_oblock[63:32];
 							state <= IDLE;

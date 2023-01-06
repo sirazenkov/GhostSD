@@ -8,10 +8,9 @@
 module ghost_sd
 	(
 	input iclk, // 36 MHz system clock
-	input irst, // Reset button
+	input irst,
 	
-	input istart, // Start button
-	input ienc_dec, // 0 - encrypt, 1 - decrypt
+	input istart,
 
 	// SD lines
 	inout iocmd_sd,		// CMD line
@@ -37,7 +36,6 @@ module ghost_sd
         .iclk(iclk),
 
         .istart(istart),
-        .ienc_dec(1'b0), // 0 - encrypt, 1 - decrypt
 
         .ikey(key),
         .iblock(block),

@@ -12,7 +12,7 @@ module gost_tb;
 	localparam PERIOD = 40;
 	localparam HALF_PERIOD = PERIOD / 2;
 
-	reg clk, rst = 1'b0, start = 1'b0, enc_dec = 1'b0;
+	reg clk, rst = 1'b0, start = 1'b0;
 	wire done;
 	
 	reg [255:0] key = 256'hFFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF; 
@@ -28,7 +28,6 @@ module gost_tb;
 		.iclk(clk),
 
 		.istart(start),
-		.ienc_dec(enc_dec),
 
 		.ikey(key),
 		.iblock(iblock),
@@ -67,22 +66,13 @@ module gost_tb;
 
 		@(done == 1'b1);
 		start = 1'b0;
-		if(oblock != ciphertext)
-			$display("Encryption failed!");
+		if(oblock != ciphertext) begin
+			$display("Error: Encryption failed!");
+			$finish;
+		end
 		#PERIOD;
 
-		iblock = ciphertext;
-		start = 1'b1;
-		enc_dec = 1'b1;
-		#PERIOD;
-
-		@(done == 1'b1);
-		start = 1'b0;
-		if(oblock != plaintext)
-			$display("Decryption failed!");
-		#PERIOD;
-
-		$display("End of test");
+		$display("Test passed");
 		$finish;
 	end
 endmodule
