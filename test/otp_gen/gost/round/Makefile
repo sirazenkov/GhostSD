@@ -1,4 +1,4 @@
-SRC_PATH=../../../src/gost/round
+SRC_PATH=../../../../src/otp_gen/gost/round
 
 all: synth sim
 

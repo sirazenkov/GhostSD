@@ -1,18 +1,15 @@
-SRC_PATH=../../src/gost
+SRC_PATH=../../../../../src/otp_gen/gost/round
 
 all: synth sim
 
 # Design and testbench synthesis
 synth:
 	mkdir work
-	iverilog -o work/gost_tb gost_tb.v \
-		$(SRC_PATH)/gost.v \
-		$(SRC_PATH)/round/round.v \
-		$(SRC_PATH)/round/s_box.v
+	iverilog -o work/s_box_tb $(SRC_PATH)/s_box.v s_box_tb.v
 
 # Launch simulation
 sim:
-	./work/gost_tb
+	./work/s_box_tb
 
 # Open waveform
 wave:
