@@ -52,7 +52,7 @@ module otp_gen
 		endcase
 	end
 
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(irst)
 			state <= IDLE;
 		else
@@ -64,24 +64,22 @@ module otp_gen
 	wire [63:0] enc_block;
 	wire done_gost;
 
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(istart && next_state == GEN_BLOCK)
 			start_gost <= 1'b1;
 		else
 			start_gost <= 1'b0;
 
 		case(state)
-			IDLE: begin
+			IDLE:
 				if(inew_otp)
-					plain_block <= {iIV, 32{1'b0}};
-			end
-			GEN_BLOCK: begin
+					plain_block <= {iIV, {32{1'b0}}};
+			GEN_BLOCK:
 				if(done_gost)
 					plain_block <= plain_block + 1'b1;
-			end
-			WRITE_BLOCK: begin
+			WRITE_BLOCK:
 				counter <= counter + 1;
-			end
+		endcase
 	end
 
 	gost gost_inst (

@@ -20,7 +20,7 @@ module ghost_sd
 	output osuccess,
 	output ofail
 	);
-
+	
 	`include "crypto.vh"
 	
 	wire icmd_sd, ocmd_sd, clk_sd;

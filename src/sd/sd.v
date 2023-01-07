@@ -52,7 +52,7 @@ module sd
 
 	reg state;
 	wire next_state;
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(irst)
 			state <= IDLE;
 		else
@@ -62,7 +62,7 @@ module sd
 	wire [31:0] arg;
 	reg [22:0] addr_sd = 23'd0;
 	
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(irst)
 			addr_sd <= 23'd0;
 		else if(state == WRITE && next_state == READ)
@@ -148,7 +148,7 @@ module sd
 	end
 
 	reg [15:0] rca = 16'd0;
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(irst) begin
 			osuccess <= 1'b0;
 			ofail <= 1'b0;
@@ -173,7 +173,7 @@ module sd
 	end
 
 	reg start_cmd;
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(irst)
 			start_cmd <= 1'b0;
 		else if(state != next_state
@@ -185,7 +185,7 @@ module sd
 			start_cmd <= 1'b0;
 
 	reg start_d_read, start_d_write;
-	always_ff @(posedge iclk) begin
+	always @(posedge iclk) begin
 		if(irst) begin
 			start_d_read <= 1'b0;	
 			start_d_write <= 1'b0;	
