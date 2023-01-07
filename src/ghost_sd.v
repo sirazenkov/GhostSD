@@ -1,9 +1,9 @@
-//=======================================================================
+//==========================================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
 //description: Top module of GhostSD project
-//=======================================================================
+//==========================================
 
 module ghost_sd
 	(
@@ -17,55 +17,91 @@ module ghost_sd
 	inout [3:0] iodata_sd,	// D[3:0] line
 	output oclk_sd,		// CLK line
 
-	output status_led	// Blinking slow - waiting for start
-				// Blinking fast - running operation
-				// OFF - failed
-				// ON - success
+	output osuccess,
+	output ofail
 	);
 
-	localparam [255:0] key = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
-	localparam [63:0] IV = 64'hb97b7f467edaefd8;
+	`include "crypto.vh"
 	
-	wire gost_done;
-	wire [63:0] res_block;
-	reg [63:0] block = IV;
+	wire icmd_sd, ocmd_sd, clk_sd;
+	wire [3:0] idata_sd, odata_sd;
 
-	gost gost_inst
+	wire gen_otp, otp_ready;
+
+	wire write_en_raw, write_en_otp;
+	wire [3:0] wdata_raw, wdata_otp;
+	wire [9:0] addr, addr_otp;
+	wire [63:0] res_block;
+	wire [3:0] block_otp, block_raw;
+
+	wire success, fail;
+
+	sd sd_inst (
+        	.irst(irst),
+		.iclk(iclk),
+
+        	.icmd_sd(icmd_sd),
+        	.ocmd_sd(ocmd_sd),
+        	.idata_sd(idata_sd),
+        	.odata_sd(odata_sd),
+        	.oclk_sd(clk_sd),
+
+        	.istart(istart),
+
+        	.ogen_otp(gen_otp),
+
+        	.iotp_ready(otp_ready),
+
+        	.oaddr(addr),
+
+        	.owdata(wdata_raw),
+        	.owrite_en(write_en_raw),
+
+        	.irdata(res_block),
+
+        	.osuccess(success),
+       		.ofail(fail)
+        );
+
+	otp_gen otp_gen_inst
 	(
 	.irst(irst),
         .iclk(iclk),
 
-        .istart(istart),
+        .istart(gen_otp),
 
-        .ikey(key),
-        .iblock(block),
+        .ikey(KEY),
+	.iIV(IV),
 
-        .oblock(res_block),
-        .odone(gost_done)
+        .oaddr(addr_otp),
+        .owdata(wdata_otp),
+	.owrite_en(write_en_otp),
+
+	.odone(otp_ready),
 	);
-/*
+
+	ram_4k_block otp_block
+	(
+		.waddr(addr_otp),
+		.raddr(addr),
+ 		.din(wdata_otp),
+ 		.write_en(write_en_otp),
+		.wclk(iclk),
+		.rclk(clk_sd),
+ 		.dout(block_otp)
+	);
+
 	ram_4k_block raw_block
 	(
-		.waddr(),
-		.raddr(),
- 		.din(),
- 		.write_en(),
-		.wclk(),
-		.rclk(iclk),
- 		.dout()
+		.waddr(addr),
+		.raddr(addr),
+ 		.din(wdata_raw),
+ 		.write_en(write_en_raw),
+		.wclk(clk_sd),
+		.rclk(clk_sd),
+ 		.dout(block_raw)
 	);
 
-	ram_4k_block processed_block
-	(
-		.waddr(),
-		.raddr(),
- 		.din(),
- 		.write_en(),
-		.wclk(iclk),
-		.rclk(),
- 		.dout()
-	);
-*/
 	always @(posedge iclk)
 	begin
 		if(gost_done == 1'b1)
@@ -74,6 +110,17 @@ module ghost_sd
 		end
 	end
 
-	assign iodata_sd = block[63:60];
+	assign oclk_sd = clk_sd;
+	assign iocmd_sd = ocmd_sd == 1'b0 ? 1'b0 : 1'bz;
+	genvar i;
+	generate
+		for(i = 0; i < 4; i = i + 1) begin
+			assign iodata_sd[i] = odata_sd[i] == 1'b0 ? 1'b0 : 1'bz;
+		end
+	endgenerate
+	assign idata_sd = iodata_sd;
+
+	assign osuccess = success;
+	assign ofail = fail;
 
 endmodule

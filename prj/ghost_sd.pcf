@@ -1,12 +1,9 @@
-# System clock (72 MHz)
+# System clock (36 MHz)
 set_io iclk D1
 
 # Buttons
 set_io irst A1 # Reset
-set_io istart E2 # Start
-
-#Switches
-set_io ienc_dec B3 # 0 - encrypt, 1 - decrypt 
+set_io istart B1 # Start
 
 # SD interface
 set_io oclk_sd E3
@@ -16,5 +13,6 @@ set_io iodata_sd[1] C2
 set_io iodata_sd[2] B4
 set_io iodata_sd[3] C6
 
-# Status LED
-set_io status_led B6
+# Status
+set_io osuccess B6 # LED
+set_io ofail E2
