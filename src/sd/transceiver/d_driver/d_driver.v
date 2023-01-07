@@ -42,7 +42,7 @@ module d_driver
 	reg [2:0] state = IDLE;
 
 	reg [3:0] data = 4'h0;
-	reg [10:0] counter = {11{1'b0}};
+	reg [9:0] counter = 10'd0;
 	reg crc_fail = 1'b0;
 
 	wire rst_crc;
@@ -70,7 +70,7 @@ module d_driver
 	assign odata_sd = state == SEND_DATA || state == SEND_CRC ? data : 4'hF;
 
 	assign owdata = data;
-	assign oaddr = counter[9:0];
+	assign oaddr = counter;
 	assign owrite_en = state == RCV_DATA;
 
 	assign ocrc_fail = crc_fail;
@@ -84,9 +84,9 @@ module d_driver
 			data <= idata_sd;
 		else if(istart_write && state == WAIT_SEND)
 			data <= 4'h0;	// Send start bit
-		else if(state == SEND_DATA && counter[10] == 1'b1)
+		else if(state == SEND_DATA && &counter)
 			data <= crc;	
-		else if(state == SEND_CRC && counter == 11'd16)
+		else if(state == SEND_CRC && counter == 10'd15)
 			data <= 4'hf;	// Send end bit
 		else
 			data <= irdata;
@@ -97,7 +97,7 @@ module d_driver
 		if(irst == 1'b1)
 		begin
 			state <= IDLE;
-			counter <= {11{1'b0}};
+			counter <= 10'd0;
 			unload <= 1'b0;
 			crc_fail <= 1'b0;
 		end
@@ -109,7 +109,7 @@ module d_driver
 					if(istart_read)
 					begin
 						state <= WAIT_RCV;
-						counter <= {11{1'b0}};
+						counter <= 10'd0;
 						crc_fail <= 1'b0;
 					end
 				end
@@ -121,16 +121,16 @@ module d_driver
 				RCV_DATA:
 				begin
 					counter <= counter + 1'b1;
-					if(counter[10] == 1'b1)
+					if(&counter)
 					begin
 						state <= CHECK_CRC;
-						counter <= {11{1'b0}};
+						counter <= 10'd0;
 						unload <= 1'b1;
 					end
 				end
 				CHECK_CRC: // Check CRC on the data lines
 				begin
-					if(counter == 11'd16)
+					if(counter == 10'd15)
 						state <= WAIT_SEND;
 					else if(crc != data)
 					begin
@@ -144,23 +144,23 @@ module d_driver
 					if(istart_write)
 					begin
 						state <= SEND_DATA;
-						counter <= {11{1'b0}};
+						counter <= 10'd0;
 					end
 				end
 				SEND_DATA:
 				begin
 					counter <= counter + 1'b1;
-					if(counter[10] == 1'b1)
+					if(&counter)
 					begin
 						state <= SEND_CRC;
 						unload <= 1'b1;
-						counter <= {11{1'b0}};
+						counter <= 10'd0;
 					end
 				end
 				SEND_CRC:
 				begin
 					counter <= counter + 1'b1;
-					if(counter == 16'd16)
+					if(counter == 16'd15)
 					begin
 						state <= BUSY;
 						unload <= 1'b0;

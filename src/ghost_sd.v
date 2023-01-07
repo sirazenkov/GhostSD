@@ -26,7 +26,7 @@ module ghost_sd
 	wire icmd_sd, ocmd_sd, clk_sd;
 	wire [3:0] idata_sd, odata_sd;
 
-	wire gen_otp, otp_ready;
+	wire gen_otp, otp_ready, new_otp;
 
 	wire write_en_raw, write_en_otp;
 	wire [3:0] wdata_raw, wdata_otp;
@@ -49,6 +49,7 @@ module ghost_sd
         	.istart(istart),
 
         	.ogen_otp(gen_otp),
+		.onew_otp(new_otp),
 
         	.iotp_ready(otp_ready),
 
@@ -69,6 +70,8 @@ module ghost_sd
         .iclk(iclk),
 
         .istart(gen_otp),
+	
+	.inew_otp(new_otp),
 
         .ikey(KEY),
 	.iIV(IV),
@@ -77,7 +80,7 @@ module ghost_sd
         .owdata(wdata_otp),
 	.owrite_en(write_en_otp),
 
-	.odone(otp_ready),
+	.odone(otp_ready)
 	);
 
 	ram_4k_block otp_block
@@ -102,13 +105,7 @@ module ghost_sd
  		.dout(block_raw)
 	);
 
-	always @(posedge iclk)
-	begin
-		if(gost_done == 1'b1)
-		begin
-			block <= res_block;
-		end
-	end
+	assign res_block = block_raw ^ block_otp;
 
 	assign oclk_sd = clk_sd;
 	assign iocmd_sd = ocmd_sd == 1'b0 ? 1'b0 : 1'bz;

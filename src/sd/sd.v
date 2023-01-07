@@ -20,7 +20,8 @@ module sd
 	input istart,		// Start SD card encryption/decryption
 
 	output ogen_otp,	// Generate next block of the pad
-	input iotp_ready,	// One-time pad ready
+	output onew_otp,	// Start new OTP with the IV
+	input iotp_ready,	// One-time pad block ready
 
 	output [9:0] oaddr, 	// Data address in RAM
 
@@ -201,6 +202,7 @@ module sd
 		end
 	end
 	assign ogen_otp = state == READ;
+	assign onew_otp = state == IDLE;
 
 	transceiver transceiver_inst
         (
