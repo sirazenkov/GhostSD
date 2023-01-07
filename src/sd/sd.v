@@ -200,7 +200,7 @@ module sd
 			start_d_write <= 1'b0;
 		end
 	end
-	assign ogen_otp = start_d_read;
+	assign ogen_otp = state == READ;
 
 	transceiver transceiver_inst
         (
