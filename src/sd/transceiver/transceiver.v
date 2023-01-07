@@ -92,7 +92,7 @@ module transceiver
 		.owrite_en(owrite_en),
 		.irdata(irdata),
 
-		.ocrc_fail(orc_fail),
+		.ocrc_fail(odata_crc_fail),
 		.odone(odata_done)
 	);
 

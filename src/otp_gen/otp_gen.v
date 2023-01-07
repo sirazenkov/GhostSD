@@ -29,8 +29,7 @@ module otp_gen
 		IDLE = 2'b00,
 		GEN_BLOCK = 2'b01,
 		WRITE_BLOCK = 2'b11;
-	reg [1:0] state = IDLE;
-	wire [1:0] next_state;
+	reg [1:0] state = IDLE, next_state;
 
 	reg [9:0] counter;
 
@@ -92,7 +91,7 @@ module otp_gen
         	.iblock(plain_block),
 
         	.oblock(enc_block),
-        	.done(done_gost)
+        	.odone(done_gost)
 	);
 
 	assign oaddr = counter;

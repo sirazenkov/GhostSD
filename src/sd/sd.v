@@ -50,8 +50,7 @@ module sd
 		WRITE = 6'd20,
 		CMD15 = 6'd15;
 
-	reg state;
-	wire next_state;
+	reg [5:0] state, next_state;
 	always @(posedge iclk) begin
 		if(irst)
 			state <= IDLE;
@@ -59,7 +58,7 @@ module sd
 			state <= next_state;
 	end
 
-	wire [31:0] arg;
+	reg [31:0] arg;
 	reg [22:0] addr_sd = 23'd0;
 	
 	always @(posedge iclk) begin
@@ -97,11 +96,11 @@ module sd
 	always @(*) begin
 		next_state = state;
 		if(istart && state == IDLE)
-			next_state == CMD55;
+			next_state = CMD55;
 		else if(state == READ && data_done) begin
-			if(data_crc_failed)
+			if(data_crc_fail)
 				next_state = CMD17;
-			else if(iwrite)
+			else if(iotp_ready)
 				next_state = CMD24;
 		end
 		else if(state == WRITE && data_done)
@@ -137,7 +136,7 @@ module sd
 				CMD17: begin
 					if(resp[31])
 						next_state = CMD15;
-					else if(iwrite)
+					else
 						next_state = READ;
 				end
 				CMD24:
@@ -145,6 +144,7 @@ module sd
 				CMD15:
 					next_state = IDLE;
 			endcase
+		end
 	end
 
 	reg [15:0] rca = 16'd0;
@@ -183,6 +183,7 @@ module sd
 			start_cmd <= 1'b1;
 		else
 			start_cmd <= 1'b0;
+	end
 
 	reg start_d_read, start_d_write;
 	always @(posedge iclk) begin
@@ -228,12 +229,11 @@ module sd
 
 		.istart_d_read(start_d_read),
 		.istart_d_write(start_d_write),
-		.oaddr_sd(addr_sd),
         	.odata_crc_fail(data_crc_fail),
         	.odata_done(data_done),
 
 		.istart_cmd(start_cmd),
-        	.ocmd_done(data_done)
-        )	
+        	.ocmd_done(cmd_done)
+        );	
 
 endmodule

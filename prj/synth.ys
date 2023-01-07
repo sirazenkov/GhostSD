@@ -15,6 +15,7 @@ read_verilog ../src/sd/transceiver/cmd_driver/crc7.v
 read_verilog ../src/sd/transceiver/d_driver/d_driver.v
 read_verilog ../src/sd/transceiver/d_driver/crc16.v
 
+proc
 opt
 
 synth_ice40 -top ghost_sd -json work/ghost_sd.json

@@ -31,7 +31,7 @@ module ghost_sd
 	wire write_en_raw, write_en_otp;
 	wire [3:0] wdata_raw, wdata_otp;
 	wire [9:0] addr, addr_otp;
-	wire [63:0] res_block;
+	wire [3:0] res_block;
 	wire [3:0] block_otp, block_raw;
 
 	wire success, fail;
@@ -115,6 +115,7 @@ module ghost_sd
 			assign iodata_sd[i] = odata_sd[i] == 1'b0 ? 1'b0 : 1'bz;
 		end
 	endgenerate
+	assign icmd_sd = iocmd_sd;
 	assign idata_sd = iodata_sd;
 
 	assign osuccess = success;
