@@ -18,8 +18,21 @@ timing:
 bitstream:
 	icepack work/ghost_sd.asc work/ghost_sd.bin
 
+###### Use sudo ######
 program:
+	icesprog -g PA1 -w 0
+	icesprog -g PB1 -w 0
 	icesprog work/ghost_sd.bin
+
+###### Use sudo ######
+reset:
+	icesprog -g PA1 -w 1 
+	icesprog -g PA1 -w 0 
+
+###### Use sudo ######
+start:
+	icesprog -g PB1 -w 1 
+	icesprog -g PB1 -w 0 
 
 clean:
 	rm -rf work
