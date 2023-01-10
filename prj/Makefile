@@ -24,15 +24,17 @@ program:
 	icesprog -g PB1 -w 0
 	icesprog work/ghost_sd.bin
 
-###### Use sudo ######
 reset:
 	icesprog -g PA1 -w 1 
 	icesprog -g PA1 -w 0 
 
-###### Use sudo ######
 start:
 	icesprog -g PB1 -w 1 
 	icesprog -g PB1 -w 0 
+
+read_fail:
+	icesprog -g PE2 -r
+######################
 
 clean:
 	rm -rf work
