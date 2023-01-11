@@ -1,6 +1,7 @@
 SRC_PATH=../../../../src/sd/transceiver/d_driver
 
 all: synth sim
+	$(MAKE) -C crc16 all
 
 # Design and testbench synthesis
 synth:
@@ -25,3 +26,4 @@ wave:
 # Delete all artifacts
 clean:
 	rm -r work
+	$(MAKE) -C crc16 clean

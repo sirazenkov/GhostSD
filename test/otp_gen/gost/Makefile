@@ -1,6 +1,7 @@
 SRC_PATH=../../../src/otp_gen/gost
 
 all: synth sim
+	$(MAKE) -C round all
 
 # Design and testbench synthesis
 synth:
@@ -25,3 +26,4 @@ wave:
 # Delete all artifacts
 clean:
 	rm -r work
+	$(MAKE) -C round clean

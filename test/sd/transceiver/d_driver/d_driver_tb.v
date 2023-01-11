@@ -66,7 +66,7 @@ module d_driver_tb;
 
 	initial
 	begin
-		$display("Starting d_driver testbench...");
+		$display("Starting d_driver testbench... (EMPTY TEST)");
 
 
 
