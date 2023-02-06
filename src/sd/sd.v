@@ -49,7 +49,7 @@ module sd (
 
   reg [5:0] state, next_state;
   always @(posedge iclk) begin
-    if(irst)
+    if (irst)
       state <= IDLE;
     else
       state <= next_state;
@@ -217,3 +217,4 @@ module sd (
   );  
 
 endmodule
+

@@ -5,38 +5,40 @@
 //description: CRC (cyclic redundancy check) with x^7 + x^3 + 1 polynomial
 //========================================================================
 
-module crc7
-	(
-	input irst,
-    	input iclk,
+module crc7 (
+  input irst,
+  input iclk,
 
-	input idata,
+  input idata,
 
-	input iunload,	// Shift out the CRC
-	output ocrc	
-	);
+  input  iunload,  // Shift out the CRC
+  output ocrc  
+);
 
-	reg [6:0] crc;
-	wire main_xor;
+  reg [6:0] crc;
 
-	integer i;
+  wire main_xor;
 
-	assign main_xor = idata ^ crc[6];
+  integer i;
 
-	always @(posedge iclk) begin
-		if(irst == 1'b1)
-			crc <= 7'b0;
-		else begin
-			for(i = 0; i < 7; i = i + 1) begin
-				if(i == 0) 
-					crc[i] <= main_xor;
-				else if(i == 3 & ~iunload)
-					crc[i] <= main_xor ^ crc[i-1];
-				else
-					crc[i] <= crc[i-1];
-			end
-		end
-	end 
+  assign main_xor = idata ^ crc[6];
 
-	assign ocrc = crc[6];
+  always @(posedge iclk) begin
+    if (irst)
+      crc <= 7'b0;
+    else begin
+      for(i = 0; i < 7; i = i + 1) begin
+        if (i == 0) 
+          crc[i] <= main_xor;
+        else if (i == 3 & ~iunload)
+          crc[i] <= main_xor ^ crc[i-1];
+        else
+          crc[i] <= crc[i-1];
+      end
+    end
+  end 
+
+  assign ocrc = crc[6];
+
 endmodule
+
