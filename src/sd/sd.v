@@ -5,8 +5,7 @@
 //description: SD Bus protocol communication
 //==========================================
 
-module sd
-  (
+module sd (
   input irst, // Global reset
   input iclk, // System clock (36 MHz)
   
@@ -32,7 +31,7 @@ module sd
 
   output reg osuccess, // SD-card encrypted/decrypted
   output reg ofail
-  );
+);
 
   localparam [5:0]
     IDLE   = 6'd0,
