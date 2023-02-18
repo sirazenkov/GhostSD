@@ -10,8 +10,7 @@ placeNroute:
         --json work/ghost_sd.json \
         --pcf ghost_sd.pcf \
         --asc work/ghost_sd.asc \
-	--freq 36
-
+	--pre-pack constraints.py 
 timing:
 	icetime -d lp1k -P cm36 work/ghost_sd.asc
 
@@ -22,7 +21,7 @@ bitstream:
 program:
 	icesprog -g PA1 -w 0
 	icesprog -g PB1 -w 0
-	icesprog work/ghost_sd.bin
+	icesprog -c 3 work/ghost_sd.bin
 
 reset:
 	icesprog -g PA1 -w 1 
