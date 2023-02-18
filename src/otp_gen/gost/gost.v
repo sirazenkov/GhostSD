@@ -21,10 +21,7 @@ module gost (
   localparam
     IDLE = 1'b0,
     ENC  = 1'b1;
-  reg state = IDLE;
-
-  wire start_round, round_done;
-  assign start_round = state == ENC; 
+  reg state = IDLE, next_state;
 
   reg [4:0] counter = 5'd0;
 
@@ -33,30 +30,38 @@ module gost (
 
   reg  [31:0] round_key = {32{1'b0}};
 
+  always @(*) begin
+    next_state = state;
+    case(state)
+      IDLE: if (istart) next_state = ENC;
+      ENC: if (counter == 5'b11111) next_state = IDLE;  
+    endcase
+  end
+
   always @(posedge iclk) begin
-    if (irst == 1'b1) begin
-      state   <= IDLE;
+    if (irst)
+      state <= IDLE;
+    else
+      state <= next_state;
+  end
+
+  always @(posedge iclk) begin
+    if (irst)
       counter <= 5'b00000;
-    end
     else begin
       case(state)
         IDLE: begin
-          if (istart == 1'b1) begin
-            state   <= ENC;
+          if (istart) begin
             counter <= 5'b00000;  
             block   <= iblock;
           end
         end
         ENC: begin
-          if (round_done == 1'b1) begin
-            counter <= counter + 1'b1;
-            if (counter == 5'b11111) begin
-              block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
-              state <= IDLE;
-            end
-            else
-              block <= round_oblock;
-          end
+          if (counter == 5'b11111)
+            block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
+          else
+            block <= round_oblock;
+          counter <= counter + 1'b1;
         end
       endcase
     end
@@ -64,8 +69,8 @@ module gost (
 
   always @(*) begin
     case(counter)
-      5'd0, 5'd8, 5'd16, 5'd31  : round_key <= ikey[255:224];
-      5'd1, 5'd9, 5'd17, 5'd30  : round_key <= ikey[223:192];
+      5'd0, 5'd8,  5'd16, 5'd31 : round_key <= ikey[255:224];
+      5'd1, 5'd9,  5'd17, 5'd30 : round_key <= ikey[223:192];
       5'd2, 5'd10, 5'd18, 5'd29 : round_key <= ikey[191:160];
       5'd3, 5'd11, 5'd19, 5'd28 : round_key <= ikey[159:128];
       5'd4, 5'd12, 5'd20, 5'd27 : round_key <= ikey[127:96];
@@ -79,13 +84,10 @@ module gost (
     .irst(irst),
     .iclk(iclk),
     
-    .istart(start_round),
-
     .iblock(block),
     .ikey  (round_key),
 
-    .oblock(round_oblock),
-    .odone (round_done)
+    .oblock(round_oblock)
   );
 
   assign oblock = block;

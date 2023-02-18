@@ -16,7 +16,7 @@ module gost_tb;
   wire done;
   
   reg  [255:0] key = 256'hFFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF; 
-  reg  [63:0] iblock = {64{1'b0}};
+  reg  [63:0] iblock = 64'd0;
   reg  [63:0] plaintext = 64'hFEDCBA9876543210;
   reg  [63:0] ciphertext = 64'h4EE901E5C2D8CA3D;
   wire [63:0] oblock;
@@ -67,6 +67,8 @@ module gost_tb;
       $display("Error: Encryption failed!");
       $finish;
     end
+    #PERIOD;
+    #PERIOD;
     #PERIOD;
 
     $display("Test passed");
