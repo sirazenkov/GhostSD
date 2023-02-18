@@ -92,7 +92,7 @@ module otp_gen (
   );
 
   assign oaddr     = counter;
-  assign owdata    = enc_block[4*(16-counter)-1:4*(16-counter-1)];
+  assign owdata    = enc_block[4*(16-counter)-1 -: 4];
   assign owrite_en = state == WRITE_BLOCK;
   assign odone     = state == IDLE;
 
