@@ -45,9 +45,8 @@ module otp_gen (
     endcase
   end
 
-  always @(posedge iclk) begin
-      state <= irst ? IDLE : next_state;
-  end
+  always @(posedge iclk)
+    state <= irst ? IDLE : next_state;
 
   reg start_gost;
 

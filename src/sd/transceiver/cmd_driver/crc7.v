@@ -30,7 +30,7 @@ module crc7 (
       for(i = 0; i < 7; i = i + 1) begin
         if (i == 0) 
           crc[i] <= main_xor;
-        else if (i == 3 & ~iunload)
+        else if (i == 3 && ~iunload)
           crc[i] <= main_xor ^ crc[i-1];
         else
           crc[i] <= crc[i-1];

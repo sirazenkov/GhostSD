@@ -38,7 +38,7 @@ module d_driver (
     SEND_DATA = 3'b100,
     SEND_CRC  = 3'b101,
     BUSY      = 3'b111;
-  reg [2:0] state = IDLE;
+  reg [2:0] state = IDLE, next_state;
 
   reg [3:0] data     =  4'h0;
   reg [9:0] counter  = 10'd0;
@@ -47,7 +47,7 @@ module d_driver (
   reg unload = 1'b0;
 
   wire rst_crc;
-  assign rst_crc = irst == 1'b1 || state == IDLE || state == WAIT_SEND || state == WAIT_RCV;
+  assign rst_crc = irst || state == IDLE || state == WAIT_SEND || state == WAIT_RCV;
 
   wire [3:0] crc;
 
@@ -75,8 +75,28 @@ module d_driver (
   assign ocrc_fail = crc_fail;
   assign odone     = state == IDLE || state == WAIT_SEND;
 
+  always @(posedge iclk)
+    state <= irst ? IDLE : next_state;
+
+  always @(*) begin
+    next_state = state;
+    case(state)
+      IDLE:      if (istart_read)       next_state = WAIT_RCV;
+      WAIT_RCV:  if (data == 4'h0)      next_state = RCV_DATA;
+      RCV_DATA:  if (&counter)          next_state = CHECK_CRC;
+      CHECK_CRC:
+                 if (counter == 10'd15) next_state = WAIT_SEND;
+		 else if  (crc != data) next_state = IDLE;
+      WAIT_SEND: if (istart_write)      next_state = SEND_DATA; // Wait until data is processed
+      SEND_DATA: if (&counter)          next_state = SEND_CRC;
+      SEND_CRC:  if (counter == 10'd15) next_state = BUSY;
+      BUSY:      if (idata_sd[0])       next_state = IDLE;      // SD card finished writing 
+      default: next_state = IDLE;
+    endcase
+  end
+
   always @(posedge iclk) begin
-    if (irst == 1'b1)  
+    if (irst)  
       data <= 4'h0;
     if (state == IDLE || state == RCV_DATA || state == CHECK_CRC)
       data <= idata_sd;
@@ -91,67 +111,47 @@ module d_driver (
   end
 
   always @(posedge iclk) begin
-    if (irst == 1'b1) begin
-      state    <= IDLE;
+    if (irst) begin
       counter  <= 10'd0;
-      unload   <= 1'b0;
-      crc_fail <= 1'b0;
+      unload   <=  1'b0;
+      crc_fail <=  1'b0;
     end
     else begin
       case(state)
         IDLE: begin
           if (istart_read) begin
-            state    <= WAIT_RCV;
             counter  <= 10'd0;
-            crc_fail <= 1'b0;
+            crc_fail <=  1'b0;
           end
         end
-        WAIT_RCV:
-          if (data == 4'h0)
-            state <= RCV_DATA;
         RCV_DATA: begin
           counter <= counter + 1'b1;
           if (&counter) begin
-            state   <= CHECK_CRC;
             counter <= 10'd0;
-            unload  <= 1'b1;
+            unload  <=  1'b1;
           end
         end
 	CHECK_CRC: begin // Check CRC on the data lines
-          if (counter == 10'd15)
-            state <= WAIT_SEND;
-          else if (crc != data) begin
-            state    <= IDLE;
-            crc_fail <= 1'b1;
-          end
           counter <= counter + 1'b1;
+          if (crc != data)
+            crc_fail <= 1'b1;
         end
-	WAIT_SEND: begin // Wait until data is encrypted/decrypted
-          if (istart_write) begin
-            state   <= SEND_DATA;
+	WAIT_SEND: begin
+          if (istart_write)
             counter <= 10'd0;
-          end
         end
         SEND_DATA: begin
           counter <= counter + 1'b1;
           if (&counter) begin
-            state   <= SEND_CRC;
-            unload  <= 1'b1;
+            unload  <=  1'b1;
             counter <= 10'd0;
           end
         end
         SEND_CRC: begin
           counter <= counter + 1'b1;
-          if (counter == 16'd15) begin
-            state <= BUSY;
+          if (counter == 10'd15)
             unload <= 1'b0;
-          end
         end
-        BUSY: begin
-          if (idata_sd[0]) // SD card finished writing
-            state <= IDLE;
-        end
-	default: state <= IDLE;
       endcase
     end
   end

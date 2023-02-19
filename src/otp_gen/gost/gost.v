@@ -40,12 +40,8 @@ module gost (
     endcase
   end
 
-  always @(posedge iclk) begin
-    if (irst)
-      state <= IDLE;
-    else
-      state <= next_state;
-  end
+  always @(posedge iclk)
+    state <= irst ? IDLE : next_state;
 
   always @(posedge iclk) begin
     if (irst)

@@ -48,12 +48,8 @@ module sd (
     CMD15  = 6'd15;
 
   reg [5:0] state, next_state;
-  always @(posedge iclk) begin
-    if (irst)
-      state <= IDLE;
-    else
-      state <= next_state;
-  end
+  always @(posedge iclk)
+    state <= irst ? IDLE : next_state;
 
   reg [31:0] arg;
   reg [22:0] addr_sd = 23'd0;
