@@ -1,23 +1,22 @@
 SRC_PATH=../../../../src/sd/transceiver/d_driver
 
-all: synth sim
+SIM ?= icarus
+TOPLEVEL_LANG ?= verilog
+
+VERILOG_SOURCES += $(SRC_PATH)/d_driver.v
+VERILOG_SOURCES += $(SRC_PATH)/crc16.v
+
+TOPLEVEL = d_driver
+
+MODULE = d_driver_tb
+
+all: 
+	include $(shell cocotb-config --makefiles)/Makefile.sim
 	$(MAKE) -C crc16 all
-
-# Design and testbench synthesis
-synth:
-	mkdir work
-	iverilog -o work/d_driver_tb \
-	d_driver_tb.v \
-	$(SRC_PATH)/d_driver.v \
-	$(SRC_PATH)/crc16.v
-
-# Launch simulation
-sim:
-	./work/d_driver_tb
 
 # Open waveform
 wave:
-	gtkwave work/wave.ocd \
+	gtkwave work/wave.vcd \
 		--rcvar 'fontname_signals Monospace 20' \
         	--rcvar 'fontname_waves Monospace 20' \
         	--rcvar 'scale_to_time_dimension n' \
