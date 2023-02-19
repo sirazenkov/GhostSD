@@ -12,8 +12,6 @@ module round_tb;
   localparam PERIOD = 40;
   localparam HALF_PERIOD = PERIOD / 2;
 
-  reg clk, rst = 1'b0;
-  
   reg [31:0] keys[0:30];
   reg [63:0] iblocks[0:30];
   reg [63:0] correct_oblocks[0:30];
@@ -25,9 +23,6 @@ module round_tb;
   integer i = 1;
 
   round uut(
-    .irst(rst),
-    .iclk(clk),
-
     .iblock(iblock),
     .ikey(round_key),
 
@@ -39,13 +34,6 @@ module round_tb;
     $dumpvars(0, round_tb);
   end
 
-  always begin
-    clk = 1'b1;
-    #HALF_PERIOD;
-    clk = 1'b0;
-    #HALF_PERIOD;
-  end
-
   initial begin
     $display("Starting GOST round testbench...");
 
@@ -53,11 +41,6 @@ module round_tb;
     $readmemh("data/iblocks.hex", iblocks);
     $readmemh("data/correct_oblocks.hex", correct_oblocks);
 
-    // Reset
-    rst = 1'b1;
-    #PERIOD;
-    rst = 1'b0;
-    
     for(i = 0; i < 31; i = i + 1) begin
       round_key = keys[i];
       iblock = iblocks[i];

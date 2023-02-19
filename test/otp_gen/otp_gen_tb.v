@@ -16,7 +16,7 @@ module otp_gen_tb;
   wire done;
   
   reg  [255:0] key = 256'hFFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF; 
-  reg  [31:0] IV = {32{1'b0}};
+  reg  [31:0] IV = 32'd0;
 
   wire [9:0] addr;
   wire [3:0] wdata;

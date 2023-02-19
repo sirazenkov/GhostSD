@@ -6,9 +6,6 @@
 //============================================
 
 module round (
-  input irst,
-  input iclk,
-
   input [63:0] iblock,
   input [31:0] ikey,
 

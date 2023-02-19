@@ -27,4 +27,4 @@ wave:
 # Delete all artifacts
 clean:
 	rm -r work
-	$(MAKE) -C round clean
+	$(MAKE) -C gost clean

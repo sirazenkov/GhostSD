@@ -68,8 +68,6 @@ module gost_tb;
       $finish;
     end
     #PERIOD;
-    #PERIOD;
-    #PERIOD;
 
     $display("Test passed");
     $finish;
