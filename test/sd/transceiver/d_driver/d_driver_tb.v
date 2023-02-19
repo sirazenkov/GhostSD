@@ -10,7 +10,7 @@ module d_driver_tb;
   localparam PERIOD = 40;
   localparam HALF_PERIOD = PERIOD / 2;
   
-  reg clk, rst, start_read = 1'b0, start_write = 1'b0;
+  reg clk, rst, start = 1'b0, start = 1'b0;
   reg [3:0] idata_sd, rdata;
 
   wire write_en, crc_fail, done;
@@ -33,8 +33,7 @@ module d_driver_tb;
     .idata_sd(idata_sd),
     .odata_sd(odata_sd),
     
-    .istart_read(start_read),
-    .istart_write(start_write),
+    .istart(start),
 
     .oaddr(addr),
     .owdata(wdata),
@@ -58,7 +57,7 @@ module d_driver_tb;
     rst = 1'b0;
 
     // Start
-    start_read = 1'b1;
+    start = 1'b1;
   end
 
   initial begin

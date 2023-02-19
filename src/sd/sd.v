@@ -162,7 +162,8 @@ module sd (
         && next_state != WRITE) ? 1'b1 : 1'b0;
   end
 
-  reg start_d_read, start_d_write;
+  wire start_d;
+  reg  start_d_read, start_d_write;
   always @(posedge iclk) begin
     if (irst) begin
       start_d_read  <= 1'b0;  
@@ -179,6 +180,7 @@ module sd (
       start_d_write <= 1'b0;
     end
   end
+  assign start_d  = start_d_write | start_d_read;
   assign ogen_otp = state == READ;
   assign onew_otp = state == IDLE;
 
@@ -203,8 +205,7 @@ module sd (
     .owrite_en (owrite_en),
     .irdata    (irdata),
 
-    .istart_d_read  (start_d_read),
-    .istart_d_write (start_d_write),
+    .istart_d       (start_d),
     .odata_crc_fail (data_crc_fail),
     .odata_done     (data_done),
 

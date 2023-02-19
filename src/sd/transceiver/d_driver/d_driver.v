@@ -13,8 +13,7 @@ module d_driver (
   input  [3:0] idata_sd,
   output [3:0] odata_sd,
 
-  input istart_read,
-  input istart_write,
+  input istart,
 
   output [9:0] oaddr, // Data address in RAM
 
@@ -28,6 +27,15 @@ module d_driver (
   output ocrc_fail,
   output odone
 );
+
+  `ifdef COCOTB_SIM
+     `define WAVE_PATH ../../../../test/sd/transceiver/d_driver/work/wave.vcd 
+     initial begin
+       $dumpfile(WAVE_PATH);
+       $dumpvars(0, d_driver);
+       #1;
+     end
+  `endif
 
   localparam [2:0]
     IDLE      = 3'b000,
@@ -81,13 +89,13 @@ module d_driver (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE:      if (istart_read)       next_state = WAIT_RCV;
+      IDLE:      if (istart)            next_state = WAIT_RCV;
       WAIT_RCV:  if (data == 4'h0)      next_state = RCV_DATA;
       RCV_DATA:  if (&counter)          next_state = CHECK_CRC;
       CHECK_CRC:
                  if (counter == 10'd15) next_state = WAIT_SEND;
 		 else if  (crc != data) next_state = IDLE;
-      WAIT_SEND: if (istart_write)      next_state = SEND_DATA; // Wait until data is processed
+      WAIT_SEND: if (istart)            next_state = SEND_DATA; // Wait until data is processed
       SEND_DATA: if (&counter)          next_state = SEND_CRC;
       SEND_CRC:  if (counter == 10'd15) next_state = BUSY;
       BUSY:      if (idata_sd[0])       next_state = IDLE;      // SD card finished writing 
@@ -100,7 +108,7 @@ module d_driver (
       data <= 4'h0;
     if (state == IDLE || state == RCV_DATA || state == CHECK_CRC)
       data <= idata_sd;
-    else if (istart_write && state == WAIT_SEND)
+    else if (istart && state == WAIT_SEND)
       data <= 4'h0;  // Send start bit
     else if (state == SEND_DATA && &counter)
       data <= crc;  
@@ -119,7 +127,7 @@ module d_driver (
     else begin
       case(state)
         IDLE: begin
-          if (istart_read) begin
+          if (istart) begin
             counter  <= 10'd0;
             crc_fail <=  1'b0;
           end
@@ -137,7 +145,7 @@ module d_driver (
             crc_fail <= 1'b1;
         end
 	WAIT_SEND: begin
-          if (istart_write)
+          if (istart)
             counter <= 10'd0;
         end
         SEND_DATA: begin
