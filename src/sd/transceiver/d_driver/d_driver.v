@@ -29,9 +29,8 @@ module d_driver (
 );
 
   `ifdef COCOTB_SIM
-     `define WAVE_PATH ../../../../test/sd/transceiver/d_driver/work/wave.vcd 
      initial begin
-       $dumpfile(WAVE_PATH);
+       $dumpfile("../../../../test/sd/transceiver/d_driver/wave.vcd");
        $dumpvars(0, d_driver);
        #1;
      end

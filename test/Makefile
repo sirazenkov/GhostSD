@@ -5,6 +5,6 @@ all:
 
 clean:
 	$(MAKE) -C sd/transceiver/cmd_driver clean
-	$(MAKE) -C sd/transceiver/d_driver clean
+	$(MAKE) -C sd/transceiver/d_driver cleanall
 	$(MAKE) -C otp_gen/gost clean
 
