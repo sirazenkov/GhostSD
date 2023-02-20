@@ -14,10 +14,12 @@ class D_driver_BFM():
     def __init__(self):
         self.dut = cocotb.top
 
+    async def start_operation(self):
+        cocotb.start_soon(Clock(self.dut.iclk, 55, units="ns").start())
+        cocotb.start_soon(self.ram())
+
     async def reset(self):
         logger.info("Started resetting")
-        await cocotb.start(Clock(self.dut.iclk, 55, units="ns").start())
-        await cocotb.start(self.ram())
         await FallingEdge(self.dut.iclk)
         self.dut.irst.value     = 1 
         self.dut.idata_sd.value = 1
@@ -94,6 +96,7 @@ async def d_driver_tb(_):
     """D line's driver testbench""" 
     passed = True
     bfm = D_driver_BFM()
+    await bfm.start_operation()
     await bfm.reset()
 
     transactions = random.randint(0,5)
