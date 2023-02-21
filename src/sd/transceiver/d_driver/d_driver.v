@@ -105,7 +105,7 @@ module d_driver (
   always @(posedge iclk) begin
     if (irst)  
       data <= 4'h0;
-    if (state == IDLE || state == RCV_DATA || state == CHECK_CRC)
+    if (state == IDLE || WAIT_RCV || state == RCV_DATA || state == CHECK_CRC)
       data <= idata_sd;
     else if (istart && state == WAIT_SEND)
       data <= 4'h0;  // Send start bit
