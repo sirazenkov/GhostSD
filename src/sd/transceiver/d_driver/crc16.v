@@ -28,12 +28,19 @@ module crc16 (
       crc <= 16'd0;
     else begin
       for(i = 0; i < 16; i = i + 1) begin
-        if (i == 0)
-          crc[i] <= main_xor;
-        else if (~iunload & (i == 5 || i == 12))
-          crc[i] <= main_xor ^ crc[i-1];
-        else
-          crc[i] <= crc[i-1];
+	if (iunload) begin
+	  if (i == 0)
+	    crc[i] <= 1'b0;
+          else
+            crc[i] <= crc[i-1];
+        end else begin
+          if (i == 0)
+            crc[i] <= main_xor;
+          else if (i == 5 || i == 12)
+            crc[i] <= main_xor ^ crc[i-1];
+          else
+            crc[i] <= crc[i-1];
+        end
       end
     end
   end

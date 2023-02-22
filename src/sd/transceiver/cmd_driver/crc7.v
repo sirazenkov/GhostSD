@@ -28,12 +28,19 @@ module crc7 (
       crc <= 7'b0;
     else begin
       for(i = 0; i < 7; i = i + 1) begin
-        if (i == 0) 
-          crc[i] <= main_xor;
-        else if (i == 3 && ~iunload)
-          crc[i] <= main_xor ^ crc[i-1];
-        else
-          crc[i] <= crc[i-1];
+	if (iunload) begin
+          if (i == 0)
+	    crc[i] <= 1'b0;
+          else
+	    crc[i] <= crc[i-1];
+        end else begin
+          if (i == 0) 
+            crc[i] <= main_xor;
+          else if (i == 3 && ~iunload)
+            crc[i] <= main_xor ^ crc[i-1];
+          else
+            crc[i] <= crc[i-1];
+        end
       end
     end
   end 
