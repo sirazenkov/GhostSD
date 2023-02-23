@@ -1,6 +1,8 @@
 # GhostSD (Work in progress)
 GOST-based SDSC-card encryptor implemented on [iCESugar-nano](https://github.com/wuxx/icesugar-nano) FPGA
 
+[![design-simulation](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml/badge.svg)](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml)
+
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/photo.jpg?raw=true)
 
 ### Directory structure
