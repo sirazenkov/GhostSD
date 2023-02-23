@@ -15,6 +15,7 @@ test - Testbenches written in Verilog
 - [icetime](https://github.com/YosysHQ/icestorm/tree/master/icetime) (timing analysis)
 - [icepack](https://github.com/YosysHQ/icestorm/tree/master/icepack) (bitstream generation)
 - [icesprog](https://github.com/wuxx/icesugar/tree/master/tools/src) (device programming and debug)
+- [cocotb](https://github.com/cocotb/cocotb) (simulation)
 - [Icarus Verilog](https://github.com/steveicarus/iverilog) (simulation)
 
 ### Starting up
