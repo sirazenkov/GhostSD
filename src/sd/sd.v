@@ -123,14 +123,14 @@ module sd (
       sel_clk <= 1'b0;
     else if (next_state == IDLE)
       sel_clk <= 1'b0;
-    else if (nextstate == CMD7)
+    else if (next_state == CMD7)
       sel_clk <= 1'b1;
   end
 
   always @(posedge iclk) begin
     if (irst)
       rca <= 16'd0;
-    else if (nextstate == CMD7)
+    else if (next_state == CMD7)
       rca <= resp[31:16];
   end
 
