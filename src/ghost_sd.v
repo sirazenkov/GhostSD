@@ -19,7 +19,15 @@ module ghost_sd (
   output osuccess,
   output ofail
 );
-  
+
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("../test/wave.vcd");
+       $dumpvars(0, ghost_sd);
+       #1;
+     end
+  `endif  
+
   `include "crypto.vh"
   
   wire icmd_sd, ocmd_sd, clk_sd;
