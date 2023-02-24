@@ -53,8 +53,9 @@ class D_driver_BFM():
         self.dut.idata_sd.value = 0xF # End bit
         await RisingEdge(self.dut.odone)
         await FallingEdge(self.dut.iclk)
+        return (int(self.dut.odone.value) == 1, int(self.dut.ocrc_fail.value) == 1)
 
-    async def receive_block(self, crc_packets):
+    async def receive_block(self, expected_block, crc_packets):
         await FallingEdge(self.dut.iclk)
         self.dut.istart.value = 1
         await FallingEdge(self.dut.iclk)
@@ -70,7 +71,8 @@ class D_driver_BFM():
                 crc_failed = True
             await FallingEdge(self.dut.iclk)
         await RisingEdge(self.dut.odone)
-        return (block, crc_failed)
+        blocks_equal = expected_block == block
+        return (blocks_equal, crc_failed)
 
     async def random_delay(self, upper_bound):
         delay = random.randint(0,upper_bound)
@@ -114,28 +116,28 @@ async def d_driver_tb(_):
         block = [random.randint(0,15) for i in range(1024)]
         crc_packets = gen_crc_packets(block)
         await bfm.random_delay(10)
-        await bfm.send_block(block, crc_packets)
-        if(int(bfm.dut.ocrc_fail.value) == 0):
+        done, crc_fail = await bfm.send_block(block, crc_packets)
+        if(not crc_fail):
             logger.info(f"CRC16 check for block {i} succeeded!")
         else:
             logger.error(f"CRC16 check for block {i} failed!")
             passed = False
             break
-        if(int(bfm.dut.odone.value) == 1):
+        if(done):
             logger.info(f"Module received block {i} successfully!") 
         else:
             logger.error(f"Module did not receive block {i} successfully!")
             passed = False
             break
         await bfm.random_delay(10)
-        received_block, crc_failed = await bfm.receive_block(crc_packets)
-        if(block == received_block):
+        blocks_equal, crc_fail = await bfm.receive_block(block, crc_packets)
+        if(blocks_equal):
             logger.info(f"Block {i} from module is equal the initial block {i}!") 
         else:
             logger.error(f"Block {i} from module does not equal the initial block {i}!")
             passed = False
             break
-        if(not crc_failed):
+        if(not crc_fail):
             logger.info(f"Correct CRC in block {i} from the module!")
         else:
             logger.error(f"Wrong CRC in block {i} from the module!")
