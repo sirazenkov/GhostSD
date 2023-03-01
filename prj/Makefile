@@ -25,10 +25,12 @@ program:
 
 reset:
 	icesprog -g PA1 -w 1 
+	sleep 1
 	icesprog -g PA1 -w 0 
 
 start:
 	icesprog -g PB1 -w 1 
+	sleep 1
 	icesprog -g PB1 -w 0 
 
 read_fail:

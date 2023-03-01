@@ -8,12 +8,12 @@ read_verilog ../src/otp_gen/gost/round/round.v
 read_verilog ../src/otp_gen/gost/round/s_box.v
 
 read_verilog ../src/sd/sd.v
-read_verilog ../src/sd/transceiver/transceiver.v
-read_verilog ../src/sd/transceiver/clock_divider.v
-read_verilog ../src/sd/transceiver/cmd_driver/cmd_driver.v
-read_verilog ../src/sd/transceiver/cmd_driver/crc7.v
-read_verilog ../src/sd/transceiver/d_driver/d_driver.v
-read_verilog ../src/sd/transceiver/d_driver/crc16.v
+read_verilog ../src/sd/sd_fsm.v
+read_verilog ../src/sd/clock_divider.v
+read_verilog ../src/sd/cmd_driver/cmd_driver.v
+read_verilog ../src/sd/cmd_driver/crc7.v
+read_verilog ../src/sd/d_driver/d_driver.v
+read_verilog ../src/sd/d_driver/crc16.v
 
 proc
 opt
