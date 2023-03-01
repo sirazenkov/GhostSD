@@ -35,4 +35,7 @@ test - Testbenches written in Python and Verilog
 Run simulation: `make -C test`. \
 You may delete output files with `make -C test clean`.
 
+### Project scheme
+![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_fpga.png?raw=true)
+
 *All code was written in vim* :heart:
