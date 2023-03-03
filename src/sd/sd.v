@@ -33,8 +33,11 @@ module sd (
   output ofail
 );
 
-  wire sel_clk, start_cmd, start_d, data_done, data_crc_failed;
+  wire sel_clk;
+  wire start_cmd, cmd_done;
+  wire start_d, data_done, data_crc_failed;
   wire [31:0] resp, arg;
+
   sd_fsm sd_fsm_inst (
     .irst(irst),
     .iclk(iclk),
@@ -52,6 +55,7 @@ module sd (
     
     .ostart_cmd(start_cmd),
     .oarg      (arg),
+    .icmd_done (cmd_done),
     .iresp     (resp),
     
     .ostart_d(start_d),
@@ -72,6 +76,8 @@ module sd (
     .ofastclk(clk_18MHz),
     .oslowclk(clk_281kHz)
   );
+
+  wire [5:0] state;
 
   // CMD line driver
   cmd_driver cmd_driver_inst (

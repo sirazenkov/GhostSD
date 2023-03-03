@@ -21,14 +21,18 @@ module ghost_sd (
 );
 
   `ifdef COCOTB_SIM
-     initial begin
-       $dumpfile("../test/wave.vcd");
-       $dumpvars(0, ghost_sd);
-       #1;
-     end
+    parameter KEY = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
+    parameter IV = 32'hb97b7f46;
+
+    initial begin
+      $dumpfile("../test/wave.vcd");
+      $dumpvars(0, ghost_sd);
+      #1;
+    end
+  `else
+    `include "crypto.vh"
   `endif  
 
-  `include "crypto.vh"
   
   wire icmd_sd, ocmd_sd, clk_sd;
 

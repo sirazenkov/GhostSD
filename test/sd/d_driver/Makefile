@@ -1,4 +1,4 @@
-SRC_PATH=../../../../src/sd/transceiver/d_driver
+SRC_PATH=../../../src/sd/d_driver
 
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog

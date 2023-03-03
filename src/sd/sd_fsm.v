@@ -10,6 +10,7 @@ module sd_fsm (
   input iclk,
 
   input istart,
+  input icmd_done,
   input [31:0] iresp,
   input idata_crc_fail,
   input idata_done,
@@ -20,7 +21,6 @@ module sd_fsm (
   output     onew_otp,
   output reg ostart_cmd,
   output reg [31:0] oarg,
-  output reg [15:0] orca,
   output reg ostart_d,
   output reg ofail,
   output reg osuccess
@@ -52,6 +52,14 @@ module sd_fsm (
       addr_sd <= addr_sd + 1'b1;
     else if (next_state == CMD15)
       addr_sd <= 23'd0;
+  end
+
+  reg [15:0] rca;
+  always @(posedge iclk) begin
+    if (irst)
+      rca <= 16'd0;
+    else if (next_state == CMD7)
+      rca <= iresp[31:16];
   end
 
   always @(*) begin
@@ -95,8 +103,8 @@ module sd_fsm (
         CMD2:   next_state = CMD3;
         CMD3:   next_state = CMD7;
         CMD7:   next_state = CMD55;
-        ACMD6:  next_state = resp[12:9] == 4'd4 ? READ : IDLE;
-        CMD17:  next_state = resp[31] ? CMD15 : READ;
+        ACMD6:  next_state = iresp[12:9] == 4'd4 ? READ : IDLE;
+        CMD17:  next_state = iresp[31] ? CMD15 : READ;
         CMD24:  next_state = WRITE;
         CMD15:  next_state = IDLE;
       endcase
@@ -110,13 +118,6 @@ module sd_fsm (
       osel_clk <= 1'b0;
     else if (next_state == CMD7)
       osel_clk <= 1'b1;
-  end
-
-  always @(posedge iclk) begin
-    if (irst)
-      orca <= 16'd0;
-    else if (next_state == CMD7)
-      orca <= resp[31:16];
   end
 
   always @(posedge iclk) begin

@@ -30,7 +30,7 @@ module d_driver (
 
   `ifdef COCOTB_SIM
      initial begin
-       $dumpfile("../../../../test/sd/transceiver/d_driver/wave.vcd");
+       $dumpfile("../../../test/sd/d_driver/wave.vcd");
        $dumpvars(0, d_driver);
        #1;
      end

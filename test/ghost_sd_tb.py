@@ -33,25 +33,47 @@ class GhostSD_BFM():
 
     async def reset(self):
         await FallingEdge(self.dut.iclk)
-        self.dut.irst.value       = 1 
-        self.dut.iocmd_sd.value   = BinaryValue('Z')
-        self.dut.iodata_sd.value  = BinaryValue('ZZZZ')
-        self.dut.istart.value     = 0
+        self.dut.irst.value      = 1 
+        self.dut.iocmd_sd.value  = BinaryValue('Z')
+        self.dut.iodata_sd.value = BinaryValue('ZZZZ')
+        self.dut.istart.value    = 0
         await FallingEdge(self.dut.iclk)
         self.dut.irst.value = 0
         await FallingEdge(self.dut.iclk)
 
-    async check_finish(self):
+    async def check_finish(self):
         return (int(self.dut.osuccess.value), int(self.dut.ofail.value))
 
     async def select_response(self, command, argument):
+        return
 
     async def receive_command(self):
+        crc_data = 0
         await FallingEdge(self.dut.iocmd_sd)
         await ClockCycles(self.dut.oclk_sd, 1) # Skip start bit
-        await ClockCycles(self.dut.oclk_sd, 1)
+        crc_data = (crc_data << 1) | self.dut.iocmd_sd.value
+        await ClockCycles(self.dut.oclk_sd, 1) # Skip transmission bit
+        index = 0
+        for i in range(6):
+            await FallingEdge(self.dut.oclk_sd)
+            index = (index << 1) | self.dut.iocmd_sd.value
+            crc_data = (crc_data << 1) | self.dut.iocmd_sd.value
+        argument = 0
+        for i in range(32):
+            await FallingEdge(self.dut.oclk_sd)
+            argument = (index << 1) | self.dut.iocmd_sd.value
+            crc_data = (crc_data << 1) | self.dut.iocmd_sd.value
+        cmd_crc = crc7(crc_data)
+        crc_fail = False
+        for i in range(7):
+            await FallingEdge(self.dut.oclk_sd)
+            if((cmd_crci >> (7-i)) & 1 != self.dut.iocmd_sd.value):
+                crc_fail = True
+        await ClockCycles(self.dut.oclk_sd, 1) # Skip end bit
+        return (index, argument, crc_fail)
 
-    async def send_response(self):
+    async def send_response(self, ):
+        return
 
     async def send_block(self, block, crc_packets):
         await FallingEdge(self.dut.iclk)
@@ -128,7 +150,7 @@ def gen_crc16_packets(block):
         crc_packets.append(crc_packet)
     return crc_packets
 
-@cocotb.test()
+#@cocotb.test()
 async def ghost_sd_tb(_):
     """GhostSD testbench""" 
     passed = True
@@ -143,7 +165,7 @@ async def ghost_sd_tb(_):
 
     while(True):
         command_content, command_crc7 = bfm.receive_command()
-        command_index = ({((1 << 38) - 1) & command_content) >> 32
+        command_index = (((1 << 38) - 1) & command_content) >> 32
         command_argument = ((1 << 32) - 1) & command_content
         if(command_index == commands_sequence[commands_counter]):
             logger.info(f"Command with index {command_index} received!")
@@ -163,7 +185,7 @@ async def ghost_sd_tb(_):
         response = bfm.select_response(command_index, command_argument)
 
         success,fail = bfm.check_result()
-        if(success != 0 || fail != 0):
+        if(success != 0 or fail != 0):
             break
 
 
@@ -194,7 +216,7 @@ async def ghost_sd_tb(_):
     if (failed == 1):
         passed = False
         logger.error("GhostSD operation failed!")
-    else if (success == 1)
+    elif (success == 1):
         logger.info("GhostSD operation succeeded!")
 
     assert passed

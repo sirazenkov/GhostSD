@@ -1,15 +1,12 @@
-SRC_PATH="../../../../../src/sd/transceiver/cmd_driver"
+SRC_PATH="../../../../src/sd/d_driver"
 
-all: synth sim
+all:
 
-# Design and testbench synthesis
-synth:
+# Design simulation
+all:
 	mkdir work
-	iverilog -o work/crc7_tb crc7_tb.v $(SRC_PATH)/crc7.v 
-
-# Launch simulation
-sim:
-	./work/crc7_tb
+	iverilog -o work/crc16_tb crc16_tb.v $(SRC_PATH)/crc16.v 
+	./work/crc16_tb
 
 # Open waveform
 wave:

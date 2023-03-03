@@ -1,4 +1,4 @@
-SRC_PATH=../../../../src/sd/transceiver/cmd_driver
+SRC_PATH=../../../src/sd/cmd_driver
 
 all: synth sim
 	$(MAKE) -C crc7 all
