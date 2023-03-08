@@ -15,6 +15,14 @@ module crc16 (
   output ocrc
 );
 
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("wave.vcd");
+       $dumpvars(0, crc16);
+       #1;
+     end
+  `endif
+
   reg [15:0] crc;
 
   wire main_xor;

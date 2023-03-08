@@ -1,21 +1,23 @@
-SRC_PATH="../../../../src/sd/d_driver"
+SRC_PATH=../../../../src/sd/d_driver
 
-all:
+SIM ?= icarus
+TOPLEVEL_LANG ?= verilog
 
-# Design simulation
-all:
-	mkdir work
-	iverilog -o work/crc16_tb crc16_tb.v $(SRC_PATH)/crc16.v 
-	./work/crc16_tb
+VERILOG_SOURCES += $(SRC_PATH)/crc16.v
+
+TOPLEVEL = crc16
+
+MODULE = crc16_tb
+
+include $(shell cocotb-config --makefiles)/Makefile.sim
 
 # Open waveform
 wave:
-	gtkwave work/wave.ocd \
+	gtkwave wave.vcd \
 		--rcvar 'fontname_signals Monospace 20' \
         	--rcvar 'fontname_waves Monospace 20' \
-        	--rcvar 'scale_to_time_dimension n' \
-		--script=add_waves.tcl
+        	--rcvar 'scale_to_time_dimension n'
 
-# Delete all artifacts
-clean:
-	rm -r work
+cleanall:
+	$(MAKE) clean
+	rm -rf __pycache__ wave.vcd results.xml 

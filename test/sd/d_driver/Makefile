@@ -25,4 +25,4 @@ wave:
 cleanall:
 	$(MAKE) clean
 	rm -rf __pycache__ wave.vcd results.xml 
-	$(MAKE) -C crc16 clean
+	$(MAKE) -C crc16 cleanall
