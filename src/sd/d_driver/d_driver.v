@@ -30,7 +30,7 @@ module d_driver (
 
   `ifdef COCOTB_SIM
      initial begin
-       $dumpfile("../../../test/sd/d_driver/wave.vcd");
+       $dumpfile("wave.vcd");
        $dumpvars(0, d_driver);
        #1;
      end
@@ -50,7 +50,7 @@ module d_driver (
   reg [3:0]  data;
   reg [10:0] counter  = 11'd0;
 
-  reg unload = 1'b0;
+  wire unload = state == CHECK_CRC || state == SEND_CRC;
 
   wire rst_crc;
   assign rst_crc = irst || state == IDLE || state == WAIT_SEND || state == WAIT_RCV;
@@ -74,7 +74,7 @@ module d_driver (
     end
   endgenerate
 
-  assign odata_sd = next_state == SEND_DATA || state == SEND_DATA || state == SEND_CRC ? data : 4'hF;
+  assign odata_sd = state == SEND_DATA || state == SEND_CRC ? data : 4'hF;
 
   assign owdata    = data;
   assign oaddr     = counter;
@@ -116,51 +116,18 @@ module d_driver (
   end
 
   always @(posedge iclk) begin
-    if (irst) begin
-      counter   <= 11'd0;
-      unload    <=  1'b0;
-      ocrc_fail <=  1'b0;
-    end
-    else begin
-      case(state)
-        IDLE: begin
-          if (next_state == RCV_DATA) begin
-            ocrc_fail <=  1'b0;
-          end
-        end
-        RCV_DATA: begin
-          counter <= counter + 1'b1;
-          if (next_state == CHECK_CRC) begin
-            counter <= 11'd0;
-            unload  <=  1'b1;
-          end
-        end
-	CHECK_CRC: begin // Check CRC on the data lines
-	  if (next_state == WAIT_SEND) begin
-	    counter <= 11'd0;
-	    unload  <= 1'b0;
-	  end else counter <= counter + 1'b1;
-	  if (next_state == IDLE) ocrc_fail <= 1'b1;
-        end
-        WAIT_SEND: begin
-	  if (next_state == SEND_DATA) counter <= counter + 1;
-        end
-	SEND_DATA: begin
-          counter <= counter + 1'b1;
-          if (next_state == SEND_CRC) begin
-            counter <= 11'd0;
-            unload  <= 1'b1;
-          end
-        end
-        SEND_CRC: begin
-          counter <= counter + 1'b1;
-	  if (next_state == BUSY) begin
-            counter <= 11'd0;
-            unload  <= 1'b0;
-	  end
-        end
-      endcase
-    end
+   if (irst)
+     ocrc_fail <= 1'b0;
+   else if (state == IDLE      && next_state == WAIT_RCV) ocrc_fail <= 1'b0;
+   else if (state == CHECK_CRC && next_state == IDLE)     ocrc_fail <= 1'b1;
+  end
+
+  always @(posedge iclk) begin
+    if (irst)
+      counter <= 11'd0;
+    else
+      counter <= next_state == SEND_DATA ? counter + 1'b1 :
+	         state == WAIT_SEND || state != next_state  ? 11'd0 : counter + 1'b1;
   end
 
 endmodule

@@ -45,6 +45,7 @@ class GhostSD_BFM():
         return (int(self.dut.osuccess.value), int(self.dut.ofail.value))
 
     async def select_response(self, command, argument):
+
         return
 
     async def receive_command(self):
@@ -72,7 +73,20 @@ class GhostSD_BFM():
         await ClockCycles(self.dut.oclk_sd, 1) # Skip end bit
         return (index, argument, crc_fail)
 
-    async def send_response(self, ):
+    async def send_response(self, response, dummy):
+        await FallingEdge(self.dut.iclk)
+        self.dut.icmd_sd.value = 0
+        await ClockCycles(self.dut.oclk_sd, 2) # Start bit and transmission bit
+        if(dummy): # Dummy R2 response
+            self.dut.icmd_sd.value = 0
+            for i in range():
+                await FallingEdge(self.dut.iclk) 
+        else:
+            for i in range(45):
+                self.dut.icmd_sd.value = 1 & (response >> (45 - 1 - i))
+                await FallingEdge(self.dut.iclk)
+        self.dut.icmd_sd.value = 1
+        await FallingEdge(self.dut.iclk) 
         return
 
     async def send_block(self, block, crc_packets):
@@ -182,7 +196,10 @@ async def ghost_sd_tb(_):
             passed = False
             break
 
-        response = bfm.select_response(command_index, command_argument)
+        if(command_index == 2): # Dummy response for CMD2, since it's ignored
+            bfm.send_response() 
+        else:
+            response = bfm.select_response(command_index, command_argument)
 
         success,fail = bfm.check_result()
         if(success != 0 or fail != 0):
