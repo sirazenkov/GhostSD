@@ -22,12 +22,6 @@ module cmd_driver (
   output        odone  // Operation done
 );
 
-  reg start_sh;
-  wire start;
-  always @(posedge iclk)
-    start_sh <= istart;
-  assign start = ~start_sh & istart;
-
   localparam [2:0]
     IDLE      = 3'b000,
     SEND_CMD  = 3'b001,
@@ -38,11 +32,12 @@ module cmd_driver (
   reg [2:0] state = IDLE, next_state;
 
   wire rst_crc;
-  reg  unload = 1'b0;
+  wire  unload;
   wire crc_data, crc;
   
   assign rst_crc = irst | (counter == 8'h00);
   assign crc_data = state == RCV_RESP ? icmd_sd : cmd_content[39];
+  assign unload = state == SEND_CRC || state == RCV_CRC;
 
   crc7 crc7_inst (
     .irst(rst_crc),
@@ -63,36 +58,31 @@ module cmd_driver (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE:      if (start || crc_failed) next_state = SEND_CMD; 
-      SEND_CMD:  if (change_state)        next_state = SEND_CRC;
-      SEND_CRC:  if (change_state)        next_state = cmd_index == 6'd15 ? IDLE : WAIT_RESP;
+      IDLE:      if (istart || crc_failed) next_state = SEND_CMD; 
+      SEND_CMD:  if (change_state)         next_state = SEND_CRC;
+      SEND_CRC:  if (change_state)         next_state = icmd_index == 6'd15 ? IDLE : WAIT_RESP;
       WAIT_RESP: if (!icmd_sd)             next_state = RCV_RESP;
-      RCV_RESP:  if (change_state)        next_state = RCV_CRC;
-      RCV_CRC:   if (change_state)        next_state = IDLE;
+      RCV_RESP:  if (change_state)         next_state = RCV_CRC;
+      RCV_CRC:   if (change_state)         next_state = IDLE;
       default: next_state = IDLE;
     endcase
   end
 
   reg [39:0] cmd_content = 40'd0;
-  reg [5:0]  cmd_index   =  6'd0;
 
   reg crc_failed = 1'b0;
 
   always @(posedge iclk) begin
     if (irst) begin 
-      unload <= 1'b0;
-
       counter     <=  8'd0;
-      cmd_index   <=  6'd0;
       cmd_content <= 40'b0;
       crc_failed  <=  1'b0;
     end
     else begin
       case(state)
         IDLE : begin
-          if (start || crc_failed) begin
+          if (next_state == SEND_CMD) begin
             counter     <= 8'd40;
-            cmd_index   <= icmd_index;
             cmd_content <= {1'b0, 1'b1, icmd_index, icmd_arg};
             crc_failed  <= 1'b0;
           end
@@ -100,15 +90,11 @@ module cmd_driver (
         SEND_CMD : begin  
           counter     <= counter - 1'b1;
           cmd_content <= {cmd_content[38:0], 1'b0};
-          if (change_state) begin
-            unload  <= 1'b1;
+          if (change_state)
             counter <= 8'd8;
-          end
         end
         SEND_CRC : begin
           counter <= counter - 1'b1;
-          if (change_state)
-            unload <= 1'b0;
         end
         WAIT_RESP : begin
           if (!icmd_sd)
@@ -117,17 +103,13 @@ module cmd_driver (
         RCV_RESP : begin
           counter     <= counter - 1'b1;
           cmd_content <= {cmd_content[38:0], icmd_sd};
-          if (change_state) begin
+          if (change_state)
             counter <= 8'd7;
-            unload  <= 1'b1;
-          end
         end
         RCV_CRC : begin
           counter <= counter - 1'b1;
-          if (icmd_sd != crc & cmd_index != 6'd41)
+          if (icmd_sd != crc & icmd_index != 6'd41)
             crc_failed <= 1'b1;
-          if (change_state)
-            unload <= 1'b0;
         end
       endcase
     end
