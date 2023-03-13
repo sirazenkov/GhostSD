@@ -26,4 +26,4 @@ wave:
 # Delete all artifacts
 clean:
 	rm -r work
-	$(MAKE) -C crc7 clean
+	$(MAKE) -C crc7 cleanall

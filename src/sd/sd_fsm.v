@@ -20,6 +20,7 @@ module sd_fsm (
   output     ogen_otp,
   output     onew_otp,
   output reg ostart_cmd,
+  output     [5:0] oindex,
   output reg [31:0] oarg,
   output reg ostart_d,
   output reg ofail,
@@ -43,6 +44,8 @@ module sd_fsm (
   reg [5:0] state, next_state;
   always @(posedge iclk)
     state <= irst ? IDLE : next_state;
+
+  assign oindex = state;
 
   reg [22:0] addr_sd;
   always @(posedge iclk) begin
