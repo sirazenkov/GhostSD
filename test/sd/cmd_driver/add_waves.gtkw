@@ -1,0 +1,31 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Wed Mar 15 04:38:04 2023
+[*]
+[dumpfile] "/home/user/MyProjects/GhostSD/test/sd/cmd_driver/wave.vcd"
+[dumpfile_mtime] "Wed Mar 15 04:35:20 2023"
+[dumpfile_size] 7925
+[savefile] "/home/user/MyProjects/GhostSD/test/sd/cmd_driver/add_waves.gtkw"
+[timestart] 0
+[size] 1853 1025
+[pos] -29 -29
+*-20.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] cmd_driver.
+[sst_width] 263
+[signals_width] 270
+[sst_expanded] 1
+[sst_vpaned_height] 301
+@28
+cmd_driver.irst
+cmd_driver.iclk
+@22
+cmd_driver.icmd_arg[31:0]
+@24
+cmd_driver.icmd_index[5:0]
+@28
+cmd_driver.icmd_sd
+cmd_driver.ocmd_sd
+@22
+cmd_driver.oresp[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

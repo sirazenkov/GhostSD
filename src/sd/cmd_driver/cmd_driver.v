@@ -22,6 +22,14 @@ module cmd_driver (
   output        odone  // Operation done
 );
 
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("wave.vcd");
+       $dumpvars(0, cmd_driver);
+       #1;
+     end
+  `endif
+
   localparam [2:0]
     IDLE      = 3'b000,
     SEND_CMD  = 3'b001,
