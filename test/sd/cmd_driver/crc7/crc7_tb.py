@@ -13,6 +13,10 @@ import logging
 
 import random
 
+import sys
+sys.path.insert(1, '../../../')
+from common import crc7
+
 NUM_OF_TRANSACTIONS = 5
 
 logging.basicConfig(level=logging.NOTSET)
@@ -45,17 +49,6 @@ class CRC7_BFM():
             result = (result << 1) | int(self.dut.ocrc.value)
             await FallingEdge(self.dut.iclk)
         return result
-
-def crc7(data):
-    crc = 0
-    for i in range(39): # transmission bit + command index (6 bits) + command argument (32 bits)
-        data_bit = (data >> (38-i)) & 1
-        last_bit = (crc >> 6) & 1
-        xor_bit = last_bit ^ data_bit
-        crc = crc << 1
-        crc = crc & ((1 << 7) - 1)
-        crc = crc ^ xor_bit ^ (xor_bit << 3)
-    return crc
 
 @cocotb.test()
 async def crc7_tb(_):

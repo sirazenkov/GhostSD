@@ -6,6 +6,10 @@ import logging
 
 import random
 
+import sys
+sys.path.insert(1, '../../')
+from common import *
+
 NUM_OF_TRANSACTIONS = 5
 
 logging.basicConfig(level=logging.NOTSET)
@@ -78,32 +82,6 @@ class D_driver_BFM():
         delay = random.randint(0,upper_bound)
         await ClockCycles(self.dut.iclk, delay)
 
-
-def crc16(data):
-    crc = 0
-    for i in range(1024): 
-        data_bit = (data >> (1023-i)) & 1
-        last_bit = (crc >> 15) & 1
-        xor_bit = last_bit ^ data_bit
-        crc = crc << 1
-        crc = crc & ((1 << 16) - 1)
-        crc = crc ^ xor_bit ^ (xor_bit << 5) ^ (xor_bit << 12)
-    return crc
-
-def gen_crc_packets(block):
-    lines_data = [0,0,0,0]
-    for i in range(1024):
-        for j in range(4):
-            lines_data[j] = lines_data[j] << 1 | ((block[i] >> j) & 1)
-    crc_values = [crc16(line_data) for line_data in lines_data]
-    crc_packets = []
-    for i in range(16):
-        crc_packet = 0
-        for j in range(4):
-            crc_packet = crc_packet | (((crc_values[j] >> (15-i)) & 1) << j)
-        crc_packets.append(crc_packet)
-    return crc_packets
-
 @cocotb.test()
 async def d_driver_tb(_):
     """D line's driver testbench""" 
@@ -114,7 +92,7 @@ async def d_driver_tb(_):
 
     for i in range(NUM_OF_TRANSACTIONS):
         block = [random.randint(0,15) for i in range(1024)]
-        crc_packets = gen_crc_packets(block)
+        crc_packets = gen_crc16_packets(block)
         await bfm.random_delay(10)
         done, crc_fail = await bfm.send_block(block, crc_packets)
         if(not crc_fail):

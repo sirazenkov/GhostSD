@@ -13,6 +13,10 @@ import logging
 
 import random
 
+import sys
+sys.path.insert(1, '../../../')
+from common import crc16
+
 NUM_OF_TRANSACTIONS = 5
 
 logging.basicConfig(level=logging.NOTSET)
@@ -45,17 +49,6 @@ class CRC16_BFM():
             result = (result << 1) | int(self.dut.ocrc.value)
             await FallingEdge(self.dut.iclk)
         return result
-
-def crc16(data):
-    crc = 0
-    for i in range(1024): 
-        data_bit = (data >> (1023-i)) & 1
-        last_bit = (crc >> 15) & 1
-        xor_bit = last_bit ^ data_bit
-        crc = crc << 1
-        crc = crc & ((1 << 16) - 1)
-        crc = crc ^ xor_bit ^ (xor_bit << 5) ^ (xor_bit << 12)
-    return crc
 
 @cocotb.test()
 async def crc16_tb(_):

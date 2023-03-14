@@ -13,7 +13,7 @@ module cmd_driver (
   input  icmd_sd,
   output ocmd_sd,
 
-  input istart, // Start transaction (command[-response])
+  input istart, // Start transaction (command-response)
 
   input [5:0]  icmd_index, // Command index
   input [31:0] icmd_arg,   // Command argument  
