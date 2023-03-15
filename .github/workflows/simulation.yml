@@ -5,7 +5,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - run: sudo apt install -y --no-install-recommends iverilog
       - run: pip3 install cocotb
       - run: make -C test
