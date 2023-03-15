@@ -20,7 +20,7 @@ class Transaction:
         self.arg   = arg
         self.resp  = resp
         self.cmd_crc = crc7(index << 32 | arg)
-        self.resp_crc = crc7(resp)
+        self.resp_crc = crc7(index << 32 | resp)
 
 RCA = random.randint(0, 1 << 16)
 
@@ -57,23 +57,18 @@ class CMD_driver_BFM():
                 field_ok == False
         return field_ok
 
-    async def check_done_cmd(self):
-        end_bit_set = int(self.dut.ocmd_sd.value) == 1
-        done = int(self.dut.odone.value) == 1
-        return (end_bit_set, done)
-
     async def send_response(self, index, resp, crc):
+        if(index == 15):
+            return int(self.dut.odone.value)
         await FallingEdge(self.dut.iclk)
         self.dut.icmd_sd.value = 0
-        await FallingEdge(self.dut.iclk)
+        await ClockCycles(self.dut.iclk, 2, rising=False)
         if(index == 2):
-            for i in range(134):
-                await FallingEdge(self.dut.iclk)
-                if(i == 2):
-                    self.dut.icmd_sd.value = 1
-                elif(i == 8):
+            self.dut.icmd_sd.value = 1
+            for i in range(133):
+                if(i == 6):
                     self.dut.icmd_sd.value = 0
-            await FallingEdge(self.dut.iclk)
+                await FallingEdge(self.dut.iclk)
         else:
             for i in range(6):
                 if(index == 41):
@@ -150,25 +145,18 @@ async def cmd_driver_tb(_):
             logger.error(f"Failed CRC check for (A)CMD{trans.index}!") 
             passed = False
             break
-        cmd_end_bit, cmd_done = await bfm.check_done_cmd()
-        if(cmd_end_bit):
+        if(int(bfm.dut.ocmd_sd.value) == 1):
             logger.info(f"End bit set after (A)CMD{trans.index}!") 
         else:
             logger.error(f"End bit not set after (A)CMD{trans.index}!") 
             passed = False
             break
-        if(cmd_done):
-            logger.info(f"(A)CMD{trans.index} successfully transmitted!") 
-        else:
-            logger.error(f"Module not done after transmitting (A)CMD{trans.index}!") 
-            passed = False
-            break
         await bfm.random_delay(10)
-        complete_resp = await bfm.send_response(trans.index, trans.resp, trans.cmd_crc)
+        complete_resp = await bfm.send_response(trans.index, trans.resp, trans.resp_crc)
         if(complete_resp):
-            logger.info(f"Received response for command {trans.index}!") 
+            logger.info(f"Sent response for command {trans.index}!") 
         else:
-            logger.error(f"Failed response receiving for command {trans.index}!") 
+            logger.error(f"Failed sending response for command {trans.index}!") 
             passed = False
             break
     assert passed

@@ -1,6 +1,6 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Mar 15 04:38:04 2023
+[*] Wed Mar 15 08:04:36 2023
 [*]
 [dumpfile] "/home/user/MyProjects/GhostSD/test/sd/cmd_driver/wave.vcd"
 [dumpfile_mtime] "Wed Mar 15 04:35:20 2023"
@@ -14,7 +14,7 @@
 [sst_width] 263
 [signals_width] 270
 [sst_expanded] 1
-[sst_vpaned_height] 301
+[sst_vpaned_height] 598
 @28
 cmd_driver.irst
 cmd_driver.iclk
@@ -27,5 +27,7 @@ cmd_driver.icmd_sd
 cmd_driver.ocmd_sd
 @22
 cmd_driver.oresp[31:0]
+@28
+cmd_driver.odone
 [pattern_trace] 1
 [pattern_trace] 0
