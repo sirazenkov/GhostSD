@@ -7,7 +7,7 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import FallingEdge, RisingEdge, ClockCycles
+from cocotb.triggers import FallingEdge
 
 import logging
 

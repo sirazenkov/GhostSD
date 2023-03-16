@@ -1,3 +1,10 @@
+#======================================
+#company: Tomsk State University
+#developer: Simon Razenkov
+#e-mail: sirazenkov@stud.tsu.ru
+#description: D driver module testbench
+#======================================
+
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import FallingEdge, RisingEdge, ClockCycles
