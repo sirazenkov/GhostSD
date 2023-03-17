@@ -28,8 +28,6 @@ all:
 
 	$(MAKE) -C otp_gen all
 	$(MAKE) -C sd all
-	$(MAKE) -C sd/cmd_driver all
-	$(MAKE) -C sd/d_driver all
 
 # Open waveform
 wave:
@@ -43,5 +41,3 @@ cleanall:
 	rm -rf __pycache__ wave.vcd results.xml 
 	$(MAKE) -C otp_gen clean
 	$(MAKE) -C sd cleanall
-	$(MAKE) -C sd/cmd_driver clean
-	$(MAKE) -C sd/d_driver cleanall
