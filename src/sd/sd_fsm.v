@@ -107,14 +107,13 @@ module sd_fsm (
         next_state = CMD17;
     end
     else if (icmd_done) begin
-      next_state = CMD24;
       case(state)
         CMD55:  next_state = iresp[5] ? ((!osel_clk) ? ACMD41 : ACMD6) : IDLE;
         ACMD41: next_state = iresp[31] & (iresp[21] | iresp[20]) ? CMD2 : IDLE;
         CMD2:   next_state = CMD3;
         CMD3:   next_state = CMD7;
         CMD7:   next_state = CMD55;
-        ACMD6:  next_state = iresp[12:9] == 4'd4 ? READ : IDLE;
+        ACMD6:  next_state = iresp[12:9] == 4'd4 ? CMD17 : IDLE;
         CMD17:  next_state = iresp[31] ? CMD15 : READ;
         CMD24:  next_state = WRITE;
         CMD15:  next_state = IDLE;

@@ -1,0 +1,40 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Fri Mar 17 15:15:43 2023
+[*]
+[dumpfile] "/home/user/MyProjects/GhostSD/test/sd/wave.vcd"
+[dumpfile_mtime] "Fri Mar 17 15:11:58 2023"
+[dumpfile_size] 3121
+[savefile] "/home/user/MyProjects/GhostSD/test/sd/add_waves.gtkw"
+[timestart] 48000
+[size] 1460 992
+[pos] -1 -1
+*-19.000000 2490000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 223
+[signals_width] 254
+[sst_expanded] 1
+[sst_vpaned_height] 490
+@28
+sd_fsm.irst
+sd_fsm.iclk
+sd_fsm.istart
+sd_fsm.icmd_done
+@25
+sd_fsm.iresp[31:0]
+@28
+sd_fsm.idata_crc_fail
+sd_fsm.idata_done
+sd_fsm.iotp_ready
+sd_fsm.osel_clk
+sd_fsm.ogen_otp
+sd_fsm.onew_otp
+sd_fsm.ostart_cmd
+@24
+sd_fsm.oindex[5:0]
+sd_fsm.oarg[31:0]
+@28
+sd_fsm.ostart_d
+sd_fsm.ofail
+sd_fsm.osuccess
+[pattern_trace] 1
+[pattern_trace] 0
