@@ -27,6 +27,14 @@ module sd_fsm (
   output reg osuccess
 );
 
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("wave.vcd");
+       $dumpvars(0, sd_fsm);
+       #1;
+     end
+  `endif
+
   localparam [5:0]
     IDLE   = 6'd0,
     CMD55  = 6'd55,
@@ -145,9 +153,9 @@ module sd_fsm (
       ostart_cmd <= 1'b0;
     else 
       ostart_cmd <= (state != next_state
-        && next_state != IDLE
-        && next_state != READ
-        && next_state != WRITE) ? 1'b1 : 1'b0;
+                    && next_state != IDLE
+                    && next_state != READ
+                    && next_state != WRITE) ? 1'b1 : 1'b0;
   end
 
   always @(posedge iclk) begin
