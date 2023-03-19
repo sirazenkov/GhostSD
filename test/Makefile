@@ -24,8 +24,8 @@ MODULE = ghost_sd_tb
 include $(shell cocotb-config --makefiles)/Makefile.sim
 
 all: 
-#	$(MAKE) -C otp_gen all
-#	$(MAKE) -C sd all
+	$(MAKE) -C otp_gen all
+	$(MAKE) -C sd all
 
 # Open waveform
 wave:
@@ -37,5 +37,5 @@ wave:
 cleanall:
 	$(MAKE) clean
 	rm -rf __pycache__ wave.vcd results.xml 
-#	$(MAKE) -C otp_gen clean
-#	$(MAKE) -C sd cleanall
+	$(MAKE) -C otp_gen clean
+	$(MAKE) -C sd cleanall

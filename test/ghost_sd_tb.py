@@ -93,7 +93,7 @@ class GhostSD_BFM():
 
     async def receive_block(self):
         await FallingEdge(self.dut.odata0_sd)
-        await FallingEdge(self.dut.oclk_sd)
+        await ClockCycles(self.dut.oclk_sd, 2, rising=False)
         block = []
         for i in range(1024):
             block.append(int(self.dut.odata_sd.value))
@@ -120,7 +120,6 @@ async def ghost_sd_tb(_):
     await bfm.reset()
     
     block = [randint(0,15) for i in range(1024)]
-    print("BLOCK: ", block)
     original_block = block
     crc_packets = gen_crc16_packets(block)
 
@@ -165,7 +164,6 @@ async def ghost_sd_tb(_):
                 logger.info(f"Block of data sent!");
             elif(trans.index == 24):
                 received_block = await bfm.receive_block()
-                print(f"Received_block {i}", received_block)
                 logger.info(f"Block of data received!");
                 if(i == 1):
                     if(received_block == original_block):
@@ -179,6 +177,7 @@ async def ghost_sd_tb(_):
                     crc_packets = gen_crc16_packets(block)
         if(not passed):
             break
+        await FallingEdge(bfm.dut.oclk_sd)
         if(await bfm.check_finish()):
             logger.info("GhostSD operation succeeded!")
         else:
