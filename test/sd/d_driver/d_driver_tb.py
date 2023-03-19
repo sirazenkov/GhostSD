@@ -74,7 +74,7 @@ class D_driver_BFM():
         await FallingEdge(self.dut.iclk)
         block = []
         for i in range(1024):
-            block.append(int(self.dut.odata_sd))
+            block.append(int(self.dut.odata_sd.value))
             await FallingEdge(self.dut.iclk)
         crc_failed = False
         for i in range(16):
@@ -86,7 +86,7 @@ class D_driver_BFM():
         return (blocks_equal, crc_failed)
 
     async def random_delay(self, upper_bound):
-        delay = random.randint(0,upper_bound)
+        delay = random.randint(1,upper_bound)
         await ClockCycles(self.dut.iclk, delay)
 
 @cocotb.test()

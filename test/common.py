@@ -56,6 +56,6 @@ transactions = (
     Transaction(6, (1 << 32) - 2, 4 << 9),
     Transaction(17, 0, 4 << 9),
     Transaction(24, 0, 4 << 9),
-    Transaction(17, 1, 4 << 9 | 1 << 31),
+    Transaction(17, 1 << 9, 4 << 9 | 1 << 31),
     Transaction(15, RCA << 16 | (1 << 16) - 1, 0)
 )

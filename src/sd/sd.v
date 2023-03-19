@@ -41,7 +41,7 @@ module sd (
 
   sd_fsm sd_fsm_inst (
     .irst(irst),
-    .iclk(iclk),
+    .iclk(clk_sd),
 
     .istart(istart),
 

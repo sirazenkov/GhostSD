@@ -31,7 +31,7 @@ module crc7 (
 
   assign main_xor = idata ^ crc[6];
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst)
       crc <= 7'b0;
     else begin

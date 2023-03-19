@@ -36,24 +36,26 @@ module d_driver (
      end
   `endif
 
-  localparam [2:0]
-    IDLE      = 3'b000,
-    WAIT_RCV  = 3'b001,
-    RCV_DATA  = 3'b011,
-    CHECK_CRC = 3'b010,
-    WAIT_SEND = 3'b110,
-    SEND_DATA = 3'b100,
-    SEND_CRC  = 3'b101,
-    BUSY      = 3'b111;
-  reg [2:0] state = IDLE, next_state;
+  localparam [3:0]
+    IDLE      = 4'b0000,
+    WAIT_RCV  = 4'b0001,
+    RCV_DATA  = 4'b0011,
+    CHECK_CRC = 4'b0010,
+    DONE_RCV  = 4'b0110,
+    WAIT_SEND = 4'b0111,
+    SEND_DATA = 4'b0101,
+    SEND_CRC  = 4'b0100,
+    BUSY      = 4'b1100,
+    DONE_SEND = 4'b1010;
+  reg [3:0] state = IDLE, next_state;
 
   reg [3:0]  data;
-  reg [10:0] counter  = 11'd0;
+  reg [10:0] counter = 11'd0;
 
   wire unload = state == CHECK_CRC || state == SEND_CRC;
 
   wire rst_crc;
-  assign rst_crc = irst || state == IDLE || state == WAIT_SEND || state == WAIT_RCV;
+  assign rst_crc = irst || state == WAIT_RCV || state == WAIT_SEND;
 
   wire [3:0] data_crc;
   wire [3:0] crc;
@@ -80,10 +82,12 @@ module d_driver (
   assign oaddr     = counter;
   assign owrite_en = state == RCV_DATA;
 
-  assign odone = state == IDLE || state == WAIT_SEND;
+  assign odone = state == DONE_RCV || state == DONE_SEND;
 
-  always @(posedge iclk)
-    state <= irst ? IDLE : next_state;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) state <= IDLE;
+    else      state <= next_state;
+  end
 
   always @(*) begin
     next_state = state;
@@ -92,17 +96,18 @@ module d_driver (
       WAIT_RCV:  if (~|data)            next_state = RCV_DATA;
       RCV_DATA:  if (&counter[9:0])     next_state = CHECK_CRC;
       CHECK_CRC:
-                 if (counter == 10'd15) next_state = WAIT_SEND;
+                 if (counter == 10'd16) next_state = DONE_RCV;
 		 else if (crc != data)  next_state = IDLE;
+      DONE_RCV:                         next_state = WAIT_SEND;
       WAIT_SEND: if (istart)            next_state = SEND_DATA; // Wait until data is processed
       SEND_DATA: if (counter[10])       next_state = SEND_CRC;
       SEND_CRC:  if (counter == 11'd16) next_state = BUSY;
-      BUSY:      if (data[0])           next_state = IDLE;      // SD card finished writing 
+      BUSY:      if (data[0])           next_state = DONE_SEND;
       default: next_state = IDLE;
     endcase
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst)
       data <= 4'h0;
     else if (state == WAIT_SEND && next_state == SEND_DATA)
@@ -115,14 +120,14 @@ module d_driver (
       data <= idata_sd;
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
    if (irst)
      ocrc_fail <= 1'b0;
    else if (state == IDLE      && next_state == WAIT_RCV) ocrc_fail <= 1'b0;
    else if (state == CHECK_CRC && next_state == IDLE)     ocrc_fail <= 1'b1;
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst)
       counter <= 11'd0;
     else

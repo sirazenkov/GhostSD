@@ -1,14 +1,18 @@
+#============================================
+# company: Tomsk State University
+# developer: Simon Razenkov
+# e-mail: sirazenkov@stud.tsu.ru
+# description: Top module (GhostSD) testbench
+#============================================
+
 import cocotb
 from cocotb.clock import Clock
-from cocotb.binary import BinaryValue
 from cocotb.triggers import FallingEdge, RisingEdge, ClockCycles
 
 import logging
 
-import random
+from random import randint
 
-import sys
-sys.path.insert(1, '.')
 from common import *
 
 logging.basicConfig(level=logging.NOTSET)
@@ -19,190 +23,167 @@ class GhostSD_BFM():
     def __init__(self):
         self.dut = cocotb.top
 
-    async def pull_up(self):
-        while(True):
-            if (self.dut.iocmd_sd.value == BinaryValue('Z')):
-                self.dut.iocmd_sd.value = 1
-            for i in range(4):
-                if (self.dut.iodata_sd[i].value == BinaryValue('Z')):
-                    self.dut.iodata_sd[i].value = 1
-
     async def start_operation(self):
-        cocotb.start_soon(Clock(self.dut.iclk, 27, units="ns").start())
-        cocotb.start_soon(self.pull_up()) 
-        await FallingEdge(self.dut.iclk)
+        await FallingEdge(self.dut.oclk_sd)
         self.dut.istart.value = 1
-        await self.random_delay(10)
-        self.dut.istart.value = 1
+        await FallingEdge(self.dut.oclk_sd)
+        self.dut.istart.value = 0
 
     async def reset(self):
         await FallingEdge(self.dut.iclk)
         self.dut.irst.value      = 1 
-        self.dut.iocmd_sd.value  = BinaryValue('Z')
-        self.dut.iodata_sd.value = BinaryValue('ZZZZ')
+        self.dut.iocmd_sd.value  = 1
+        self.dut.iodata_sd.value = 0xF
         self.dut.istart.value    = 0
         await FallingEdge(self.dut.iclk)
         self.dut.irst.value = 0
         await FallingEdge(self.dut.iclk)
 
-    async def check_finish(self):
-        return (int(self.dut.osuccess.value), int(self.dut.ofail.value))
-
-    async def select_response(self, command, argument):
-
-        return
-
-    async def receive_command(self):
-        crc_data = 0
-        await FallingEdge(self.dut.iocmd_sd)
-        await ClockCycles(self.dut.oclk_sd, 1) # Skip start bit
-        crc_data = (crc_data << 1) | self.dut.iocmd_sd.value
-        await ClockCycles(self.dut.oclk_sd, 1) # Skip transmission bit
-        index = 0
-        for i in range(6):
+    async def check_cmd_field(self, field, length):
+        field_ok = True
+        for i in range(length):
             await FallingEdge(self.dut.oclk_sd)
-            index = (index << 1) | self.dut.iocmd_sd.value
-            crc_data = (crc_data << 1) | self.dut.iocmd_sd.value
-        argument = 0
-        for i in range(32):
-            await FallingEdge(self.dut.oclk_sd)
-            argument = (index << 1) | self.dut.iocmd_sd.value
-            crc_data = (crc_data << 1) | self.dut.iocmd_sd.value
-        cmd_crc = crc7(crc_data)
-        crc_fail = False
-        for i in range(7):
-            await FallingEdge(self.dut.oclk_sd)
-            if((cmd_crci >> (7-i)) & 1 != self.dut.iocmd_sd.value):
-                crc_fail = True
-        await ClockCycles(self.dut.oclk_sd, 1) # Skip end bit
-        return (index, argument, crc_fail)
+            if(int(str(self.dut.iocmd_sd.value) == 'z') != ((field >> (length-1-i)) & 1)):
+                field_ok = False
+        return field_ok
 
-    async def send_response(self, response, dummy):
-        await FallingEdge(self.dut.iclk)
-        self.dut.icmd_sd.value = 0
-        await ClockCycles(self.dut.oclk_sd, 2) # Start bit and transmission bit
-        if(dummy): # Dummy R2 response
-            self.dut.icmd_sd.value = 0
-            for i in range():
-                await FallingEdge(self.dut.iclk) 
+    async def send_response(self, index, resp, crc):
+        if(index == 15):
+            return
+        await FallingEdge(self.dut.oclk_sd)
+        self.dut.iocmd_sd.value = 0
+        await ClockCycles(self.dut.oclk_sd, 2, rising=False)
+        if(index == 2):
+            self.dut.iocmd_sd.value = 1
+            for i in range(133):
+                if(i == 6):
+                    self.dut.iocmd_sd.value = 0
+                await FallingEdge(self.dut.oclk_sd)
         else:
-            for i in range(45):
-                self.dut.icmd_sd.value = 1 & (response >> (45 - 1 - i))
-                await FallingEdge(self.dut.iclk)
-        self.dut.icmd_sd.value = 1
-        await FallingEdge(self.dut.iclk) 
+            for i in range(6):
+                if(index == 41):
+                    self.dut.iocmd_sd.value = 1 
+                else:
+                    self.dut.iocmd_sd.value = 1 & (index >> (5-i))
+                await FallingEdge(self.dut.oclk_sd)
+            for i in range(32):
+                self.dut.iocmd_sd.value = 1 & (resp >> (31-i)) 
+                await FallingEdge(self.dut.oclk_sd)
+            for i in range(7):
+                if(index == 41):
+                    self.dut.iocmd_sd.value = 1 
+                else:
+                    self.dut.iocmd_sd.value = 1 & (crc >> (6-i))
+                await FallingEdge(self.dut.oclk_sd)
+        self.dut.iocmd_sd.value = 1
+        await FallingEdge(self.dut.oclk_sd)
         return
 
     async def send_block(self, block, crc_packets):
-        await FallingEdge(self.dut.iclk)
-        self.dut.istart.value = 1
-        await FallingEdge(self.dut.iclk)
-        self.dut.idata_sd.value = 0 # Start bit
-        self.dut.istart.value = 0
-        await FallingEdge(self.dut.iclk)
+        await FallingEdge(self.dut.oclk_sd)
+        self.dut.iodata_sd.value = 0 # Start bit
+        await FallingEdge(self.dut.oclk_sd)
         for i in range(1024):
-            self.dut.idata_sd.value = block[i]
-            await FallingEdge(self.dut.iclk)
+            self.dut.iodata_sd.value = block[i]
+            await FallingEdge(self.dut.oclk_sd)
         for i in range(16):
-            self.dut.idata_sd.value = crc_packets[i]
-            await FallingEdge(self.dut.iclk)
-        self.dut.idata_sd.value = 0xF # End bit
-        await RisingEdge(self.dut.odone)
-        await FallingEdge(self.dut.iclk)
+            self.dut.iodata_sd.value = crc_packets[i]
+            await FallingEdge(self.dut.oclk_sd)
+        self.dut.iodata_sd.value = 0xF # End bit
 
-    async def receive_block(self, crc_packets):
-        await FallingEdge(self.dut.iclk)
-        self.dut.istart.value = 1
-        await FallingEdge(self.dut.iclk)
-        self.dut.istart.value = 0
-        await FallingEdge(self.dut.iclk)
+    async def receive_block(self):
+        await FallingEdge(self.dut.odata0_sd)
+        await FallingEdge(self.dut.oclk_sd)
         block = []
         for i in range(1024):
-            block.append(int(self.dut.odata_sd))
-            await FallingEdge(self.dut.iclk)
-        crc_failed = False
+            block.append(int(self.dut.odata_sd.value))
+            await FallingEdge(self.dut.oclk_sd)
         for i in range(16):
-            if(int(self.dut.odata_sd.value) != crc_packets[i]):
-                crc_failed = True
-            await FallingEdge(self.dut.iclk)
-        await RisingEdge(self.dut.odone)
-        return (block, crc_failed)
+            await FallingEdge(self.dut.oclk_sd)
+        await FallingEdge(self.dut.oclk_sd)
+        self.dut.iodata_sd.value = 0xF # Not busy
+        return block
+
+    async def check_finish(self):
+        return (int(self.dut.osuccess.value), int(self.dut.ofail.value)) == (1,0)
 
     async def random_delay(self, upper_bound):
-        delay = random.randint(0,upper_bound)
-        await ClockCycles(self.dut.iclk, delay)
+        delay = randint(0,upper_bound)
+        await ClockCycles(self.dut.oclk_sd, delay)
 
-#@cocotb.test()
+@cocotb.test()
 async def ghost_sd_tb(_):
     """GhostSD testbench""" 
     passed = True
     bfm = GhostSD_BFM()
-    await bfm.start_operation()
+    cocotb.start_soon(Clock(bfm.dut.iclk, 27, units="ns").start())
     await bfm.reset()
     
-    success = 0
-    fail = 0
-    commands_counter = 0
-    commands_sequence = (55, 41, 2, 3, 7, 55, 6)
+    block = [randint(0,15) for i in range(1024)]
+    print("BLOCK: ", block)
+    original_block = block
+    crc_packets = gen_crc16_packets(block)
 
-    while(True):
-        command_content, command_crc7 = bfm.receive_command()
-        command_index = (((1 << 38) - 1) & command_content) >> 32
-        command_argument = ((1 << 32) - 1) & command_content
-        if(command_index == commands_sequence[commands_counter]):
-            logger.info(f"Command with index {command_index} received!")
+    for i in range(2): # Encrypt, decrypt
+        await bfm.start_operation()
+        for trans in transactions:
+            await FallingEdge(bfm.dut.iocmd_sd)
+            await ClockCycles(bfm.dut.oclk_sd, 2) 
+            index_ok = await bfm.check_cmd_field(trans.index, 6)
+            if(index_ok):
+                logger.info(f"Command index {trans.index} received successfully during cycle {i}!") 
+            else:
+                logger.error(f"Failed receiving command index {trans.index} during cycle {i}!") 
+                passed = False
+                break
+            arg_ok = await bfm.check_cmd_field(trans.arg, 32)
+            if(arg_ok):
+                logger.info(f"Command argument for (A)CMD{trans.index} received successfully during cycle {i}!") 
+            else:
+                logger.error(f"Failed receiving command argument for (A)CMD{trans.index} during cycle {i}!") 
+                passed = False
+                break
+            crc_ok = await bfm.check_cmd_field(trans.cmd_crc, 7)
+            if(crc_ok):
+                logger.info(f"Command CRC for (A)CMD{trans.index} received successfully during cycle {i}!") 
+            else:
+                logger.error(f"Failed CRC check for (A)CMD{trans.index} during cycle {i}!") 
+                passed = False
+                break
+            await FallingEdge(bfm.dut.oclk_sd)
+            if(str(bfm.dut.iocmd_sd.value) == 'z'):
+                logger.info(f"End bit set after (A)CMD{trans.index} during cycle {i}!") 
+            else:
+                logger.error(f"End bit not set after (A)CMD{trans.index} during cycle {i}!") 
+                passed = False
+                break
+            await bfm.random_delay(10)
+            await bfm.send_response(trans.index, trans.resp, trans.resp_crc)
+            logger.info(f"Response {trans.resp} for {trans.index} sent!");
+            if(trans.index == 17 and trans.arg == 0):
+                await bfm.send_block(block, crc_packets)
+                logger.info(f"Block of data sent!");
+            elif(trans.index == 24):
+                received_block = await bfm.receive_block()
+                print(f"Received_block {i}", received_block)
+                logger.info(f"Block of data received!");
+                if(i == 1):
+                    if(received_block == original_block):
+                        logger.info("GhostSD operation is valid!")
+                    else:
+                        logger.error("GhostSD operation is invalid!")
+                        passed = False
+                        break
+                else:
+                    block = received_block
+                    crc_packets = gen_crc16_packets(block)
+        if(not passed):
+            break
+        if(await bfm.check_finish()):
+            logger.info("GhostSD operation succeeded!")
         else:
-            logger.error(f"Command with index {command_index} received \
-                           instead of {commands_sequence[commands_counter]}!")
+            logger.error("GhostSD operation failed!")
             passed = False
             break
-
-        if(crc7(command_content) == command_crc7):
-            logger.info(f"Command CRC7 checksum is correct!")
-        else:
-            logger.error(f"Command CRC7 checksum is wrong!")
-            passed = False
-            break
-
-        if(command_index == 2): # Dummy response for CMD2, since it's ignored
-            bfm.send_response() 
-        else:
-            response = bfm.select_response(command_index, command_argument)
-
-        success,fail = bfm.check_result()
-        if(success != 0 or fail != 0):
-            break
-
-
-        block = [random.randint(0,15) for i in range(1024)]
-        crc_packets = gen_crc_packets(block)
-        await bfm.random_delay(10)
-        await bfm.send_block(block, crc_packets)
-        await bfm.random_delay(10)
-        received_block, crc_failed = await bfm.receive_block(crc_packets)
-        if(gost(block) == received_block):
-            logger.info(f"Block {i} is successfully processed!") 
-        else:
-            logger.error(f"Block {i} is processed incorrectly!") 
-            passed = False
-            break
-        if(not crc_failed):
-            logger.info(f"Correct CRC in block {i} from the module!")
-        else:
-            logger.error(f"Wrong CRC in block {i} from the module!")
-            break
-        if(int(bfm.dut.odata_sd.value) == 0xF):
-            logger.info(f"Finish bit set in block {i} from module!") 
-        else:
-            logger.error(f"Finish bit not set in block {i} from module!")
-            passed = False
-            break
-
-    if (failed == 1):
-        passed = False
-        logger.error("GhostSD operation failed!")
-    elif (success == 1):
-        logger.info("GhostSD operation succeeded!")
-
     assert passed
 

@@ -17,7 +17,11 @@ module ghost_sd (
   output      oclk_sd,   // CLK line
 
   output osuccess,
-  output ofail
+  output ofail,
+
+  `ifdef COCOTB_SIM
+  output odata0_sd
+  `endif
 );
 
   `ifdef COCOTB_SIM
@@ -25,14 +29,13 @@ module ghost_sd (
     parameter IV = 32'hb97b7f46;
 
     initial begin
-      $dumpfile("../test/wave.vcd");
+      $dumpfile("wave.vcd");
       $dumpvars(0, ghost_sd);
       #1;
     end
   `else
     `include "crypto.vh"
   `endif  
-
   
   wire icmd_sd, ocmd_sd, clk_sd;
 
@@ -118,13 +121,15 @@ module ghost_sd (
 
   assign oclk_sd  = clk_sd;
   assign iocmd_sd = ocmd_sd == 1'b0 ? 1'b0 : 1'bz;
-
   genvar i;
   generate
     for(i = 0; i < 4; i = i + 1) begin
       assign iodata_sd[i] = odata_sd[i] == 1'b0 ? 1'b0 : 1'bz;
     end
   endgenerate
+  `ifdef COCOTB_SIM
+    assign odata0_sd = odata_sd[0];
+  `endif
 
   assign icmd_sd  = iocmd_sd;
   assign idata_sd = iodata_sd;

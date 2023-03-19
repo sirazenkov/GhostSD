@@ -3,7 +3,6 @@ SRC_PATH=../src
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES += $(SRC_PATH)/crypto.vh
 VERILOG_SOURCES += $(SRC_PATH)/ghost_sd.v
 VERILOG_SOURCES += $(SRC_PATH)/ram_4k_block.v
 VERILOG_SOURCES += $(SRC_PATH)/sd/sd.v
@@ -25,9 +24,8 @@ MODULE = ghost_sd_tb
 include $(shell cocotb-config --makefiles)/Makefile.sim
 
 all: 
-
-	$(MAKE) -C otp_gen all
-	$(MAKE) -C sd all
+#	$(MAKE) -C otp_gen all
+#	$(MAKE) -C sd all
 
 # Open waveform
 wave:
@@ -39,5 +37,5 @@ wave:
 cleanall:
 	$(MAKE) clean
 	rm -rf __pycache__ wave.vcd results.xml 
-	$(MAKE) -C otp_gen clean
-	$(MAKE) -C sd cleanall
+#	$(MAKE) -C otp_gen clean
+#	$(MAKE) -C sd cleanall

@@ -17,7 +17,7 @@ module sd_fsm (
   input iotp_ready,
 
   output reg osel_clk,
-  output     ogen_otp,
+  output reg ogen_otp,
   output     onew_otp,
   output reg ostart_cmd,
   output     [5:0] oindex,
@@ -50,13 +50,15 @@ module sd_fsm (
     CMD15  = 6'd15;
 
   reg [5:0] state, next_state;
-  always @(posedge iclk)
-    state <= irst ? IDLE : next_state;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) state <= IDLE;
+    else      state <= next_state;
+  end
 
   assign oindex = state;
 
   reg [22:0] addr_sd;
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst)
       addr_sd <= 23'd0;
     else if (state == WRITE && next_state == CMD17)
@@ -66,10 +68,10 @@ module sd_fsm (
   end
 
   reg [15:0] rca;
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst)
       rca <= 16'd0;
-    else if (next_state == CMD7)
+    else if (state == CMD3 && next_state == CMD7)
       rca <= iresp[31:16];
   end
 
@@ -92,18 +94,34 @@ module sd_fsm (
     end
   end
 
+  reg data_done, otp_ready;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) begin
+      data_done <= 1'b0;
+      otp_ready <= 1'b0;
+    end
+    else if (state != next_state) begin
+      data_done <= 1'b0;
+      otp_ready <= 1'b0;
+    end
+    else begin
+      if (idata_done) data_done <= 1'b1;
+      if (iotp_ready) otp_ready <= 1'b1;
+    end
+  end
+
   always @(*) begin
     next_state = state;
     if (istart && state == IDLE)
       next_state = CMD55;
-    else if (idata_done) begin
-      if (state == READ) begin
-        if (idata_crc_fail)
-          next_state = CMD17;
-        else if (iotp_ready)
-          next_state = CMD24;
-      end
-      else if (state == WRITE)
+    else if (state == READ) begin
+      if (idata_crc_fail)
+        next_state = CMD17;
+      else if (data_done && otp_ready)
+        next_state = CMD24;
+    end
+    else if (state == WRITE) begin
+      if (data_done)
         next_state = CMD17;
     end
     else if (icmd_done) begin
@@ -121,7 +139,7 @@ module sd_fsm (
     end
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst)
       osel_clk <= 1'b0;
     else if (next_state == IDLE)
@@ -130,7 +148,7 @@ module sd_fsm (
       osel_clk <= 1'b1;
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst) begin
       osuccess <= 1'b0;
       ofail    <= 1'b0;
@@ -147,26 +165,22 @@ module sd_fsm (
     end
   end
 
-  always @(posedge iclk) begin
-    if (irst)
+  always @(posedge iclk or posedge irst) begin
+    if (irst) begin
       ostart_cmd <= 1'b0;
-    else 
-      ostart_cmd <= (state != next_state
-                    && next_state != IDLE
-                    && next_state != READ
-                    && next_state != WRITE) ? 1'b1 : 1'b0;
+      ostart_d   <= 1'b0;  
+      ogen_otp   <= 1'b0;
+    end else if (state != next_state) begin
+      ostart_cmd <= (next_state != IDLE && next_state != READ && next_state != WRITE) ? 1'b1 : 1'b0;
+      if (next_state == CMD17 || next_state == WRITE) ostart_d <= 1'b1;
+      if (next_state == READ) ogen_otp <= 1'b1;
+    end else begin
+      ostart_cmd <= 1'b0;
+      ostart_d   <= 1'b0;
+      ogen_otp   <= 1'b0;
+    end
   end
-
-  always @(posedge iclk) begin
-    if (irst)
-      ostart_d <= 1'b0;  
-    else if (state != next_state) begin
-      if (next_state == CMD17 || next_state == WRITE)
-        ostart_d <= 1'b1;
-    end else
-      ostart_d <= 1'b0;
-  end
-  assign ogen_otp = state == READ;
+  
   assign onew_otp = state == IDLE; 
 
 endmodule

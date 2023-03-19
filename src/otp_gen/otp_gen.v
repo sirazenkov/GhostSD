@@ -21,14 +21,13 @@ module otp_gen (
   output [3:0] owdata,
   output       owrite_en,
 
-  output odone
+  output reg odone
 );
 
   localparam [1:0]
     IDLE        = 2'b00,
     GEN_BLOCK   = 2'b01,
-    WRITE_BLOCK = 2'b11,
-    DONE        = 2'b10;
+    WRITE_BLOCK = 2'b11;
   reg [1:0] state = IDLE, next_state;
 
   reg [9:0] counter;
@@ -36,17 +35,17 @@ module otp_gen (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE:
-        if (istart)        next_state = GEN_BLOCK;
-      GEN_BLOCK:
-        if (done_gost)     next_state = WRITE_BLOCK;
-      WRITE_BLOCK:
-        if (&counter[3:0]) next_state = &counter[9:4] ? DONE : GEN_BLOCK;
+      IDLE:        if (istart)        next_state = GEN_BLOCK;
+      GEN_BLOCK:   if (done_gost)     next_state = WRITE_BLOCK;
+      WRITE_BLOCK: if (&counter[3:0]) next_state = &counter[9:4] ? IDLE : GEN_BLOCK;
+      default:                        next_state = IDLE;
     endcase
   end
 
-  always @(posedge iclk)
-    state <= irst ? IDLE : next_state;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) state <= IDLE;
+    else      state <= next_state;
+  end
 
   reg start_gost;
 
@@ -56,10 +55,10 @@ module otp_gen (
   wire done_gost;
 
   always @(posedge iclk) begin
-    start_gost <= istart && next_state == GEN_BLOCK;
+    start_gost <= state != next_state && next_state == GEN_BLOCK;
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst) begin
       counter     <= 10'd0;
       plain_block <= 64'd0;
@@ -93,7 +92,15 @@ module otp_gen (
   assign oaddr     = counter;
   assign owdata    = enc_block[4*(16-counter[3:0])-1 -: 4];
   assign owrite_en = state == WRITE_BLOCK;
-  assign odone     = state == DONE;
+
+  always @ (posedge iclk or posedge irst) begin
+    if (irst)
+      odone <= 1'b0;
+    else if (state != next_state) begin
+      if (next_state == IDLE) odone <= 1'b1;
+      else                    odone <= 1'b0;
+    end
+  end
 
 endmodule
 

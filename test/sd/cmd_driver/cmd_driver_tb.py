@@ -86,7 +86,6 @@ class CMD_driver_BFM():
                     self.dut.icmd_sd.value = 1 & (crc >> (6-i))
                 await FallingEdge(self.dut.iclk)
         self.dut.icmd_sd.value = 1
-        await FallingEdge(self.dut.iclk)
         return int(self.dut.odone.value)
 
     async def random_delay(self, upper_bound):
@@ -138,7 +137,8 @@ async def cmd_driver_tb(_):
             logger.error(f"End bit not set after (A)CMD{trans.index}!") 
             passed = False
             break
-        await bfm.random_delay(10)
+        if(trans.index != 15):
+            await bfm.random_delay(10)
         complete_resp = await bfm.send_response(trans.index, trans.resp, trans.resp_crc)
         if(complete_resp):
             logger.info(f"Sent response for command {trans.index}!") 

@@ -13,8 +13,8 @@ module clock_divider (
 );
 
   reg [7:0] counter = 7'b0; 
-  always @(posedge iclk) begin
-    if (irst == 1'b1)
+  always @(posedge iclk or posedge irst) begin
+    if (irst)
       counter <= 7'b0;
     else
       counter <= counter + 1;  

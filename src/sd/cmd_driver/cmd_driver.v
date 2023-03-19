@@ -36,7 +36,8 @@ module cmd_driver (
     SEND_CRC  = 3'b011,
     WAIT_RESP = 3'b010,
     RCV_RESP  = 3'b110,
-    RCV_CRC   = 3'b111;
+    RCV_CRC   = 3'b111,
+    DONE      = 3'b101; 
   reg [2:0] state = IDLE, next_state;
 
   reg [7:0]  counter     =  8'd0;
@@ -50,7 +51,7 @@ module cmd_driver (
   wire  unload;
   wire crc_data, crc;
  
-  assign rst_crc = irst || state == IDLE || state == WAIT_RESP;
+  assign rst_crc = irst || state == DONE || state == WAIT_RESP;
   assign crc_data = state == RCV_RESP ? icmd_sd : cmd_content[39];
   assign unload = state == SEND_CRC || state == RCV_CRC;
 
@@ -63,35 +64,37 @@ module cmd_driver (
     .ocrc   (crc)
   );
 
-  always @(posedge iclk)
-    state <= irst ? IDLE : next_state;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) state <= IDLE;
+    else      state <= next_state;
+  end
 
   always @(*) begin
     next_state = state;
     case(state)
       IDLE:      if (istart || crc_failed) next_state = SEND_CMD; 
       SEND_CMD:  if (change_state)         next_state = SEND_CRC;
-      SEND_CRC:  if (change_state)         next_state = icmd_index == 6'd15 ? IDLE : WAIT_RESP;
+      SEND_CRC:  if (change_state)         next_state = icmd_index == 6'd15 ? DONE : WAIT_RESP;
       WAIT_RESP: if (!icmd_sd)             next_state = RCV_RESP;
       RCV_RESP:  if (change_state)         next_state = RCV_CRC;
-      RCV_CRC:   if (change_state)         next_state = IDLE;
+      RCV_CRC:   if (change_state)         next_state = crc_failed ? IDLE : DONE;
       default: next_state = IDLE;
     endcase
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst) counter <= 8'd0;
     else if (state != next_state) begin
       case(next_state)
         SEND_CMD: counter <= 8'd39;
         SEND_CRC: counter <= 8'd6;
-	RCV_RESP: counter <= icmd_index == 6'd2 ? 8'd127 : 8'd38;
+	RCV_RESP: counter <= icmd_index == 6'd2 ? 8'd126 : 8'd38;
 	RCV_CRC:  counter <= 8'd6;
       endcase
     end else counter <= counter - 1'b1;
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst) crc_failed <= 1'b0;
     else if (next_state == SEND_CMD)
       crc_failed <= 1'b0;
@@ -100,7 +103,7 @@ module cmd_driver (
       crc_failed <= 1'b1;
   end
 
-  always @(posedge iclk) begin
+  always @(posedge iclk or posedge irst) begin
     if (irst) 
       cmd_content <= 40'd0;
     else if (state == IDLE && next_state == SEND_CMD)
@@ -114,7 +117,7 @@ module cmd_driver (
   assign ocmd_sd = (state == SEND_CMD) ? cmd_content[39] :
                    (state == SEND_CRC) ? crc : 1'b1;
   assign oresp = cmd_content[31:0];
-  assign odone = (state == IDLE) && !(crc_failed);
+  assign odone = state == DONE;
 
 endmodule
 
