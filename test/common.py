@@ -1,3 +1,5 @@
+from random import randint
+
 def crc7(data):
     crc = 0
     for i in range(39): # transmission bit + command index (6 bits) + command argument (32 bits)
@@ -34,3 +36,26 @@ def gen_crc16_packets(block):
         crc_packets.append(crc_packet)
     return crc_packets
 
+class Transaction:
+    def __init__(self, index, arg, resp):
+        self.index = index
+        self.arg   = arg
+        self.resp  = resp
+        self.cmd_crc = crc7(1 << 38 | index << 32 | arg)
+        self.resp_crc = crc7(index << 32 | resp)
+
+RCA = randint(0, 1 << 16)
+
+transactions = (
+    Transaction(55, (1 << 16) - 1, 1 << 5),
+    Transaction(41, 1 << 31 | 3 << 20, 1 << 31 | 3 << 20),
+    Transaction(2, (1 << 32) - 1, 0),
+    Transaction(3, (1 << 32) - 1, RCA << 16),
+    Transaction(7, RCA << 16 | (1 << 16) - 1, 3 << 9),
+    Transaction(55, RCA << 16 | (1 << 16) - 1, 1 << 5),
+    Transaction(6, (1 << 32) - 2, 4 << 9),
+    Transaction(17, 0, 4 << 9),
+    Transaction(24, 0, 4 << 9),
+    Transaction(17, 1, 4 << 9 | 1 << 31),
+    Transaction(15, RCA << 16 | (1 << 16) - 1, 0)
+)

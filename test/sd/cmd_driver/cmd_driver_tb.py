@@ -1,9 +1,9 @@
-#========================================
-#company: Tomsk State University
-#developer: Simon Razenkov
-#e-mail: sirazenkov@stud.tsu.ru
-#description: CMD driver module testbench
-#========================================
+#=========================================
+# company: Tomsk State University
+# developer: Simon Razenkov
+# e-mail: sirazenkov@stud.tsu.ru
+# description: CMD driver module testbench
+#=========================================
 
 import cocotb
 from cocotb.clock import Clock
@@ -15,21 +15,11 @@ import random
 
 import sys
 sys.path.insert(1, '../../')
-from common import crc7
+from common import crc7, Transaction, RCA, transactions
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-
-class Transaction:
-    def __init__(self, index, arg, resp):
-        self.index = index
-        self.arg   = arg
-        self.resp  = resp
-        self.cmd_crc = crc7(index << 32 | arg)
-        self.resp_crc = crc7(index << 32 | resp)
-
-RCA = random.randint(0, 1 << 16)
 
 class CMD_driver_BFM():
     def __init__(self):
@@ -54,14 +44,17 @@ class CMD_driver_BFM():
         self.dut.icmd_arg.value   = arg
         await FallingEdge(self.dut.iclk)
         self.dut.istart.value = 0
-        return int(self.dut.ocmd_sd.value) == 0
+        start_bit = int(self.dut.ocmd_sd.value)
+        await FallingEdge(self.dut.iclk)
+        transm_bit = int(self.dut.ocmd_sd.value)
+        return start_bit == 0 and transm_bit == 1
 
     async def check_cmd_field(self, field, length):
         field_ok = True
         for i in range(length):
             await FallingEdge(self.dut.iclk)
-            if(int(self.dut.ocmd_sd.value) != ((field >> (length-i)) & 1)):
-                field_ok == False
+            if(int(self.dut.ocmd_sd.value) != ((field >> (length-1-i)) & 1)):
+                field_ok = False
         return field_ok
 
     async def send_response(self, index, resp, crc):
@@ -100,20 +93,6 @@ class CMD_driver_BFM():
         delay = random.randint(0,upper_bound)
         await ClockCycles(self.dut.iclk, delay)
 
-transactions = (
-    Transaction(55, (1 << 16) - 1, 1 << 5),
-    Transaction(41, 1 << 31 | 3 << 20, 1 << 31 | 3 << 20),
-    Transaction(2, (1 << 32) - 1, 0),
-    Transaction(3, (1 << 32) - 1, RCA << 16),
-    Transaction(7, RCA << 16 | (1 << 16) - 1, 3 << 9),
-    Transaction(55, RCA << 16 | (1 << 16) - 1, 1 << 5),
-    Transaction(6, (1 << 32) - 2, 4 << 9),
-    Transaction(17, 0, 4 << 9),
-    Transaction(24, 0, 4 << 9),
-    Transaction(17, 1, 4 << 9 | 1 << 31),
-    Transaction(15, RCA << 16 | (1 << 16) - 1, 0)
-    )
-
 @cocotb.test()
 async def cmd_driver_tb(_):
     """CMD line's driver testbench""" 
@@ -145,13 +124,14 @@ async def cmd_driver_tb(_):
             logger.error(f"Failed receiving command argument for (A)CMD{trans.index}!") 
             passed = False
             break
-        crc_ok = await bfm.check_cmd_field(trans.cmd_crc, 32)
+        crc_ok = await bfm.check_cmd_field(trans.cmd_crc, 7)
         if(crc_ok):
             logger.info(f"Command CRC for (A)CMD{trans.index} received successfully!") 
         else:
             logger.error(f"Failed CRC check for (A)CMD{trans.index}!") 
             passed = False
             break
+        await FallingEdge(bfm.dut.iclk)
         if(int(bfm.dut.ocmd_sd.value) == 1):
             logger.info(f"End bit set after (A)CMD{trans.index}!") 
         else:
