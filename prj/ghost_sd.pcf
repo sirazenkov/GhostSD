@@ -2,8 +2,8 @@
 set_io iclk D1
 
 # Buttons
-set_io irst A1 # Reset
-set_io istart B1 # Start
+set_io irst E4 # Reset
+set_io istart E5 # Start
 
 # SD interface
 set_io oclk_sd E3
@@ -15,4 +15,4 @@ set_io iodata_sd[3] C6
 
 # Status
 set_io osuccess B6 # LED
-set_io ofail E2
+set_io ofail F5

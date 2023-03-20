@@ -36,6 +36,6 @@ Run simulation: `make -C test`. \
 You may delete output files with `make -C test cleanall`.
 
 ### Project scheme
-![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_fpga.png?raw=true)
+![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_system.png?raw=true)
 
 *All code was written in vim* :heart:
