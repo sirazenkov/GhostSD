@@ -1,11 +1,14 @@
 name: design-simulation
 run-name: ${{ github.actor }} is running design simulation
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@master
       - run: sudo apt install -y --no-install-recommends iverilog
       - run: pip3 install cocotb
       - run: make -C test

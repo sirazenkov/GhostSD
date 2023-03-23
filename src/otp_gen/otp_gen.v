@@ -71,7 +71,7 @@ module otp_gen (
           if (done_gost)
             plain_block <= plain_block + 1'b1;
         WRITE_BLOCK:
-          counter <= counter + 1;
+          counter <= counter + 1'b1;
       endcase
     end
   end

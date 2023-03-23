@@ -63,7 +63,7 @@ module d_driver (
 
   genvar i;
   generate
-    for(i = 0; i < 4; i = i + 1) begin
+    for(i = 0; i < 4; i = i + 1) begin : d_crc16
       crc16 crc16_inst (
         .irst(rst_crc),
         .iclk(iclk),
@@ -79,7 +79,7 @@ module d_driver (
   assign odata_sd = state == SEND_DATA || state == SEND_CRC ? data : 4'hF;
 
   assign owdata    = data;
-  assign oaddr     = counter;
+  assign oaddr     = counter[9:0];
   assign owrite_en = state == RCV_DATA;
 
   assign odone = state == DONE_RCV || state == DONE_SEND;

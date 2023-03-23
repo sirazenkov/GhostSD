@@ -1,9 +1,9 @@
-//==========================================
+//===============================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
-//description: SD Bus protocol communication
-//==========================================
+//description: SD Bus controller
+//===============================
 
 module sd (
   input irst, // Global reset
@@ -66,18 +66,19 @@ module sd (
     .osuccess(osuccess)
   );
 
-  wire clk_18MHz, clk_281kHz, clk_sd;
-  assign clk_sd  = sel_clk ? clk_18MHz : clk_281kHz;
+  wire slow_clk, fast_clk, clk_sd;
   assign oclk_sd = clk_sd;
 
-  // Get 18 Mhz and 281.25 kHz clocks from 36 MHz system clock
+/*
+  assign clk_sd  = sel_clk ? fast_clk : slow_clk;
   clock_divider clock_divider_inst (
     .irst(irst),
     .iclk(iclk),
 
-    .ofastclk(clk_18MHz),
-    .oslowclk(clk_281kHz)
+    .ofastclk(fast_clk),
+    .oslowclk(slow_clk)
   );
+*/
 
   // CMD line driver
   cmd_driver cmd_driver_inst (

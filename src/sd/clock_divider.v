@@ -17,7 +17,7 @@ module clock_divider (
     if (irst)
       counter <= 7'b0;
     else
-      counter <= counter + 1;  
+      counter <= counter + 1'b1;  
   end
 
   assign ofastclk = counter[0];

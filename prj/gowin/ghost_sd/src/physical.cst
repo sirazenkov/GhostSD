@@ -1,0 +1,30 @@
+//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//All rights reserved. 
+//File Title: Physical Constraints file
+//GOWIN Version: 1.9.8.07 Education
+//Part Number: GW2A-LV18PG256C8/I7
+//Device: GW2A-18C
+//Created Time: Thu 03 23 11:47:51 2023
+
+IO_LOC "ofail" A13;
+IO_PORT "ofail" PULL_MODE=UP DRIVE=8;
+IO_LOC "osuccess" C13;
+IO_PORT "osuccess" PULL_MODE=UP DRIVE=8;
+IO_LOC "oclk_sd" N10;
+IO_PORT "oclk_sd" PULL_MODE=UP DRIVE=8;
+IO_LOC "iodata_sd[3]" N11;
+IO_PORT "iodata_sd[3]" PULL_MODE=UP DRIVE=8;
+IO_LOC "iodata_sd[2]" M10;
+IO_PORT "iodata_sd[2]" PULL_MODE=UP DRIVE=8;
+IO_LOC "iodata_sd[1]" M7;
+IO_PORT "iodata_sd[1]" PULL_MODE=UP DRIVE=8;
+IO_LOC "iodata_sd[0]" M8;
+IO_PORT "iodata_sd[0]" PULL_MODE=UP DRIVE=8;
+IO_LOC "iocmd_sd" R14;
+IO_PORT "iocmd_sd" PULL_MODE=UP DRIVE=8;
+IO_LOC "istart" T3;
+IO_PORT "istart" PULL_MODE=UP;
+IO_LOC "irst" T10;
+IO_PORT "irst" PULL_MODE=UP;
+IO_LOC "iclk" H11;
+IO_PORT "iclk" PULL_MODE=UP;
