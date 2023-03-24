@@ -1,15 +1,15 @@
-//=================================================================
+//==============================================================================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
-//description: Clock divider for generating fast and slow SD clocks
-//=================================================================
+//description: Clock divider for generating fast and slow SD clocks without PLLs
+//==============================================================================
 
 module clock_divider (
-  input irst,      // Global res
+  input irst,      // Global reset
   input iclk,      // Reference clock
-  output ofastclk, // Divided by 2 clock
-  output oslowclk  // Divided by 128 clock
+  input isel_clk,  // Select slow (0) or fast (1) clock
+  output oclk_sd
 );
 
   reg [7:0] counter = 7'b0; 
@@ -20,8 +20,6 @@ module clock_divider (
       counter <= counter + 1'b1;  
   end
 
-  assign ofastclk = counter[0];
-  assign oslowclk = counter[6];
+  assign oclk_sd = sel_clk ? counter[0] : counter[6];
 
 endmodule
-

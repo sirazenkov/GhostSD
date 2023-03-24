@@ -11,12 +11,13 @@ module sd (
   
   input istart, // Start SD card initialization
 
+  output osel_clk, // Select used clock
+
   // SD Bus
   input        icmd_sd,  // CMD line
   output       ocmd_sd,
   input  [3:0] idata_sd, // D line
   output [3:0] odata_sd,
-  output       oclk_sd,  // CLK line
 
   // OTP generator
   output ogen_otp,   // Generate next block of the pad
@@ -33,7 +34,6 @@ module sd (
   output ofail
 );
 
-  wire sel_clk;
   wire start_cmd, cmd_done;
   wire start_d, data_done, data_crc_fail;
   wire [5:0]  index;
@@ -41,14 +41,14 @@ module sd (
 
   sd_fsm sd_fsm_inst (
     .irst(irst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .istart(istart),
 
     .idata_crc_fail(data_crc_fail),
     .idata_done    (data_done),
 
-    .osel_clk(sel_clk),
+    .osel_clk(osel_clk),
 
     .ogen_otp  (ogen_otp),
     .onew_otp  (onew_otp),
@@ -66,24 +66,10 @@ module sd (
     .osuccess(osuccess)
   );
 
-  wire slow_clk, fast_clk, clk_sd;
-  assign oclk_sd = clk_sd;
-
-/*
-  assign clk_sd  = sel_clk ? fast_clk : slow_clk;
-  clock_divider clock_divider_inst (
-    .irst(irst),
-    .iclk(iclk),
-
-    .ofastclk(fast_clk),
-    .oslowclk(slow_clk)
-  );
-*/
-
   // CMD line driver
   cmd_driver cmd_driver_inst (
     .irst(irst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .icmd_sd(icmd_sd),
     .ocmd_sd(ocmd_sd),
@@ -101,7 +87,7 @@ module sd (
   // D lines driver
   d_driver d_driver_inst (
     .irst(irst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .idata_sd(idata_sd),
     .odata_sd(odata_sd),

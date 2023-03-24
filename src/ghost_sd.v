@@ -7,10 +7,7 @@
 
 module ghost_sd (
   input iclk, // System clock
-  input irst,
   
-  input istart,
-
   // SD lines
   inout       iocmd_sd,  // CMD line
   inout [3:0] iodata_sd, // D[3:0] line
@@ -29,7 +26,7 @@ module ghost_sd (
       #1;
     end
   `endif  
-  
+
   wire icmd_sd, ocmd_sd, clk_sd;
 
   wire [3:0] idata_sd, odata_sd;
@@ -44,17 +41,33 @@ module ghost_sd (
 
   wire success, fail;
 
-  sd sd_inst (
-    .irst(irst),
+  wire pll_locked, sel_clk;
+
+  clock_divider_pll clock_divider_inst (
     .iclk(iclk),
+    .isel_clk(sel_clk),
+    .olocked(pll_locked),
+    .oclk_sd(clk_sd)
+  );
+
+  reg pll_locked_reg = 0, start = 0;
+  always @(posedge clk_sd) begin
+    pll_locked_reg <= pll_locked;
+    start <= ~pll_locked_reg && pll_locked;
+  end
+
+  sd sd_inst (
+    .irst(~pll_locked),
+    .iclk(clk_sd),
 
     .icmd_sd (icmd_sd),
     .ocmd_sd (ocmd_sd),
     .idata_sd(idata_sd),
     .odata_sd(odata_sd),
-    .oclk_sd (clk_sd),
 
-    .istart(istart),
+    .istart(start),
+
+    .osel_clk(sel_clk),
 
     .ogen_otp(gen_otp),
     .onew_otp(new_otp),
@@ -73,8 +86,8 @@ module ghost_sd (
   );
 
   otp_gen otp_gen_inst (
-    .irst(irst),
-    .iclk(iclk),
+    .irst(~pll_locked),
+    .iclk(clk_sd),
 
     .istart(gen_otp),
   
@@ -95,7 +108,7 @@ module ghost_sd (
     .raddr   (addr),
     .din     (wdata_otp),
     .write_en(write_en_otp),
-    .wclk    (iclk),
+    .wclk    (clk_sd),
     .rclk    (clk_sd),
     .dout    (block_otp)
   );
@@ -113,19 +126,20 @@ module ghost_sd (
   assign res_block = block_raw ^ block_otp;
 
   assign oclk_sd  = clk_sd;
-  assign iocmd_sd = ocmd_sd == 1'b0 ? 1'b0 : 1'bz;
+
+  assign iocmd_sd = ~ocmd_sd ? 1'b0 : 1'bz;
   genvar i;
   generate
     for(i = 0; i < 4; i = i + 1) begin : d_io
-      assign iodata_sd[i] = odata_sd[i] == 1'b0 ? 1'b0 : 1'bz;
+      assign iodata_sd[i] = ~odata_sd[i] ? 1'b0 : 1'bz;
     end
   endgenerate
 
   assign icmd_sd  = iocmd_sd;
   assign idata_sd = iodata_sd;
 
-  assign osuccess = success;
-  assign ofail   = fail;
+  assign osuccess = success ? 1'b0 : 1'bz;
+  assign ofail    = fail ? 1'b0 : 1'bz;
 
 endmodule
 
