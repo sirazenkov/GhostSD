@@ -14,7 +14,6 @@ placeNroute:
 	--threads 4 \
 	--tmg-ripup \
 	--parallel-refine \
-	--router router2 \
 	--pre-pack constraints.py
 
 timing:
