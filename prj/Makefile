@@ -10,9 +10,15 @@ placeNroute:
         --json work/ghost_sd.json \
         --pcf ghost_sd.pcf \
         --asc work/ghost_sd.asc \
-	--pre-pack constraints.py 
+	--opt-timing \
+	--threads 4 \
+	--tmg-ripup \
+	--parallel-refine \
+	--router router2 \
+	--pre-pack constraints.py
+
 timing:
-	icetime -d lp1k -P cm36 work/ghost_sd.asc
+	icetime -d lp1k -P cm36 -p ghost_sd.pcf work/ghost_sd.asc -c 36 -m -t
 
 bitstream:
 	icepack work/ghost_sd.asc work/ghost_sd.bin

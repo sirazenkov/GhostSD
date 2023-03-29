@@ -26,6 +26,9 @@ module gost (
 
   reg [4:0] counter = 5'd0;
 
+  wire round_start, round_done;
+  assign round_start = state == ENC;
+
   reg  [63:0] block = 64'd0;
   wire [63:0] round_oblock;
 
@@ -34,9 +37,9 @@ module gost (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE: if (istart)              next_state = ENC;
-      ENC:  if (counter == 5'b11111) next_state = DONE;
-      DONE:                          next_state = IDLE;
+      IDLE: if (istart)                            next_state = ENC;
+      ENC:  if (round_done && counter == 5'b11111) next_state = DONE;
+      default:                                     next_state = IDLE;
     endcase
   end
 
@@ -57,11 +60,13 @@ module gost (
           end
         end
         ENC: begin
-          if (counter == 5'b11111)
-            block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
-          else
-            block <= round_oblock;
-          counter <= counter + 1'b1;
+          if (round_done) begin
+            if (next_state == DONE)
+              block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
+            else
+              block <= round_oblock;
+            counter <= counter + 1'b1;
+          end
         end
       endcase
     end
@@ -81,10 +86,16 @@ module gost (
   end
 
   round round_inst (
+    .irst(irst),
+    .iclk(iclk),
+
+    .istart(round_start),
+
     .iblock(block),
     .ikey  (round_key),
 
-    .oblock(round_oblock)
+    .oblock(round_oblock),
+    .odone (round_done)
   );
 
   assign oblock = block;

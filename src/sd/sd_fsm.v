@@ -71,7 +71,7 @@ module sd_fsm (
   always @(posedge iclk or posedge irst) begin
     if (irst)
       rca <= 16'd0;
-    else if (state == CMD3 && next_state == CMD7)
+    else if (state != next_state && next_state == CMD7)
       rca <= iresp[31:16];
   end
 
@@ -105,8 +105,8 @@ module sd_fsm (
       otp_ready <= 1'b0;
     end
     else begin
-      if (idata_done) data_done <= 1'b1;
-      if (iotp_ready) otp_ready <= 1'b1;
+      data_done <= idata_done;
+      otp_ready <= iotp_ready;
     end
   end
 
