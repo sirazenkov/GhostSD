@@ -77,7 +77,7 @@ module sd_fsm (
 
   always @(*) begin
     oarg = {32{1'b1}};
-    if (state == CMD55 && !osel_clk)
+    if (state == CMD55 && ~osel_clk)
       oarg[31:16] = {16{1'b0}};
     else if (state == ACMD41) begin
       oarg        = 32'd0;
@@ -105,8 +105,8 @@ module sd_fsm (
       otp_ready <= 1'b0;
     end
     else begin
-      data_done <= idata_done;
-      otp_ready <= iotp_ready;
+      if (idata_done) data_done <= 1'b1;
+      if (iotp_ready) otp_ready <= 1'b1;
     end
   end
 
@@ -126,7 +126,7 @@ module sd_fsm (
     end
     else if (icmd_done) begin
       case(state)
-        CMD55:  next_state = iresp[5] ? ((!osel_clk) ? ACMD41 : ACMD6) : IDLE;
+        CMD55:  next_state = iresp[5] ? ((~osel_clk) ? ACMD41 : ACMD6) : IDLE;
         ACMD41: next_state = iresp[31] & (iresp[21] | iresp[20]) ? CMD2 : IDLE;
         CMD2:   next_state = CMD3;
         CMD3:   next_state = CMD7;
