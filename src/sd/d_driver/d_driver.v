@@ -12,6 +12,7 @@ module d_driver (
   // D line
   input  [3:0] idata_sd,
   output [3:0] odata_sd,
+  output       odata_sd_en,
 
   input istart,
 
@@ -45,8 +46,9 @@ module d_driver (
     WAIT_SEND = 4'b0111,
     SEND_DATA = 4'b0101,
     SEND_CRC  = 4'b0100,
-    BUSY      = 4'b1100,
-    DONE_SEND = 4'b1010;
+    SEND_END  = 4'b1100,
+    BUSY      = 4'b1101,
+    DONE_SEND = 4'b1111;
   reg [3:0] state = IDLE, next_state;
 
   reg [3:0]  data;
@@ -76,7 +78,8 @@ module d_driver (
     end
   endgenerate
 
-  assign odata_sd = state == SEND_DATA || state == SEND_CRC ? data : 4'hF;
+  assign odata_sd_en = state == SEND_DATA || state == SEND_CRC;
+  assign odata_sd    = odata_sd_en ? data : 4'hF;
 
   assign owdata    = data;
   assign oaddr     = counter;
@@ -101,7 +104,8 @@ module d_driver (
       DONE_RCV:                         next_state = WAIT_SEND;
       WAIT_SEND: if (istart)            next_state = SEND_DATA; // Wait until data is processed
       SEND_DATA: if (counter[10])       next_state = SEND_CRC;
-      SEND_CRC:  if (counter == 11'd16) next_state = BUSY;
+      SEND_CRC:  if (counter == 11'd16) next_state = SEND_END;
+      SEND_END:                         next_state = BUSY;
       BUSY:      if (data[0])           next_state = DONE_SEND;
       default: next_state = IDLE;
     endcase

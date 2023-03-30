@@ -11,6 +11,7 @@ module cmd_driver (
 
   // CMD line
   input  icmd_sd,
+  output ocmd_sd_en,
   output ocmd_sd,
 
   input istart, // Start transaction (command-response)
@@ -34,10 +35,11 @@ module cmd_driver (
     IDLE      = 3'b000,
     SEND_CMD  = 3'b001,
     SEND_CRC  = 3'b011,
-    WAIT_RESP = 3'b010,
-    RCV_RESP  = 3'b110,
-    RCV_CRC   = 3'b111,
-    DONE      = 3'b101; 
+    SEND_END  = 3'b010,
+    WAIT_RESP = 3'b110,
+    RCV_RESP  = 3'b111,
+    RCV_CRC   = 3'b101,
+    DONE      = 3'b100; 
   reg [2:0] state = IDLE, next_state;
 
   reg [7:0]  counter     =  8'd0;
@@ -74,7 +76,8 @@ module cmd_driver (
     case(state)
       IDLE:      if (istart || crc_failed) next_state = SEND_CMD; 
       SEND_CMD:  if (change_state)         next_state = SEND_CRC;
-      SEND_CRC:  if (change_state)         next_state = icmd_index == 6'd15 ? DONE : WAIT_RESP;
+      SEND_CRC:  if (change_state)         next_state = SEND_END;
+      SEND_END:                            next_state = icmd_index == 6'd15 ? DONE : WAIT_RESP;
       WAIT_RESP: if (!icmd_sd)             next_state = RCV_RESP;
       RCV_RESP:  if (change_state)         next_state = RCV_CRC;
       RCV_CRC:   if (change_state)         next_state = crc_failed ? IDLE : DONE;
@@ -116,6 +119,7 @@ module cmd_driver (
 
   assign ocmd_sd = (state == SEND_CMD) ? cmd_content[39] :
                    (state == SEND_CRC) ? crc : 1'b1;
+  assign ocmd_sd_en = state == SEND_CMD || state == SEND_CRC || state == SEND_END;
   assign oresp = cmd_content[31:0];
   assign odone = state == DONE;
 

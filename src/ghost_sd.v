@@ -37,9 +37,10 @@ module ghost_sd (
     `include "crypto.vh"
   `endif  
   
-  wire icmd_sd, ocmd_sd, clk_sd;
+  wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
 
   wire [3:0] idata_sd, odata_sd;
+  wire       data_sd_en;
 
   wire gen_otp, otp_ready, new_otp;
 
@@ -55,11 +56,15 @@ module ghost_sd (
     .irst(irst),
     .iclk(iclk),
 
-    .icmd_sd (icmd_sd),
-    .ocmd_sd (ocmd_sd),
-    .idata_sd(idata_sd),
-    .odata_sd(odata_sd),
-    .oclk_sd (clk_sd),
+    .icmd_sd    (icmd_sd),
+    .ocmd_sd    (ocmd_sd),
+    .ocmd_sd_en (cmd_sd_en),
+
+    .idata_sd   (idata_sd),
+    .odata_sd   (odata_sd),
+    .odata_sd_en(data_sd_en),
+    
+    .oclk_sd    (clk_sd),
 
     .istart(istart),
 
@@ -120,19 +125,43 @@ module ghost_sd (
   assign res_block = block_raw ^ block_otp;
 
   assign oclk_sd  = clk_sd;
-  assign iocmd_sd = ocmd_sd == 1'b0 ? 1'b0 : 1'bz;
+  `ifdef COCOTB_SIM
+  assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
   genvar i;
   generate
     for(i = 0; i < 4; i = i + 1) begin
-      assign iodata_sd[i] = odata_sd[i] == 1'b0 ? 1'b0 : 1'bz;
+      assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
     end
   endgenerate
-  `ifdef COCOTB_SIM
-    assign odata0_sd = odata_sd[0];
-  `endif
 
   assign icmd_sd  = iocmd_sd;
   assign idata_sd = iodata_sd;
+
+  assign odata0_sd = iodata_sd[0];
+  `else
+  SB_IO #(
+    .PIN_TYPE(6'b101001),
+    .PULLUP(1'b0),
+    .IO_STANDARD("SB_LVCMOS")
+  ) cmd_io (
+    .CLOCK_ENABLE(1'b0),
+    .PACKAGE_PIN(iocmd_sd),
+    .OUTPUT_ENABLE(cmd_sd_en),
+    .D_OUT_0(ocmd_sd),
+    .D_IN_0(icmd_sd)
+  );
+  SB_IO #(
+    .PIN_TYPE(6'b101001),
+    .PULLUP(1'b0),
+    .IO_STANDARD("SB_LVCMOS")
+  ) data_io [3:0] (
+    .CLOCK_ENABLE(1'b0),
+    .PACKAGE_PIN(iodata_sd),
+    .OUTPUT_ENABLE(data_sd_en),
+    .D_OUT_0(odata_sd),
+    .D_IN_0(idata_sd)
+  );
+  `endif
 
   assign osuccess = success;
   assign ofail   = fail;

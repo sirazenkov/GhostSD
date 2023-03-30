@@ -1,33 +1,35 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Sun Mar 19 12:33:48 2023
+[*] Thu Mar 30 10:08:32 2023
 [*]
 [dumpfile] "/home/user/MyProjects/GhostSD/test/wave.vcd"
-[dumpfile_mtime] "Sun Mar 19 12:32:36 2023"
-[dumpfile_size] 8480536
+[dumpfile_mtime] "Thu Mar 30 10:06:01 2023"
+[dumpfile_size] 9000844
 [savefile] "/home/user/MyProjects/GhostSD/test/add_waves.gtkw"
 [timestart] 0
 [size] 1853 1025
 [pos] -29 -29
-*-31.000000 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-27.000000 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] ghost_sd.
 [treeopen] ghost_sd.sd_inst.
 [sst_width] 223
 [signals_width] 254
 [sst_expanded] 1
-[sst_vpaned_height] 598
+[sst_vpaned_height] 636
 @28
 ghost_sd.irst
 ghost_sd.iclk
 ghost_sd.istart
 ghost_sd.oclk_sd
 ghost_sd.iocmd_sd
+ghost_sd.cmd_sd_en
 @22
 ghost_sd.iodata_sd[3:0]
 @28
+ghost_sd.data_sd_en
 ghost_sd.osuccess
 ghost_sd.ofail
-@25
+@24
 ghost_sd.sd_inst.sd_fsm_inst.state[5:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -59,6 +59,7 @@ class CMD_driver_BFM():
 
     async def send_response(self, index, resp, crc):
         if(index == 15):
+            await FallingEdge(self.dut.iclk)
             return int(self.dut.odone.value)
         await FallingEdge(self.dut.iclk)
         self.dut.icmd_sd.value = 0
