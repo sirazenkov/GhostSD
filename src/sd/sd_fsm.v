@@ -35,6 +35,14 @@ module sd_fsm (
      end
   `endif
 
+  reg start_reg = 1'b0;
+  wire start;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) start_reg <= 1'b0;
+    else      start_reg <= istart;
+  end
+  assign start = istart & ~start_reg;
+
   localparam [5:0]
     IDLE   = 6'd0,
     CMD55  = 6'd55,
@@ -112,7 +120,7 @@ module sd_fsm (
 
   always @(*) begin
     next_state = state;
-    if (istart && state == IDLE)
+    if (start && state == IDLE)
       next_state = CMD55;
     else if (state == READ) begin
       if (idata_crc_fail)
@@ -153,7 +161,7 @@ module sd_fsm (
       osuccess <= 1'b0;
       ofail    <= 1'b0;
     end
-    else if (istart) begin
+    else if (start) begin
       osuccess <= 1'b0;
       ofail    <= 1'b0;
     end
