@@ -61,7 +61,7 @@ async def SD_FSM_tb(_):
     for i in range(len(input_values)):
         await bfm.set_inputs(input_values[i])
         await FallingEdge(bfm.dut.iclk)
-        if(i == 31 or i == 33): # otp_ready and data_done require an additional cycle
+        if(i == 33 or i == 35): # otp_ready and data_done require an additional cycle
             await FallingEdge(bfm.dut.iclk)
         outputs_ok = await bfm.check_outputs(output_values[i])
         for output in outputs_ok:

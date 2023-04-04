@@ -135,7 +135,7 @@ module sd_fsm (
     else if (icmd_done) begin
       case(state)
         CMD55:  next_state = iresp[5] ? ((~osel_clk) ? ACMD41 : ACMD6) : IDLE;
-        ACMD41: next_state = iresp[31] & (iresp[21] | iresp[20]) ? CMD2 : IDLE;
+        ACMD41: next_state = !(iresp[21] || iresp[20]) ? IDLE : (iresp[31] ? CMD2 : CMD55);
         CMD2:   next_state = CMD3;
         CMD3:   next_state = CMD7;
         CMD7:   next_state = CMD55;
