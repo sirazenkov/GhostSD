@@ -25,7 +25,7 @@ module d_driver (
   // RAM with processed data (for sending)
   input [3:0] irdata,
 
-  output reg ocrc_fail,
+  output reg ocrc_fail = 1'b0,
   output odone
 );
 
@@ -51,7 +51,7 @@ module d_driver (
     DONE_SEND = 4'b1111;
   reg [3:0] state = IDLE, next_state;
 
-  reg [3:0]  data;
+  reg [3:0]  data    = 4'd0;
   reg [10:0] counter = 11'd0;
 
   wire unload = state == CHECK_CRC || state == SEND_CRC;

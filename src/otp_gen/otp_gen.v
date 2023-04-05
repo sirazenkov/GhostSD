@@ -30,7 +30,7 @@ module otp_gen (
     WRITE_BLOCK = 2'b11;
   reg [1:0] state = IDLE, next_state;
 
-  reg [9:0] counter;
+  reg [9:0] counter = 10'd0;
 
   always @(*) begin
     next_state = state;
@@ -47,9 +47,9 @@ module otp_gen (
     else      state <= next_state;
   end
 
-  reg start_gost;
+  reg start_gost = 1'b0;
 
-  reg  [63:0] plain_block;
+  reg  [63:0] plain_block = 64'd0;
   wire [63:0] enc_block;
   
   wire done_gost;
