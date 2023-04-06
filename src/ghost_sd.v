@@ -27,9 +27,10 @@ module ghost_sd (
     end
   `endif  
 
-  wire icmd_sd, ocmd_sd, clk_sd;
+  wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
 
   wire [3:0] idata_sd, odata_sd;
+  wire       data_sd_en;
 
   wire gen_otp, otp_ready, new_otp;
 
@@ -60,11 +61,14 @@ module ghost_sd (
     .irst(~pll_locked),
     .iclk(clk_sd),
 
-    .icmd_sd (icmd_sd),
-    .ocmd_sd (ocmd_sd),
-    .idata_sd(idata_sd),
-    .odata_sd(odata_sd),
+    .icmd_sd    (icmd_sd),
+    .ocmd_sd    (ocmd_sd),
+    .ocmd_sd_en (cmd_sd_en),
 
+    .idata_sd   (idata_sd),
+    .odata_sd   (odata_sd),
+    .odata_sd_en(data_sd_en),
+    
     .istart(start),
 
     .osel_clk(sel_clk),
@@ -127,19 +131,24 @@ module ghost_sd (
 
   assign oclk_sd  = clk_sd;
 
-  assign iocmd_sd = ~ocmd_sd ? 1'b0 : 1'bz;
+  assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
   genvar i;
   generate
     for(i = 0; i < 4; i = i + 1) begin : d_io
-      assign iodata_sd[i] = ~odata_sd[i] ? 1'b0 : 1'bz;
+      assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
     end
   endgenerate
 
   assign icmd_sd  = iocmd_sd;
   assign idata_sd = iodata_sd;
 
-  assign osuccess = success ? 1'b0 : 1'bz;
-  assign ofail    = fail ? 1'b0 : 1'bz;
+  `ifdef COCOTB_SIM
+    assign osuccess = success ? 1'b0 : 1'bz;
+    assign ofail    = fail ? 1'b0 : 1'bz;
+    assign odata0_sd = iodata_sd[0];
+  `else
+    assign osuccess = success;
+    assign ofail   = fail;
+  `endif
 
 endmodule
-

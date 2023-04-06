@@ -16,8 +16,11 @@ module sd (
   // SD Bus
   input        icmd_sd,  // CMD line
   output       ocmd_sd,
+  output       ocmd_sd_en,
+  
   input  [3:0] idata_sd, // D line
   output [3:0] odata_sd,
+  output       odata_sd_en,
 
   // OTP generator
   output ogen_otp,   // Generate next block of the pad
@@ -73,6 +76,7 @@ module sd (
 
     .icmd_sd(icmd_sd),
     .ocmd_sd(ocmd_sd),
+    .ocmd_sd_en(ocmd_sd_en),
 
     .istart(start_cmd),
 
@@ -89,8 +93,9 @@ module sd (
     .irst(irst),
     .iclk(iclk),
 
-    .idata_sd(idata_sd),
-    .odata_sd(odata_sd),
+    .idata_sd   (idata_sd),
+    .odata_sd   (odata_sd),
+    .odata_sd_en(odata_sd_en),
 
     .istart (start_d),
 
@@ -104,4 +109,3 @@ module sd (
   );
 
 endmodule
-

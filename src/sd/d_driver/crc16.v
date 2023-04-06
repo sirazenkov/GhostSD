@@ -23,7 +23,7 @@ module crc16 (
      end
   `endif
 
-  reg [15:0] crc;
+  reg [15:0] crc = 16'd0;
 
   wire main_xor;
 

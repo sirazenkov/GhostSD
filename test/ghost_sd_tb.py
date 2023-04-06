@@ -43,7 +43,7 @@ class GhostSD_BFM():
         field_ok = True
         for i in range(length):
             await FallingEdge(self.dut.oclk_sd)
-            if(int(str(self.dut.iocmd_sd.value) == 'z') != ((field >> (length-1-i)) & 1)):
+            if(int(int(self.dut.iocmd_sd.value) == 1) != ((field >> (length-1-i)) & 1)):
                 field_ok = False
         return field_ok
 
@@ -150,7 +150,7 @@ async def ghost_sd_tb(_):
                 passed = False
                 break
             await FallingEdge(bfm.dut.oclk_sd)
-            if(str(bfm.dut.iocmd_sd.value) == 'z'):
+            if(int(bfm.dut.iocmd_sd.value) == 1):
                 logger.info(f"End bit set after (A)CMD{trans.index} during cycle {i}!") 
             else:
                 logger.error(f"End bit not set after (A)CMD{trans.index} during cycle {i}!") 
@@ -176,8 +176,8 @@ async def ghost_sd_tb(_):
                     block = received_block
                     crc_packets = gen_crc16_packets(block)
         if(not passed):
-            break
-        await FallingEdge(bfm.dut.oclk_sd)
+            break 
+        await ClockCycles(bfm.dut.oclk_sd, 2, rising=False)
         if(await bfm.check_finish()):
             logger.info("GhostSD operation succeeded!")
         else:

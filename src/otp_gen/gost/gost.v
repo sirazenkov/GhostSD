@@ -21,10 +21,14 @@ module gost (
   localparam [1:0]
     IDLE = 2'b00,
     ENC  = 2'b01,
-    DONE = 2'b11;
+    KEY  = 2'b11,
+    DONE = 2'b10;
   reg [1:0] state = IDLE, next_state;
 
   reg [4:0] counter = 5'd0;
+
+  wire round_start, round_done;
+  assign round_start = state == ENC;
 
   reg  [63:0] block = 64'd0;
   wire [63:0] round_oblock;
@@ -34,9 +38,10 @@ module gost (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE: if (istart)              next_state = ENC;
-      ENC:  if (counter == 5'b11111) next_state = DONE;
-      DONE:                          next_state = IDLE;
+      IDLE: if (istart)     next_state = ENC;
+      ENC:  if (round_done) next_state = counter == 5'b11111 ? DONE : KEY;
+      KEY:                  next_state = ENC;
+      default:              next_state = IDLE;
     endcase
   end
 
@@ -57,34 +62,45 @@ module gost (
           end
         end
         ENC: begin
-          if (counter == 5'b11111)
-            block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
-          else
-            block <= round_oblock;
-          counter <= counter + 1'b1;
+          if (round_done) begin
+            if (next_state == DONE)
+              block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
+            else
+              block <= round_oblock;
+            counter <= counter + 1'b1;
+          end
         end
       endcase
     end
   end
 
-  always @(*) begin
-    case(counter)
-      5'd0, 5'd8,  5'd16, 5'd31 : round_key <= ikey[255:224];
-      5'd1, 5'd9,  5'd17, 5'd30 : round_key <= ikey[223:192];
-      5'd2, 5'd10, 5'd18, 5'd29 : round_key <= ikey[191:160];
-      5'd3, 5'd11, 5'd19, 5'd28 : round_key <= ikey[159:128];
-      5'd4, 5'd12, 5'd20, 5'd27 : round_key <= ikey[127:96];
-      5'd5, 5'd13, 5'd21, 5'd26 : round_key <= ikey[95:64];
-      5'd6, 5'd14, 5'd22, 5'd25 : round_key <= ikey[63:32];
-      5'd7, 5'd15, 5'd23, 5'd24 : round_key <= ikey[31:0];
-    endcase
+  always @(posedge iclk or posedge irst) begin
+    if (irst) round_key <= 5'd0;
+    else begin
+      case(counter)
+        5'd0, 5'd8,  5'd16, 5'd31 : round_key <= ikey[255:224];
+        5'd1, 5'd9,  5'd17, 5'd30 : round_key <= ikey[223:192];
+        5'd2, 5'd10, 5'd18, 5'd29 : round_key <= ikey[191:160];
+        5'd3, 5'd11, 5'd19, 5'd28 : round_key <= ikey[159:128];
+        5'd4, 5'd12, 5'd20, 5'd27 : round_key <= ikey[127:96];
+        5'd5, 5'd13, 5'd21, 5'd26 : round_key <= ikey[95:64];
+        5'd6, 5'd14, 5'd22, 5'd25 : round_key <= ikey[63:32];
+        5'd7, 5'd15, 5'd23, 5'd24 : round_key <= ikey[31:0];
+      endcase
+    end
   end
 
   round round_inst (
+    .irst(irst),
+    .iclk(iclk),
+
+    .istart(round_start),
+
     .iblock(block),
     .ikey  (round_key),
 
-    .oblock(round_oblock)
+    .oblock(round_oblock),
+    .odone (round_done)
   );
 
   assign oblock = block;

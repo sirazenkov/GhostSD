@@ -16,15 +16,15 @@ module sd_fsm (
   input idata_done,
   input iotp_ready,
 
-  output reg osel_clk,
-  output reg ogen_otp,
+  output reg osel_clk    = 1'b0,
+  output reg ogen_otp    = 1'b0,
   output     onew_otp,
-  output reg ostart_cmd,
+  output reg ostart_cmd  = 1'b0,
   output     [5:0] oindex,
-  output reg [31:0] oarg,
-  output reg ostart_d,
-  output reg ofail,
-  output reg osuccess
+  output reg [31:0] oarg = 32'd0,
+  output reg ostart_d    = 1'b0,
+  output reg ofail       = 1'b0,
+  output reg osuccess    = 1'b0
 );
 
   `ifdef COCOTB_SIM
@@ -34,6 +34,14 @@ module sd_fsm (
        #1;
      end
   `endif
+
+  reg start_reg = 1'b0;
+  wire start;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) start_reg <= 1'b0;
+    else      start_reg <= istart;
+  end
+  assign start = istart & ~start_reg;
 
   localparam [5:0]
     IDLE   = 6'd0,
@@ -48,8 +56,7 @@ module sd_fsm (
     CMD24  = 6'd24,
     WRITE  = 6'd20,
     CMD15  = 6'd15;
-
-  reg [5:0] state, next_state;
+  reg [5:0] state = IDLE, next_state;
   always @(posedge iclk or posedge irst) begin
     if (irst) state <= IDLE;
     else      state <= next_state;
@@ -57,7 +64,7 @@ module sd_fsm (
 
   assign oindex = state;
 
-  reg [22:0] addr_sd;
+  reg [22:0] addr_sd = 23'd0;
   always @(posedge iclk or posedge irst) begin
     if (irst)
       addr_sd <= 23'd0;
@@ -67,17 +74,17 @@ module sd_fsm (
       addr_sd <= 23'd0;
   end
 
-  reg [15:0] rca;
+  reg [15:0] rca = 16'd0;
   always @(posedge iclk or posedge irst) begin
     if (irst)
       rca <= 16'd0;
-    else if (state == CMD3 && next_state == CMD7)
+    else if (state != next_state && next_state == CMD7)
       rca <= iresp[31:16];
   end
 
   always @(*) begin
     oarg = {32{1'b1}};
-    if (state == CMD55 && !osel_clk)
+    if (state == CMD55 && ~osel_clk)
       oarg[31:16] = {16{1'b0}};
     else if (state == ACMD41) begin
       oarg        = 32'd0;
@@ -94,30 +101,21 @@ module sd_fsm (
     end
   end
 
-  reg data_done, otp_ready;
+  reg data_done = 1'b0;
   always @(posedge iclk or posedge irst) begin
-    if (irst) begin
-      data_done <= 1'b0;
-      otp_ready <= 1'b0;
-    end
-    else if (state != next_state) begin
-      data_done <= 1'b0;
-      otp_ready <= 1'b0;
-    end
-    else begin
-      if (idata_done) data_done <= 1'b1;
-      if (iotp_ready) otp_ready <= 1'b1;
-    end
+    if (irst)                     data_done <= 1'b0;
+    else if (state != next_state) data_done <= 1'b0;
+    else if (idata_done)          data_done <= 1'b1;
   end
 
   always @(*) begin
     next_state = state;
-    if (istart && state == IDLE)
+    if (start && state == IDLE)
       next_state = CMD55;
     else if (state == READ) begin
       if (idata_crc_fail)
         next_state = CMD17;
-      else if (data_done && otp_ready)
+      else if (data_done && iotp_ready)
         next_state = CMD24;
     end
     else if (state == WRITE) begin
@@ -126,8 +124,8 @@ module sd_fsm (
     end
     else if (icmd_done) begin
       case(state)
-        CMD55:  next_state = iresp[5] ? ((!osel_clk) ? ACMD41 : ACMD6) : IDLE;
-        ACMD41: next_state = iresp[31] & (iresp[21] | iresp[20]) ? CMD2 : IDLE;
+        CMD55:  next_state = iresp[5] ? ((~osel_clk) ? ACMD41 : ACMD6) : IDLE;
+        ACMD41: next_state = !(iresp[21] || iresp[20]) ? IDLE : (iresp[31] ? CMD2 : CMD55);
         CMD2:   next_state = CMD3;
         CMD3:   next_state = CMD7;
         CMD7:   next_state = CMD55;
@@ -153,7 +151,7 @@ module sd_fsm (
       osuccess <= 1'b0;
       ofail    <= 1'b0;
     end
-    else if (istart) begin
+    else if (start) begin
       osuccess <= 1'b0;
       ofail    <= 1'b0;
     end

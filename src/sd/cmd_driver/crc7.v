@@ -23,7 +23,7 @@ module crc7 (
      end
   `endif
 
-  reg [6:0] crc;
+  reg [6:0] crc = 7'd0;
 
   wire main_xor;
 

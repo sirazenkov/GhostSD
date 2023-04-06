@@ -43,6 +43,8 @@ class CMD_driver_BFM():
         self.dut.icmd_index.value = index
         self.dut.icmd_arg.value   = arg
         await FallingEdge(self.dut.iclk)
+        if(int(self.dut.ocmd_sd_en.value) == 0):
+            return False
         self.dut.istart.value = 0
         start_bit = int(self.dut.ocmd_sd.value)
         await FallingEdge(self.dut.iclk)
@@ -59,8 +61,11 @@ class CMD_driver_BFM():
 
     async def send_response(self, index, resp, crc):
         if(index == 15):
+            await FallingEdge(self.dut.iclk)
             return int(self.dut.odone.value)
         await FallingEdge(self.dut.iclk)
+        if(int(self.dut.ocmd_sd_en.value) == 1):
+            return 0
         self.dut.icmd_sd.value = 0
         await ClockCycles(self.dut.iclk, 2, rising=False)
         if(index == 2):
