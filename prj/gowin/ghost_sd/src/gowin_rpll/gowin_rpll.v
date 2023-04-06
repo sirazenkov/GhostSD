@@ -4,7 +4,7 @@
 //GOWIN Version: V1.9.8.07 Education
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18C
-//Created Time: Thu Mar 23 22:54:41 2023
+//Created Time: Fri Apr 07 00:11:08 2023
 
 module Gowin_rPLL (clkout, lock, clkoutd, clkin);
 
@@ -39,9 +39,9 @@ rPLL rpll_inst (
 
 defparam rpll_inst.FCLKIN = "27";
 defparam rpll_inst.DYN_IDIV_SEL = "false";
-defparam rpll_inst.IDIV_SEL = 6;
+defparam rpll_inst.IDIV_SEL = 8;
 defparam rpll_inst.DYN_FBDIV_SEL = "false";
-defparam rpll_inst.FBDIV_SEL = 4;
+defparam rpll_inst.FBDIV_SEL = 7;
 defparam rpll_inst.DYN_ODIV_SEL = "false";
 defparam rpll_inst.ODIV_SEL = 32;
 defparam rpll_inst.PSDA_SEL = "0000";
@@ -55,7 +55,7 @@ defparam rpll_inst.CLKFB_SEL = "internal";
 defparam rpll_inst.CLKOUT_BYPASS = "false";
 defparam rpll_inst.CLKOUTP_BYPASS = "false";
 defparam rpll_inst.CLKOUTD_BYPASS = "false";
-defparam rpll_inst.DYN_SDIV_SEL = 50;
+defparam rpll_inst.DYN_SDIV_SEL = 60;
 defparam rpll_inst.CLKOUTD_SRC = "CLKOUT";
 defparam rpll_inst.CLKOUTD3_SRC = "CLKOUT";
 defparam rpll_inst.DEVICE = "GW2A-18C";

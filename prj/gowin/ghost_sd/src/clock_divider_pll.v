@@ -23,9 +23,9 @@ module clock_divider_pll (
 
   Gowin_DCS DCS_inst (
         .clkout(oclk_sd),                     //output clkout
-        .clksel({~isel_clk, isel_clk,2'b00}), //input [3:0] clksel
-        .clk0(slow_clk),                      //input clk0
-        .clk1(fast_clk),                      //input clk1
+        .clksel({2'b00, ~isel_clk, isel_clk}), //input [3:0] clksel
+        .clk0(fast_clk),                      //input clk0
+        .clk1(slow_clk),                      //input clk1
         .clk2(),                              //input clk2
         .clk3()                               //input clk3
     );

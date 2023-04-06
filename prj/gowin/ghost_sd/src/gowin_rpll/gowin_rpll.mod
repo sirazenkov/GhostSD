@@ -12,12 +12,12 @@
 -file_type vlg
 -dev_type GW2A-18C
 -dyn_idiv_sel false
--idiv_sel 7
+-idiv_sel 9
 -dyn_fbdiv_sel false
--fbdiv_sel 5
+-fbdiv_sel 8
 -dyn_odiv_sel false
 -odiv_sel 32
--dyn_sdiv_sel 50
+-dyn_sdiv_sel 60
 -dyn_da_en true
 -rst_sig false
 -rst_sig_p false
