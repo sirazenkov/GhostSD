@@ -143,12 +143,12 @@ module ghost_sd (
   assign idata_sd = iodata_sd;
 
   `ifdef COCOTB_SIM
-    assign osuccess = success ? 1'b0 : 1'bz;
-    assign ofail    = fail ? 1'b0 : 1'bz;
-    assign odata0_sd = iodata_sd[0];
-  `else
     assign osuccess = success;
     assign ofail   = fail;
+    assign odata0_sd = iodata_sd[0];
+  `else
+    assign osuccess = success ? 1'b0 : 1'bz;
+    assign ofail    = fail ? 1'b0 : 1'bz;
   `endif
 
 endmodule
