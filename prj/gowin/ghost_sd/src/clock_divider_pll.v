@@ -8,7 +8,6 @@
 module clock_divider_pll (
   input iclk,      // Reference clock
   input isel_clk,  // Select slow (0) or fast (1) clock
-  output olocked,  // PLL locked
   output oclk_sd
 );
 
@@ -16,7 +15,6 @@ module clock_divider_pll (
 
   Gowin_rPLL rPLL_inst (
         .clkout(fast_clk),  //output clkout
-        .lock(olocked),     //output lock
         .clkoutd(slow_clk), //output clkoutd
         .clkin(iclk)        //input clkin
     );

@@ -6,8 +6,11 @@
 //==========================================
 
 module ghost_sd (
+  input irst_n,
   input iclk, // System clock
-  
+
+  input istart_n,  
+
   // SD lines
   inout       iocmd_sd,  // CMD line
   inout [3:0] iodata_sd, // D[3:0] line
@@ -42,23 +45,28 @@ module ghost_sd (
 
   wire success, fail;
 
-  wire pll_locked, sel_clk;
+  wire sel_clk;
 
   clock_divider_pll clock_divider_inst (
     .iclk(iclk),
     .isel_clk(sel_clk),
-    .olocked(pll_locked),
     .oclk_sd(clk_sd)
   );
 
-  reg pll_locked_reg = 0, start = 0;
+  reg debounce_start = 1, start = 0;
   always @(posedge clk_sd) begin
-    pll_locked_reg <= pll_locked;
-    start <= ~pll_locked_reg && pll_locked;
+    debounce_start <= istart_n;
+    start <= ~debounce_start;
+  end
+
+  reg debounce_rst = 1, rst = 0;
+  always @(posedge clk_sd) begin
+    debounce_rst <= irst_n;
+    rst <= ~debounce_rst;
   end
 
   sd sd_inst (
-    .irst(~pll_locked),
+    .irst(rst),
     .iclk(clk_sd),
 
     .icmd_sd    (icmd_sd),
@@ -90,7 +98,7 @@ module ghost_sd (
   );
 
   otp_gen otp_gen_inst (
-    .irst(~pll_locked),
+    .irst(rst),
     .iclk(clk_sd),
 
     .istart(gen_otp),

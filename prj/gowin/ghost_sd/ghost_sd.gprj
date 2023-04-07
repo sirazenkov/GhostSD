@@ -22,5 +22,6 @@
         <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/sd_fsm.v" type="file.verilog" enable="1"/>
         <File path="src/physical.cst" type="file.cst" enable="1"/>
         <File path="src/timing.sdc" type="file.sdc" enable="1"/>
+        <File path="src/ghost_sd.rao" type="file.gao" enable="1"/>
     </FileList>
 </Project>
