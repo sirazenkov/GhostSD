@@ -55,6 +55,7 @@ module sd_fsm (
     READ   = 6'd19, 
     CMD24  = 6'd24,
     WRITE  = 6'd20,
+    CMD13  = 6'd13,
     CMD15  = 6'd15;
   reg [5:0] state = IDLE, next_state;
   always @(posedge iclk or posedge irst) begin
@@ -68,9 +69,9 @@ module sd_fsm (
   always @(posedge iclk or posedge irst) begin
     if (irst)
       addr_sd <= 23'd0;
-    else if (state == WRITE && next_state == CMD17)
+    else if (state != next_state && state == WRITE)
       addr_sd <= addr_sd + 1'b1;
-    else if (next_state == CMD15)
+    else if (state == CMD15)
       addr_sd <= 23'd0;
   end
 
@@ -78,7 +79,7 @@ module sd_fsm (
   always @(posedge iclk or posedge irst) begin
     if (irst)
       rca <= 16'd0;
-    else if (state != next_state && next_state == CMD7)
+    else if (state != next_state && state == CMD3)
       rca <= iresp[31:16];
   end
 
@@ -91,8 +92,9 @@ module sd_fsm (
       oarg[21:20] = 2'b11;
       oarg[31]    = 1'b1;
     end
-    else if (state == CMD7 || (state == CMD55 && osel_clk) || state == CMD15)
+    else if (state == CMD7 || (state == CMD55 && osel_clk) || state == CMD15 || state == CMD13)
       oarg[31:16] = rca;
+      if (state == CMD13) oarg[15] = 1'b0;
     else if (state == ACMD6)
       oarg[0] = 1'b0;
     else if (state == CMD17 || state == CMD24) begin
@@ -108,6 +110,9 @@ module sd_fsm (
     else if (idata_done)          data_done <= 1'b1;
   end
 
+  wire tran_state;
+  assign tran_state = iresp[12:9] == 4'd4;
+
   always @(*) begin
     next_state = state;
     if (start && state == IDLE)
@@ -120,7 +125,7 @@ module sd_fsm (
     end
     else if (state == WRITE) begin
       if (data_done)
-        next_state = CMD17;
+        next_state = CMD13;
     end
     else if (icmd_done) begin
       case(state)
@@ -129,9 +134,10 @@ module sd_fsm (
         CMD2:   next_state = CMD3;
         CMD3:   next_state = CMD7;
         CMD7:   next_state = CMD55;
-        ACMD6:  next_state = iresp[12:9] == 4'd4 ? CMD17 : IDLE;
+        ACMD6:  next_state = tran_state ? CMD17 : IDLE;
         CMD17:  next_state = iresp[31] ? CMD15 : READ;
         CMD24:  next_state = WRITE;
+        CMD13:  next_state = tran_state ? CMD17 : CMD13;
         CMD15:  next_state = IDLE;
       endcase
     end
@@ -173,7 +179,7 @@ module sd_fsm (
       if (next_state == CMD17 || next_state == WRITE) ostart_d <= 1'b1;
       if (next_state == READ) ogen_otp <= 1'b1;
     end else begin
-      ostart_cmd <= 1'b0;
+      ostart_cmd <= icmd_done && next_state == CMD13 ? 1'b1 : 1'b0;
       ostart_d   <= 1'b0;
       ogen_otp   <= 1'b0;
     end
