@@ -78,8 +78,8 @@ module d_driver (
     end
   endgenerate
 
-  assign odata_sd_en = state == SEND_DATA || state == SEND_CRC;
-  assign odata_sd    = odata_sd_en ? data : 4'hF;
+  assign odata_sd_en = state == SEND_DATA || state == SEND_CRC || state == SEND_END;
+  assign odata_sd    = data;
 
   assign owdata    = data;
   assign oaddr     = counter;
@@ -99,7 +99,7 @@ module d_driver (
       WAIT_RCV:  if (~|data)            next_state = RCV_DATA;
       RCV_DATA:  if (&counter[9:0])     next_state = CHECK_CRC;
       CHECK_CRC:
-                 if (counter == 10'd16) next_state = DONE_RCV;
+                 if (counter == 11'd16) next_state = DONE_RCV;
 		 else if (crc != data)  next_state = IDLE;
       DONE_RCV:                         next_state = WAIT_SEND;
       WAIT_SEND: if (istart)            next_state = SEND_DATA; // Wait until data is processed
@@ -119,7 +119,7 @@ module d_driver (
     else if (state == SEND_DATA)
       data <= irdata;
     else if (state == SEND_CRC)
-      data <= crc;
+      data <= next_state == SEND_END ? 4'hF : crc;
     else
       data <= idata_sd;
   end
