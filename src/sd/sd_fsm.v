@@ -129,16 +129,16 @@ module sd_fsm (
     end
     else if (icmd_done) begin
       case(state)
-        CMD55:  next_state = iresp[5] ? ((~osel_clk) ? ACMD41 : ACMD6) : IDLE;
-        ACMD41: next_state = !(iresp[21] || iresp[20]) ? IDLE : (iresp[31] ? CMD2 : CMD55);
-        CMD2:   next_state = CMD3;
-        CMD3:   next_state = CMD7;
-        CMD7:   next_state = CMD55;
-        ACMD6:  next_state = tran_state ? CMD17 : IDLE;
-        CMD17:  next_state = iresp[31] ? CMD15 : READ;
-        CMD24:  next_state = WRITE;
-        CMD13:  next_state = tran_state ? CMD17 : CMD13;
-        CMD15:  next_state = IDLE;
+        CMD55:   next_state = iresp[5] ? ((~osel_clk) ? ACMD41 : ACMD6) : IDLE;
+        ACMD41:  next_state = !(iresp[21] || iresp[20]) ? IDLE : (iresp[31] ? CMD2 : CMD55);
+        CMD2:    next_state = CMD3;
+        CMD3:    next_state = CMD7;
+        CMD7:    next_state = CMD55;
+        ACMD6:   next_state = tran_state ? CMD17 : IDLE;
+        CMD17:   next_state = iresp[31] ? CMD15 : READ;
+        CMD24:   next_state = WRITE;
+        CMD13:   next_state = tran_state ? CMD17 : CMD13;
+        default: next_state = IDLE;
       endcase
     end
   end
