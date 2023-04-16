@@ -45,10 +45,12 @@ module sd_fsm (
 
   localparam [5:0]
     IDLE   = 6'd0,
+    CMD8   = 6'd8,
     CMD55  = 6'd55,
     ACMD41 = 6'd41,
     CMD2   = 6'd2,
     CMD3   = 6'd3,
+    CMD9   = 6'd9,
     CMD7   = 6'd7,
     ACMD6  = 6'd6,
     CMD17  = 6'd17,
@@ -85,14 +87,16 @@ module sd_fsm (
 
   always @(*) begin
     oarg = {32{1'b1}};
-    if (state == CMD55 && ~osel_clk)
+    if (state == CMD8)
+      oarg[31:8] = 24'd1;
+    else if (state == CMD55 && ~osel_clk)
       oarg[31:16] = {16{1'b0}};
     else if (state == ACMD41) begin
       oarg        = 32'd0;
       oarg[21:20] = 2'b11;
       oarg[31]    = 1'b1;
     end
-    else if (state == CMD7 || (state == CMD55 && osel_clk) || state == CMD15 || state == CMD13)
+    else if (state == CMD9 || state == CMD7 || (state == CMD55 && osel_clk) || state == CMD15 || state == CMD13)
       oarg[31:16] = rca;
       if (state == CMD13) oarg[15] = 1'b0;
     else if (state == ACMD6)
@@ -116,7 +120,7 @@ module sd_fsm (
   always @(*) begin
     next_state = state;
     if (start && state == IDLE)
-      next_state = CMD55;
+      next_state = CMD8;
     else if (state == READ) begin
       if (idata_crc_fail)
         next_state = CMD17;
@@ -129,10 +133,12 @@ module sd_fsm (
     end
     else if (icmd_done) begin
       case(state)
+        CMD8:    next_state = iresp[11:8] == 4'b0001 ? CMD55 : IDLE;
         CMD55:   next_state = iresp[5] ? ((~osel_clk) ? ACMD41 : ACMD6) : IDLE;
         ACMD41:  next_state = !(iresp[21] || iresp[20]) ? IDLE : (iresp[31] ? CMD2 : CMD55);
         CMD2:    next_state = CMD3;
-        CMD3:    next_state = CMD7;
+        CMD3:    next_state = CMD9;
+        CMD9:    next_state = CMD7;
         CMD7:    next_state = CMD55;
         ACMD6:   next_state = tran_state ? CMD17 : IDLE;
         CMD17:   next_state = iresp[31] ? CMD15 : READ;
@@ -148,7 +154,7 @@ module sd_fsm (
       osel_clk <= 1'b0;
     else if (next_state == IDLE)
       osel_clk <= 1'b0;
-    else if (next_state == CMD7)
+    else if (next_state == CMD9)
       osel_clk <= 1'b1;
   end
 

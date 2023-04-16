@@ -31,16 +31,17 @@ module cmd_driver (
      end
   `endif
 
-  localparam [2:0]
-    IDLE      = 3'b000,
-    SEND_CMD  = 3'b001,
-    SEND_CRC  = 3'b011,
-    SEND_END  = 3'b010,
-    WAIT_RESP = 3'b110,
-    RCV_RESP  = 3'b111,
-    RCV_CRC   = 3'b101,
-    DONE      = 3'b100; 
-  reg [2:0] state = IDLE, next_state;
+  localparam [3:0]
+    IDLE      = 4'b0000,
+    SEND_CMD  = 4'b0001,
+    SEND_CRC  = 4'b0011,
+    SEND_END  = 4'b0010,
+    WAIT_RESP = 4'b0110,
+    RCV_RESP  = 4'b0111,
+    RCV_CRC   = 4'b0101,
+    BUSY      = 4'b0100,
+    DONE      = 4'b1100; 
+  reg [3:0] state = IDLE, next_state;
 
   reg [7:0]  counter     =  8'd0;
   reg        crc_failed  =  1'b0;
@@ -80,7 +81,8 @@ module cmd_driver (
       SEND_END:                            next_state = icmd_index == 6'd15 ? DONE : WAIT_RESP;
       WAIT_RESP: if (!icmd_sd)             next_state = RCV_RESP;
       RCV_RESP:  if (change_state)         next_state = RCV_CRC;
-      RCV_CRC:   if (change_state)         next_state = crc_failed ? IDLE : DONE;
+      RCV_CRC:   if (change_state)         next_state = crc_failed ? IDLE : BUSY;
+      BUSY:      if (change_state)         next_state = DONE;
       default: next_state = IDLE;
     endcase
   end
@@ -91,8 +93,9 @@ module cmd_driver (
       case(next_state)
         SEND_CMD: counter <= 8'd39;
         SEND_CRC: counter <= 8'd6;
-	RCV_RESP: counter <= icmd_index == 6'd2 ? 8'd126 : 8'd38;
-	RCV_CRC:  counter <= 8'd6;
+        RCV_RESP: counter <= icmd_index == 6'd2 || icmd_index == 6'd9 ? 8'd126 : 8'd38;
+        RCV_CRC:  counter <= 8'd6;
+        BUSY:     counter <= 8'd8;
       endcase
     end else counter <= counter - 1'b1;
   end
@@ -102,7 +105,7 @@ module cmd_driver (
     else if (next_state == SEND_CMD)
       crc_failed <= 1'b0;
     else if (state == RCV_CRC && icmd_sd != crc
-	    && icmd_index != 6'd41 && icmd_index != 6'd2) // Ignore R2 and R3 responses for now
+	    && icmd_index != 6'd41 && icmd_index != 6'd2 && icmd_index != 6'd9) // Ignore R2 and R3 responses for now
       crc_failed <= 1'b1;
   end
 
