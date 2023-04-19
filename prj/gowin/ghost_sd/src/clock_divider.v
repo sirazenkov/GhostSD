@@ -5,7 +5,8 @@
 //description: Clock divider for generating fast and slow SD clocks with Gowin PLLs
 //=================================================================================
 
-module clock_divider_pll (
+module clock_divider (
+  input irst,
   input iclk,      // Reference clock
   input isel_clk,  // Select slow (0) or fast (1) clock
   output oclk_sd

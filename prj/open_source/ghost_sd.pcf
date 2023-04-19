@@ -2,8 +2,8 @@
 set_io iclk D1
 
 # Buttons
-set_io irst E4 # Reset
-set_io istart E5 # Start
+set_io irst_n E4 # Reset
+set_io istart_n E5 # Start
 
 # SD interface
 set_io oclk_sd E3

@@ -1,3 +1,5 @@
+YOSYS =
+
 all: synth placeNroute timing bitstream
 
 synth: 
@@ -28,19 +30,19 @@ program:
 	icesprog -c 3
 	icesprog -g PA7 -m out
 	icesprog -g PA5 -m out
-	icesprog -g PA7 -w 0
-	icesprog -g PA5 -w 0
+	icesprog -g PA7 -w 1
+	icesprog -g PA5 -w 1
 
 reset:
-	icesprog -g PA7 -w 1
+	icesprog -g PA7 -w o
 	sleep 1
-	icesprog -g PA7 -w 0
+	icesprog -g PA7 -w 1
 
 start:
 	icesprog -g PA5 -m out
-	icesprog -g PA5 -w 1
-	sleep 1
 	icesprog -g PA5 -w 0
+	sleep 1
+	icesprog -g PA5 -w 1
 
 read_fail:
 	icesprog -g PA6 -m in

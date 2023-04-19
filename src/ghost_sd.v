@@ -51,7 +51,8 @@ module ghost_sd (
 
   wire sel_clk;
 
-  clock_divider_pll clock_divider_inst (
+  clock_divider clock_divider_inst (
+    .irst(irst_n),
     .iclk(iclk),
     .isel_clk(sel_clk),
     .oclk_sd(clk_sd)
@@ -155,20 +156,48 @@ module ghost_sd (
 
   assign oclk_sd  = clk_sd;
 
-  assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
-  generate
-    for(i = 0; i < 4; i = i + 1) begin : d_io
-      assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
-    end
-  endgenerate
+  `ifdef YOSYS
+    SB_IO #(
+      .PIN_TYPE(6'b101001),
+      .PULLUP(1'b0),
+      .IO_STANDARD("SB_LVCMOS")
+    ) cmd_io (
+      .CLOCK_ENABLE(1'b0),
+      .PACKAGE_PIN(iocmd_sd),
+      .OUTPUT_ENABLE(cmd_sd_en),
+      .D_OUT_0(ocmd_sd),
+      .D_IN_0(icmd_sd)
+    );
+    SB_IO #(
+      .PIN_TYPE(6'b101001),
+      .PULLUP(1'b0),
+      .IO_STANDARD("SB_LVCMOS")
+    ) data_io [3:0] (
+      .CLOCK_ENABLE(1'b0),
+      .PACKAGE_PIN(iodata_sd),
+      .OUTPUT_ENABLE(data_sd_en),
+      .D_OUT_0(odata_sd),
+      .D_IN_0(idata_sd)
+    );
+  `else
+    assign icmd_sd  = iocmd_sd;
+    assign idata_sd = iodata_sd;
 
-  assign icmd_sd  = iocmd_sd;
-  assign idata_sd = iodata_sd;
+    assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
+    generate
+      for(i = 0; i < 4; i = i + 1) begin : d_io
+        assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
+      end
+    endgenerate
+  `endif
 
   `ifdef COCOTB_SIM
-    assign osuccess = success;
-    assign ofail   = fail;
+    assign osuccess  = success;
+    assign ofail     = fail;
     assign odata0_sd = iodata_sd[0];
+  `elsif YOSYS
+    assign osuccess = success;
+    assign ofail    = fail;
   `else
     assign osuccess = success ? 1'b0 : 1'bz;
     assign ofail    = fail ? 1'b0 : 1'bz;
