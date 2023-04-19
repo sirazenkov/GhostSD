@@ -37,11 +37,15 @@ module ghost_sd (
 
   wire gen_otp, otp_ready, new_otp;
 
+  wire [2:0] sel_ram,      sel_ram_otp;
   wire       write_en_raw, write_en_otp;
   wire [3:0] wdata_raw,    wdata_otp;
   wire [9:0] addr,         addr_otp;
   wire [3:0] block_otp,    block_raw;
   wire [3:0] res_block;
+
+  wire [3:0] rdata_raw [0:7], rdata_otp [0:7];
+  wire [7:0] write_en_raw_ram, write_en_otp_ram;
 
   wire success, fail;
 
@@ -86,7 +90,8 @@ module ghost_sd (
 
     .iotp_ready(otp_ready),
 
-    .oaddr(addr),
+    .osel_ram (sel_ram),
+    .oaddr    (addr),
 
     .owdata   (wdata_raw),
     .owrite_en(write_en_raw),
@@ -108,6 +113,7 @@ module ghost_sd (
     .ikey(KEY),
     .iIV (IV),
 
+    .osel_ram (sel_ram_otp),
     .oaddr    (addr_otp),
     .owdata   (wdata_otp),
     .owrite_en(write_en_otp),
@@ -115,32 +121,41 @@ module ghost_sd (
     .odone(otp_ready)
   );
 
-  ram_4k_block otp_block (
-    .waddr   (addr_otp),
-    .raddr   (addr),
-    .din     (wdata_otp),
-    .write_en(write_en_otp),
-    .wclk    (clk_sd),
-    .rclk    (clk_sd),
-    .dout    (block_otp)
-  );
+  genvar i;
+  generate
+    for(i = 0; i < 8; i = i + 1) begin : ram
+      assign write_en_otp_ram[i] = write_en_otp & (sel_ram_otp == i);
+      ram_4k_block otp_block (
+        .waddr   (addr_otp),
+        .raddr   (addr),
+        .din     (wdata_otp),
+        .write_en(write_en_otp_ram[i]),
+        .wclk    (clk_sd),
+        .rclk    (clk_sd),
+        .dout    (rdata_otp[i])
+      );
 
-  ram_4k_block raw_block (
-    .waddr   (addr),
-    .raddr   (addr),
-    .din     (wdata_raw),
-    .write_en(write_en_raw),
-    .wclk    (clk_sd),
-    .rclk    (clk_sd),
-    .dout    (block_raw)
-  );
+      assign write_en_raw_ram[i] = write_en_raw & (sel_ram == i);
+      ram_4k_block raw_block (
+        .waddr   (addr),
+        .raddr   (addr),
+        .din     (wdata_raw),
+        .write_en(write_en_raw_ram[i]),
+        .wclk    (clk_sd),
+        .rclk    (clk_sd),
+        .dout    (rdata_raw[i])
+      );
+    end
+  endgenerate
+
+  assign block_raw = rdata_raw[sel_ram];
+  assign block_otp = rdata_otp[sel_ram];
 
   assign res_block = block_raw ^ block_otp;
 
   assign oclk_sd  = clk_sd;
 
   assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
-  genvar i;
   generate
     for(i = 0; i < 4; i = i + 1) begin : d_io
       assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;

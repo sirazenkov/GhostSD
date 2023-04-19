@@ -17,6 +17,7 @@ module otp_gen (
   input [31:0]  iIV, // Initialization vector
 
   // RAM for OTP
+  output [2:0] osel_ram,
   output [9:0] oaddr,
   output [3:0] owdata,
   output       owrite_en,
@@ -30,14 +31,14 @@ module otp_gen (
     WRITE_BLOCK = 2'b11;
   reg [1:0] state = IDLE, next_state;
 
-  reg [9:0] counter = 10'd0;
+  reg [12:0] counter = 13'd0;
 
   always @(*) begin
     next_state = state;
     case(state)
       IDLE:        if (istart)        next_state = GEN_BLOCK;
       GEN_BLOCK:   if (done_gost)     next_state = WRITE_BLOCK;
-      WRITE_BLOCK: if (&counter[3:0]) next_state = &counter[9:4] ? IDLE : GEN_BLOCK;
+      WRITE_BLOCK: if (&counter[3:0]) next_state = &counter[12:4] ? IDLE : GEN_BLOCK;
       default:                        next_state = IDLE;
     endcase
   end
@@ -89,7 +90,8 @@ module otp_gen (
     .odone (done_gost)
   );
 
-  assign oaddr     = counter;
+  assign osel_ram  = counter[12:10];
+  assign oaddr     = counter[9:0];
   assign owdata    = enc_block[4*(16-counter[3:0])-1 -: 4];
   assign owrite_en = state == WRITE_BLOCK;
 

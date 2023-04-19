@@ -40,7 +40,7 @@ module cmd_driver (
     RCV_RESP  = 4'b0111,
     RCV_CRC   = 4'b0101,
     BUSY      = 4'b0100,
-    DONE      = 4'b1100; 
+    DONE      = 4'b1100;
   reg [3:0] state = IDLE, next_state;
 
   reg [7:0]  counter     =  8'd0;
@@ -54,7 +54,7 @@ module cmd_driver (
   wire  unload;
   wire crc_data, crc;
  
-  assign rst_crc = irst || state == DONE || state == WAIT_RESP;
+  assign rst_crc = irst || state == IDLE || state == WAIT_RESP;
   assign crc_data = state == RCV_RESP ? icmd_sd : cmd_content[39];
   assign unload = state == SEND_CRC || state == RCV_CRC;
 

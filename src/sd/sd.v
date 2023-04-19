@@ -28,6 +28,7 @@ module sd (
   input  iotp_ready, // One-time pad block ready
 
   // RAM blocks
+  output [2:0] osel_ram, // Select RAM block
   output [9:0] oaddr,  // Data address in RAM
   input  [3:0] irdata, // RAM with processed data (for sending)
   output [3:0] owdata, // RAM for received data
@@ -38,7 +39,7 @@ module sd (
 );
 
   wire start_cmd, cmd_done;
-  wire start_d, data_done, data_crc_fail;
+  wire start_d, stop_data, read_done, write_done;
   wire [5:0]  index;
   wire [31:0] resp, arg;
 
@@ -48,8 +49,9 @@ module sd (
 
     .istart(istart),
 
-    .idata_crc_fail(data_crc_fail),
-    .idata_done    (data_done),
+    .istop_data    (stop_data),
+    .iread_done    (read_done),
+    .iwrite_done   (write_done),
 
     .osel_clk(osel_clk),
 
@@ -99,13 +101,15 @@ module sd (
 
     .istart (start_d),
 
+    .osel_ram (osel_ram),
     .oaddr    (oaddr),
     .owdata   (owdata),
     .owrite_en(owrite_en),
     .irdata   (irdata),
 
-    .ocrc_fail(data_crc_fail),
-    .odone    (data_done)
+    .ostop_data (stop_data),
+    .oread_done (read_done),
+    .owrite_done(write_done)
   );
 
 endmodule
