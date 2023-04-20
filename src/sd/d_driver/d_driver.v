@@ -107,25 +107,24 @@ module d_driver (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE:      if (istart)            next_state = WAIT_RCV;
-      WAIT_RCV:  if (~|data)            next_state = RCV_DATA;
-      RCV_DATA:  if (&counter[9:0])     next_state = CHECK_CRC;
-      CHECK_CRC:
-                 if (counter == 11'd16) next_state = &counter_ram ? WAIT_SEND : WAIT_RCV;
-                 else if (crc != data)  next_state = IDLE;
-      WAIT_SEND: if (istart)            next_state = SEND_DATA; // Wait until data is processed
-      SEND_DATA: if (counter[10])       next_state = SEND_CRC;
-      SEND_CRC:  if (counter == 11'd16) next_state = SEND_END;
-      SEND_END:                         next_state = BUSY;
-      BUSY:                             next_state = idata_sd[0] && ~data[0] && &counter_ram ? IDLE : SEND_DATA;
-      default:                          next_state = IDLE;
+      IDLE:      if (istart)                  next_state = WAIT_RCV;
+      WAIT_RCV:  if (~|data)                  next_state = RCV_DATA;
+      RCV_DATA:  if (&counter[9:0])           next_state = CHECK_CRC;
+      CHECK_CRC: if (counter[4])              next_state = &counter_ram ? WAIT_SEND : WAIT_RCV;
+                 else if (crc != data)        next_state = IDLE;
+      WAIT_SEND: if (istart)                  next_state = SEND_DATA; // Wait until data is processed
+      SEND_DATA: if (counter[10])             next_state = SEND_CRC;
+      SEND_CRC:  if (counter[4])              next_state = SEND_END;
+      SEND_END:                               next_state = BUSY;
+      BUSY:      if (idata_sd[0] && ~data[0]) next_state = &counter_ram ? IDLE : SEND_DATA;
+      default:                                next_state = IDLE;
     endcase
   end
 
   always @(posedge iclk or posedge irst) begin
     if (irst)
       data <= 4'h0;
-    else if (state == WAIT_SEND && next_state == SEND_DATA)
+    else if (state != next_state && next_state == SEND_DATA)
       data <= 4'h0;
     else if (state == SEND_DATA)
       data <= irdata;
@@ -138,16 +137,21 @@ module d_driver (
   always @(posedge iclk or posedge irst) begin
     if (irst)
       counter_ram <= 3'd0;
-    else if (state != next_state && (state == CHECK_CRC || state == BUSY))
-      counter_ram <= next_state == WAIT_RCV || next_state == SEND_DATA ? counter_ram + 1'b1 : 3'd0;
+    else if (state == IDLE)
+      counter_ram <= 3'd0;
+    else if (state != next_state && (state == RCV_DATA || state == SEND_DATA))
+      counter_ram <= counter_ram + 1'b1;
   end
 
   always @(posedge iclk or posedge irst) begin
     if (irst)
       counter <= 11'd0;
-    else
-      counter <= next_state == SEND_DATA ? counter + 1'b1 :
-	         state == WAIT_SEND || state != next_state  ? 11'd0 : counter + 1'b1;
+    else if (next_state == SEND_DATA)
+      counter <= counter + 1'b1;
+    else if (state != next_state)
+      counter <= 11'd0;
+    else if (state != WAIT_SEND && state != BUSY)
+      counter <= counter + 1'b1;
   end
 
 endmodule
