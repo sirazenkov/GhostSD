@@ -58,7 +58,7 @@ module d_driver (
   wire unload = state == CHECK_CRC || state == SEND_CRC;
 
   wire rst_crc;
-  assign rst_crc = irst || state == WAIT_RCV || state == WAIT_SEND || state == SEND_END;
+  assign rst_crc = irst || state == WAIT_RCV || state == WAIT_SEND || state == BUSY;
 
   wire [3:0] data_crc;
   wire [3:0] crc;
@@ -137,10 +137,8 @@ module d_driver (
   always @(posedge iclk or posedge irst) begin
     if (irst)
       counter_ram <= 3'd0;
-    else if (state == IDLE)
-      counter_ram <= 3'd0;
-    else if (state != next_state && (state == RCV_DATA || state == SEND_DATA))
-      counter_ram <= counter_ram + 1'b1;
+    else if (state != next_state && (state == CHECK_CRC || state == BUSY))
+      counter_ram <= next_state == WAIT_RCV || next_state == SEND_DATA ? counter_ram + 1'b1 : 3'd0;
   end
 
   always @(posedge iclk or posedge irst) begin

@@ -26,6 +26,7 @@ logger.setLevel(logging.DEBUG)
 class D_driver_BFM():
     def __init__(self):
         self.dut = cocotb.top
+        self.multiplex = [0 for i in range(8)]
 
     async def start_operation(self):
         cocotb.start_soon(Clock(self.dut.iclk, 55, units="ns").start())
@@ -46,7 +47,9 @@ class D_driver_BFM():
             await RisingEdge(self.dut.iclk)
             if(int(self.dut.owrite_en.value) == 1):
                 mem[int(self.dut.osel_ram.value)][int(self.dut.oaddr.value)] = int(self.dut.owdata.value)
-            self.dut.irdata.value = mem[int(self.dut.osel_ram.value)][int(self.dut.oaddr.value)]
+            self.multiplex = [mem[i][int(self.dut.oaddr.value)] for i in range(8)]
+            await FallingEdge(self.dut.iclk)
+            self.dut.irdata.value = self.multiplex[int(self.dut.osel_ram.value)]
 
     async def send_blocks(self, blocks, crc_packets):
         await FallingEdge(self.dut.iclk)
@@ -88,8 +91,9 @@ class D_driver_BFM():
             self.dut.idata_sd.value = 0xE
             await self.random_delay(10)
             self.dut.idata_sd.value = 0xF
-            await RisingEdge(self.dut.odata_sd_en)
-            await FallingEdge(self.dut.iclk)
+            if (j != 7):
+                await RisingEdge(self.dut.odata_sd_en)
+                await FallingEdge(self.dut.iclk)
         await RisingEdge(self.dut.owrite_done)
         blocks_equal = expected_blocks == blocks
         return (blocks_equal, crc_failed)
@@ -135,8 +139,9 @@ async def d_driver_tb(_):
             logger.info(f"Correct CRC in blocks pack {i} from the module!")
         else:
             logger.error(f"Wrong CRC in blocks pack {i} from the module!")
+            passed = False
             break
-        if(int(bfm.dut.odata_sd.value) == 0xF):
+        if(int(bfm.dut.odata_sd_en.value) == 0):
             logger.info(f"Finish bit set in blocks pack {i} from module!") 
         else:
             logger.error(f"Finish bit not set in blocks pack {i} from module!")
