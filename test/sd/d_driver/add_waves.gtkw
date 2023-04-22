@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Fri Apr 21 03:14:44 2023
+[*] Fri Apr 21 07:00:03 2023
 [*]
 [dumpfile] "/home/user/MyProjects/GhostSD/test/sd/d_driver/wave.vcd"
-[dumpfile_mtime] "Fri Apr 21 03:09:18 2023"
-[dumpfile_size] 7885624
+[dumpfile_mtime] "Fri Apr 21 06:57:16 2023"
+[dumpfile_size] 7702818
 [savefile] "/home/user/MyProjects/GhostSD/test/sd/d_driver/add_waves.gtkw"
 [timestart] 0
 [size] 1853 1025
 [pos] -29 -29
-*-23.813448 923613000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-20.813448 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [sst_width] 223
 [signals_width] 350
 [sst_expanded] 1
@@ -23,6 +23,8 @@ d_driver.idata_sd[3:0]
 d_driver.odata_sd[3:0]
 @28
 d_driver.odata_sd_en
+@29
+d_driver.osel_ram[2:0]
 @22
 d_driver.oaddr[9:0]
 d_driver.irdata[3:0]
@@ -31,5 +33,6 @@ d_driver.owdata[3:0]
 d_driver.owrite_en
 d_driver.oread_done
 d_driver.owrite_done
+d_driver.ostop_data
 [pattern_trace] 1
 [pattern_trace] 0

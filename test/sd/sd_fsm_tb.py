@@ -12,7 +12,7 @@ logger.setLevel(logging.DEBUG)
 
 class SD_FSM_BFM():
 
-    inputs = ["start", "cmd_done", "resp", "data_crc_fail", "data_done", "otp_ready"]
+    inputs = ["start", "cmd_done", "resp", "stop_data", "read_done", "write_done", "otp_ready"]
     outputs = ["sel_clk", "gen_otp", "new_otp", "start_cmd", "index", "arg", "start_d", "fail", "success"]
 
     def __init__(self):
@@ -61,8 +61,6 @@ async def SD_FSM_tb(_):
     for i in range(len(input_values)):
         await bfm.set_inputs(input_values[i])
         await FallingEdge(bfm.dut.iclk)
-        if(i == 33 or i == 35): # otp_ready and data_done require an additional cycle
-            await FallingEdge(bfm.dut.iclk)
         outputs_ok = await bfm.check_outputs(output_values[i])
         for output in outputs_ok:
             if(outputs_ok[output]):
