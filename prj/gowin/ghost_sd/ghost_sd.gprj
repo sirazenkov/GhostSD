@@ -1,0 +1,27 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW2A-18C" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
+    <FileList>
+        <File path="src/clock_divider.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_dcs/gowin_dcs.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/ghost_sd.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/otp_gen/gost/gost.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/otp_gen/gost/round/round.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/otp_gen/gost/round/s_box.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/otp_gen/otp_gen.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/ram_4k_block.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/cmd_driver/cmd_driver.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/cmd_driver/crc7.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/d_driver/crc16.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/d_driver/d_driver.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/sd.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/src/sd/sd_fsm.v" type="file.verilog" enable="1"/>
+        <File path="src/physical.cst" type="file.cst" enable="1"/>
+        <File path="src/timing.sdc" type="file.sdc" enable="1"/>
+        <File path="src/ghost_sd.rao" type="file.gao" enable="1"/>
+    </FileList>
+</Project>

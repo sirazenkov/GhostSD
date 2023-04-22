@@ -17,7 +17,7 @@ import sys
 sys.path.insert(1, '../../')
 from common import *
 
-NUM_OF_TRANSACTIONS = 5
+NUM_OF_TRANSACTIONS = 2
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger()
@@ -26,6 +26,7 @@ logger.setLevel(logging.DEBUG)
 class D_driver_BFM():
     def __init__(self):
         self.dut = cocotb.top
+        self.multiplex = [0 for i in range(8)]
 
     async def start_operation(self):
         cocotb.start_soon(Clock(self.dut.iclk, 55, units="ns").start())
@@ -41,48 +42,60 @@ class D_driver_BFM():
         await FallingEdge(self.dut.iclk)
 
     async def ram(self):
-        mem = [0 for i in range(1024)]
+        mem = [[0 for i in range(1024)] for j in range(8)]
         while(True):
             await RisingEdge(self.dut.iclk)
             if(int(self.dut.owrite_en.value) == 1):
-                mem[int(self.dut.oaddr.value)] = int(self.dut.owdata.value)
-            self.dut.irdata.value = mem[int(self.dut.oaddr.value)]
-
-    async def send_block(self, block, crc_packets):
-        await FallingEdge(self.dut.iclk)
-        self.dut.istart.value = 1
-        await FallingEdge(self.dut.iclk)
-        self.dut.idata_sd.value = 0 # Start bit
-        self.dut.istart.value = 0
-        await FallingEdge(self.dut.iclk)
-        for i in range(1024):
-            self.dut.idata_sd.value = block[i]
+                mem[int(self.dut.osel_ram.value)][int(self.dut.oaddr.value)] = int(self.dut.owdata.value)
+            self.multiplex = [mem[i][int(self.dut.oaddr.value)] for i in range(8)]
             await FallingEdge(self.dut.iclk)
-        for i in range(16):
-            self.dut.idata_sd.value = crc_packets[i]
-            await FallingEdge(self.dut.iclk)
-        self.dut.idata_sd.value = 0xF # End bit
-        await RisingEdge(self.dut.odone)
-        await FallingEdge(self.dut.iclk)
-        return (int(self.dut.odone.value) == 1, int(self.dut.ocrc_fail.value) == 1)
+            self.dut.irdata.value = self.multiplex[int(self.dut.osel_ram.value)]
 
-    async def receive_block(self, expected_block, crc_packets):
+    async def send_blocks(self, blocks, crc_packets):
         await FallingEdge(self.dut.iclk)
         self.dut.istart.value = 1
         await FallingEdge(self.dut.iclk)
         self.dut.istart.value = 0
+        for j in range(8):
+            await self.random_delay(10)
+            await FallingEdge(self.dut.iclk)
+            self.dut.idata_sd.value = 0 # Start bit
+            await FallingEdge(self.dut.iclk)
+            for i in range(1024):
+                self.dut.idata_sd.value = blocks[j][i]
+                await FallingEdge(self.dut.iclk)
+            for i in range(16):
+                self.dut.idata_sd.value = crc_packets[j][i]
+                await FallingEdge(self.dut.iclk)
+            self.dut.idata_sd.value = 0xF # End bit
+        await RisingEdge(self.dut.oread_done)
         await FallingEdge(self.dut.iclk)
-        block = []
-        for i in range(1024):
-            block.append(int(self.dut.odata_sd.value))
+        return (int(self.dut.oread_done.value) == 1, int(self.dut.owrite_done.value) == 1)
+
+    async def receive_blocks(self, expected_blocks, crc_packets):
+        await FallingEdge(self.dut.iclk)
+        self.dut.istart.value = 1
+        await FallingEdge(self.dut.iclk)
+        self.dut.istart.value = 0
+        blocks = [[] for i in range(8)]
+        for j in range(8):
             await FallingEdge(self.dut.iclk)
-        crc_failed = False
-        for i in range(16):
-            if(int(self.dut.odata_sd.value) != crc_packets[i]):
-                crc_failed = True
-            await FallingEdge(self.dut.iclk)
-        await RisingEdge(self.dut.odone)
-        blocks_equal = expected_block == block
+            for i in range(1024):
+                blocks[j].append(int(self.dut.odata_sd.value))
+                await FallingEdge(self.dut.iclk)
+            crc_failed = False
+            for i in range(16):
+                if(int(self.dut.odata_sd.value) != crc_packets[j][i]):
+                    crc_failed = True
+                await FallingEdge(self.dut.iclk)
+            self.dut.idata_sd.value = 0xE
+            await self.random_delay(10)
+            self.dut.idata_sd.value = 0xF
+            if (j != 7):
+                await RisingEdge(self.dut.odata_sd_en)
+                await FallingEdge(self.dut.iclk)
+        await RisingEdge(self.dut.owrite_done)
+        blocks_equal = expected_blocks == blocks
         return (blocks_equal, crc_failed)
 
     async def random_delay(self, upper_bound):
@@ -98,39 +111,40 @@ async def d_driver_tb(_):
     await bfm.reset()
 
     for i in range(NUM_OF_TRANSACTIONS):
-        block = [random.randint(0,15) for i in range(1024)]
-        crc_packets = gen_crc16_packets(block)
+        blocks = [[random.randint(0,15) for i in range(1024)] for j in range(8)]
+        crc_packets = [gen_crc16_packets(block) for block in blocks]
         await bfm.random_delay(10)
-        done, crc_fail = await bfm.send_block(block, crc_packets)
+        done, crc_fail = await bfm.send_blocks(blocks, crc_packets)
         if(not crc_fail):
-            logger.info(f"CRC16 check for block {i} succeeded!")
+            logger.info(f"CRC16 check for blocks pack {i} succeeded!")
         else:
-            logger.error(f"CRC16 check for block {i} failed!")
+            logger.error(f"CRC16 check for blocks pack {i} failed!")
             passed = False
             break
         if(done):
-            logger.info(f"Module received block {i} successfully!") 
+            logger.info(f"Module received blocks pack {i} successfully!") 
         else:
-            logger.error(f"Module did not receive block {i} successfully!")
+            logger.error(f"Module did not receive blocks pack {i} successfully!")
             passed = False
             break
         await bfm.random_delay(10)
-        blocks_equal, crc_fail = await bfm.receive_block(block, crc_packets)
+        blocks_equal, crc_fail = await bfm.receive_blocks(blocks, crc_packets)
         if(blocks_equal):
-            logger.info(f"Block {i} from module is equal the initial block {i}!") 
+            logger.info(f"Blocks pack {i} from module is equal the initial blocks pack {i}!") 
         else:
-            logger.error(f"Block {i} from module does not equal the initial block {i}!")
+            logger.error(f"Blocks pack {i} from module does not equal the initial blocks pack {i}!")
             passed = False
             break
         if(not crc_fail):
-            logger.info(f"Correct CRC in block {i} from the module!")
+            logger.info(f"Correct CRC in blocks pack {i} from the module!")
         else:
-            logger.error(f"Wrong CRC in block {i} from the module!")
+            logger.error(f"Wrong CRC in blocks pack {i} from the module!")
+            passed = False
             break
-        if(int(bfm.dut.odata_sd.value) == 0xF):
-            logger.info(f"Finish bit set in block {i} from module!") 
+        if(int(bfm.dut.odata_sd_en.value) == 0):
+            logger.info(f"Finish bit set in blocks pack {i} from module!") 
         else:
-            logger.error(f"Finish bit not set in block {i} from module!")
+            logger.error(f"Finish bit not set in blocks pack {i} from module!")
             passed = False
             break
     assert passed

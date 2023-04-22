@@ -1,0 +1,30 @@
+//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//All rights reserved. 
+//File Title: Physical Constraints file
+//GOWIN Version: 1.9.8.07 Education
+//Part Number: GW2A-LV18PG256C8/I7
+//Device: GW2A-18C
+//Created Time: Mon 04 10 11:13:54 2023
+
+IO_LOC "oclk_sd" T7;
+IO_PORT "oclk_sd" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
+IO_LOC "ofail" L14;
+IO_PORT "ofail" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "osuccess" L16;
+IO_PORT "osuccess" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "iodata_sd[3]" T6;
+IO_PORT "iodata_sd[3]" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
+IO_LOC "iodata_sd[2]" P6;
+IO_PORT "iodata_sd[2]" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
+IO_LOC "iodata_sd[1]" T8;
+IO_PORT "iodata_sd[1]" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
+IO_LOC "iodata_sd[0]" P8;
+IO_PORT "iodata_sd[0]" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
+IO_LOC "iocmd_sd" R8;
+IO_PORT "iocmd_sd" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
+IO_LOC "istart_n" C7;
+IO_PORT "istart_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "iclk" H11;
+IO_PORT "iclk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "irst_n" D7;
+IO_PORT "irst_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;

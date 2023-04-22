@@ -1,9 +1,9 @@
-//==========================================
+//===============================
 //company: Tomsk State University
 //developer: Simon Razenkov
 //e-mail: sirazenkov@stud.tsu.ru
-//description: SD Bus protocol communication
-//==========================================
+//description: SD Bus controller
+//===============================
 
 module sd (
   input irst, // Global reset
@@ -11,14 +11,16 @@ module sd (
   
   input istart, // Start SD card initialization
 
+  output osel_clk, // Select used clock
+
   // SD Bus
   input        icmd_sd,  // CMD line
   output       ocmd_sd,
   output       ocmd_sd_en,
+  
   input  [3:0] idata_sd, // D line
   output [3:0] odata_sd,
   output       odata_sd_en,
-  output       oclk_sd,  // CLK line
 
   // OTP generator
   output ogen_otp,   // Generate next block of the pad
@@ -26,6 +28,7 @@ module sd (
   input  iotp_ready, // One-time pad block ready
 
   // RAM blocks
+  output [2:0] osel_ram, // Select RAM block
   output [9:0] oaddr,  // Data address in RAM
   input  [3:0] irdata, // RAM with processed data (for sending)
   output [3:0] owdata, // RAM for received data
@@ -35,22 +38,21 @@ module sd (
   output ofail
 );
 
-  wire sel_clk;
   wire start_cmd, cmd_done;
-  wire start_d, data_done, data_crc_fail;
+  wire start_d, read_done, write_done;
   wire [5:0]  index;
   wire [31:0] resp, arg;
 
   sd_fsm sd_fsm_inst (
     .irst(irst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .istart(istart),
 
-    .idata_crc_fail(data_crc_fail),
-    .idata_done    (data_done),
+    .iread_done    (read_done),
+    .iwrite_done   (write_done),
 
-    .osel_clk(sel_clk),
+    .osel_clk(osel_clk),
 
     .ogen_otp  (ogen_otp),
     .onew_otp  (onew_otp),
@@ -68,23 +70,10 @@ module sd (
     .osuccess(osuccess)
   );
 
-  wire clk_18MHz, clk_281kHz, clk_sd;
-  assign clk_sd  = sel_clk ? clk_18MHz : clk_281kHz;
-  assign oclk_sd = clk_sd;
-
-  // Get 18 Mhz and 281.25 kHz clocks from 36 MHz system clock
-  clock_divider clock_divider_inst (
-    .irst(irst),
-    .iclk(iclk),
-
-    .ofastclk(clk_18MHz),
-    .oslowclk(clk_281kHz)
-  );
-
   // CMD line driver
   cmd_driver cmd_driver_inst (
     .irst(irst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .icmd_sd(icmd_sd),
     .ocmd_sd(ocmd_sd),
@@ -103,7 +92,7 @@ module sd (
   // D lines driver
   d_driver d_driver_inst (
     .irst(irst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .idata_sd   (idata_sd),
     .odata_sd   (odata_sd),
@@ -111,14 +100,14 @@ module sd (
 
     .istart (start_d),
 
+    .osel_ram (osel_ram),
     .oaddr    (oaddr),
     .owdata   (owdata),
     .owrite_en(owrite_en),
     .irdata   (irdata),
 
-    .ocrc_fail(data_crc_fail),
-    .odone    (data_done)
+    .oread_done (read_done),
+    .owrite_done(write_done)
   );
 
 endmodule
-

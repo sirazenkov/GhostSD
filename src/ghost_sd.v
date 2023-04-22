@@ -6,10 +6,10 @@
 //==========================================
 
 module ghost_sd (
-  input iclk, // 36 MHz system clock
-  input irst,
-  
-  input istart,
+  input irst_n,
+  input iclk, // System clock
+
+  input istart_n,  
 
   // SD lines
   inout       iocmd_sd,  // CMD line
@@ -17,26 +17,19 @@ module ghost_sd (
   output      oclk_sd,   // CLK line
 
   output osuccess,
-  output ofail,
-
-  `ifdef COCOTB_SIM
-  output odata0_sd
-  `endif
+  output ofail
 );
+  parameter KEY = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
+  parameter IV = 32'hb97b7f46;
 
   `ifdef COCOTB_SIM
-    parameter KEY = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
-    parameter IV = 32'hb97b7f46;
-
     initial begin
       $dumpfile("wave.vcd");
       $dumpvars(0, ghost_sd);
       #1;
     end
-  `else
-    `include "crypto.vh"
   `endif  
-  
+
   wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
 
   wire [3:0] idata_sd, odata_sd;
@@ -44,17 +37,42 @@ module ghost_sd (
 
   wire gen_otp, otp_ready, new_otp;
 
+  wire [2:0] sel_ram,      sel_ram_otp;
   wire       write_en_raw, write_en_otp;
   wire [3:0] wdata_raw,    wdata_otp;
   wire [9:0] addr,         addr_otp;
   wire [3:0] block_otp,    block_raw;
   wire [3:0] res_block;
 
+  wire [3:0] rdata_raw [0:7], rdata_otp [0:7];
+  wire [7:0] write_en_raw_ram, write_en_otp_ram;
+
   wire success, fail;
 
-  sd sd_inst (
-    .irst(irst),
+  wire sel_clk;
+
+  clock_divider clock_divider_inst (
+    .irst(rst),
     .iclk(iclk),
+    .isel_clk(sel_clk),
+    .oclk_sd(clk_sd)
+  );
+
+  reg debounce_start = 1, start = 0;
+  always @(posedge clk_sd) begin
+    debounce_start <= istart_n;
+    start <= ~debounce_start;
+  end
+
+  reg debounce_rst = 1, rst = 0;
+  always @(posedge iclk) begin
+    debounce_rst <= irst_n;
+    rst <= ~debounce_rst;
+  end
+
+  sd sd_inst (
+    .irst(rst),
+    .iclk(clk_sd),
 
     .icmd_sd    (icmd_sd),
     .ocmd_sd    (ocmd_sd),
@@ -64,16 +82,17 @@ module ghost_sd (
     .odata_sd   (odata_sd),
     .odata_sd_en(data_sd_en),
     
-    .oclk_sd    (clk_sd),
+    .istart(start),
 
-    .istart(istart),
+    .osel_clk(sel_clk),
 
     .ogen_otp(gen_otp),
     .onew_otp(new_otp),
 
     .iotp_ready(otp_ready),
 
-    .oaddr(addr),
+    .osel_ram (sel_ram),
+    .oaddr    (addr),
 
     .owdata   (wdata_raw),
     .owrite_en(write_en_raw),
@@ -85,7 +104,7 @@ module ghost_sd (
   );
 
   otp_gen otp_gen_inst (
-    .irst(irst),
+    .irst(rst),
     .iclk(iclk),
 
     .istart(gen_otp),
@@ -95,6 +114,7 @@ module ghost_sd (
     .ikey(KEY),
     .iIV (IV),
 
+    .osel_ram (sel_ram_otp),
     .oaddr    (addr_otp),
     .owdata   (wdata_otp),
     .owrite_en(write_en_otp),
@@ -102,69 +122,85 @@ module ghost_sd (
     .odone(otp_ready)
   );
 
-  ram_4k_block otp_block (
-    .waddr   (addr_otp),
-    .raddr   (addr),
-    .din     (wdata_otp),
-    .write_en(write_en_otp),
-    .wclk    (iclk),
-    .rclk    (clk_sd),
-    .dout    (block_otp)
-  );
+  genvar i;
+  generate
+    for(i = 0; i < 8; i = i + 1) begin : ram
+      assign write_en_otp_ram[i] = write_en_otp & (sel_ram_otp == i);
+      ram_4k_block otp_block (
+        .waddr   (addr_otp),
+        .raddr   (addr),
+        .din     (wdata_otp),
+        .write_en(write_en_otp_ram[i]),
+        .wclk    (iclk),
+        .rclk    (clk_sd),
+        .dout    (rdata_otp[i])
+      );
 
-  ram_4k_block raw_block (
-    .waddr   (addr),
-    .raddr   (addr),
-    .din     (wdata_raw),
-    .write_en(write_en_raw),
-    .wclk    (clk_sd),
-    .rclk    (clk_sd),
-    .dout    (block_raw)
-  );
+      assign write_en_raw_ram[i] = write_en_raw & (sel_ram == i);
+      ram_4k_block raw_block (
+        .waddr   (addr),
+        .raddr   (addr),
+        .din     (wdata_raw),
+        .write_en(write_en_raw_ram[i]),
+        .wclk    (clk_sd),
+        .rclk    (clk_sd),
+        .dout    (rdata_raw[i])
+      );
+    end
+  endgenerate
+
+  assign block_raw = rdata_raw[sel_ram];
+  assign block_otp = rdata_otp[sel_ram];
 
   assign res_block = block_raw ^ block_otp;
 
   assign oclk_sd  = clk_sd;
-  `ifdef COCOTB_SIM
-  assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
-  genvar i;
-  generate
-    for(i = 0; i < 4; i = i + 1) begin
-      assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
-    end
-  endgenerate
 
-  assign icmd_sd  = iocmd_sd;
-  assign idata_sd = iodata_sd;
-
-  assign odata0_sd = iodata_sd[0];
+  `ifdef YOSYS
+    SB_IO #(
+      .PIN_TYPE(6'b101001),
+      .PULLUP(1'b0),
+      .IO_STANDARD("SB_LVCMOS")
+    ) cmd_io (
+      .CLOCK_ENABLE(1'b0),
+      .PACKAGE_PIN(iocmd_sd),
+      .OUTPUT_ENABLE(cmd_sd_en),
+      .D_OUT_0(ocmd_sd),
+      .D_IN_0(icmd_sd)
+    );
+    SB_IO #(
+      .PIN_TYPE(6'b101001),
+      .PULLUP(1'b0),
+      .IO_STANDARD("SB_LVCMOS")
+    ) data_io [3:0] (
+      .CLOCK_ENABLE(1'b0),
+      .PACKAGE_PIN(iodata_sd),
+      .OUTPUT_ENABLE(data_sd_en),
+      .D_OUT_0(odata_sd),
+      .D_IN_0(idata_sd)
+    );
   `else
-  SB_IO #(
-    .PIN_TYPE(6'b101001),
-    .PULLUP(1'b0),
-    .IO_STANDARD("SB_LVCMOS")
-  ) cmd_io (
-    .CLOCK_ENABLE(1'b0),
-    .PACKAGE_PIN(iocmd_sd),
-    .OUTPUT_ENABLE(cmd_sd_en),
-    .D_OUT_0(ocmd_sd),
-    .D_IN_0(icmd_sd)
-  );
-  SB_IO #(
-    .PIN_TYPE(6'b101001),
-    .PULLUP(1'b0),
-    .IO_STANDARD("SB_LVCMOS")
-  ) data_io [3:0] (
-    .CLOCK_ENABLE(1'b0),
-    .PACKAGE_PIN(iodata_sd),
-    .OUTPUT_ENABLE(data_sd_en),
-    .D_OUT_0(odata_sd),
-    .D_IN_0(idata_sd)
-  );
+    assign icmd_sd  = iocmd_sd;
+    assign idata_sd = iodata_sd;
+
+    assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
+    generate
+      for(i = 0; i < 4; i = i + 1) begin : d_io
+        assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
+      end
+    endgenerate
   `endif
 
-  assign osuccess = success;
-  assign ofail   = fail;
+  `ifdef COCOTB_SIM
+    assign osuccess  = success;
+    assign ofail     = fail;
+    assign odata0_sd = iodata_sd[0];
+  `elsif YOSYS
+    assign osuccess = success;
+    assign ofail    = fail;
+  `else
+    assign osuccess = success ? 1'b0 : 1'bz;
+    assign ofail    = fail ? 1'b0 : 1'bz;
+  `endif
 
 endmodule
-

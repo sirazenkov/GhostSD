@@ -68,7 +68,7 @@ class CMD_driver_BFM():
             return 0
         self.dut.icmd_sd.value = 0
         await ClockCycles(self.dut.iclk, 2, rising=False)
-        if(index == 2):
+        if(index == 2 or index == 9):
             self.dut.icmd_sd.value = 1
             for i in range(133):
                 if(i == 6):
@@ -91,6 +91,7 @@ class CMD_driver_BFM():
                     self.dut.icmd_sd.value = 1 & (crc >> (6-i))
                 await FallingEdge(self.dut.iclk)
         self.dut.icmd_sd.value = 1
+        await ClockCycles(self.dut.iclk, 9, rising=False) # Timeout between commands
         return int(self.dut.odone.value)
 
     async def random_delay(self, upper_bound):

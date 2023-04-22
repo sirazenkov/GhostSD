@@ -47,15 +47,18 @@ class Transaction:
 RCA = randint(0, 1 << 16)
 
 transactions = (
-    Transaction(55, (1 << 16) - 1, 1 << 5),
-    Transaction(41, 1 << 31 | 3 << 20, 1 << 31 | 3 << 20),
-    Transaction(2, (1 << 32) - 1, 0),
-    Transaction(3, (1 << 32) - 1, RCA << 16),
-    Transaction(7, RCA << 16 | (1 << 16) - 1, 3 << 9),
-    Transaction(55, RCA << 16 | (1 << 16) - 1, 1 << 5),
-    Transaction(6, (1 << 32) - 2, 4 << 9),
-    Transaction(17, 0, 4 << 9),
-    Transaction(24, 0, 4 << 9),
-    Transaction(17, 1 << 9, 4 << 9 | 1 << 31),
+    Transaction(55, (1 << 16) - 1,             1 << 5),
+    Transaction(41, 1 << 31 | 3 << 20,         1 << 31 | 3 << 20),
+    Transaction(2,  (1 << 32) - 1,             0),
+    Transaction(3,  (1 << 32) - 1,             RCA << 16),
+    Transaction(9,  RCA << 16 | (1 << 16) - 1, 0),
+    Transaction(7,  RCA << 16 | (1 << 16) - 1, 3 << 9),
+    Transaction(55, RCA << 16 | (1 << 16) - 1, 4 << 9 | 1 << 5),
+    Transaction(6,  (1 << 32) - 2,             4 << 9),
+    Transaction(18, 0,                         4 << 9),
+    Transaction(12, (1 << 32) - 1,             5 << 9),
+    Transaction(25, 0,                         4 << 9),
+    Transaction(12, (1 << 32) - 1,             6 << 9),
+    Transaction(18, 1 << 12,                   4 << 9 | 1 << 31),
     Transaction(15, RCA << 16 | (1 << 16) - 1, 0)
 )

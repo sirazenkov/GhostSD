@@ -1,2 +1,0 @@
-parameter KEY = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
-parameter IV = 32'hb97b7f46;
