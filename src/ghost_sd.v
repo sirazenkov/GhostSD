@@ -52,7 +52,7 @@ module ghost_sd (
   wire sel_clk;
 
   clock_divider clock_divider_inst (
-    .irst(irst_n),
+    .irst(rst),
     .iclk(iclk),
     .isel_clk(sel_clk),
     .oclk_sd(clk_sd)
@@ -65,7 +65,7 @@ module ghost_sd (
   end
 
   reg debounce_rst = 1, rst = 0;
-  always @(posedge clk_sd) begin
+  always @(posedge iclk) begin
     debounce_rst <= irst_n;
     rst <= ~debounce_rst;
   end
