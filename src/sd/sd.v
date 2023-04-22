@@ -49,7 +49,6 @@ module sd (
 
     .istart(istart),
 
-    .istop_data    (stop_data),
     .iread_done    (read_done),
     .iwrite_done   (write_done),
 

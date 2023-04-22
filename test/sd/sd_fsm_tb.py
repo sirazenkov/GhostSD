@@ -12,7 +12,7 @@ logger.setLevel(logging.DEBUG)
 
 class SD_FSM_BFM():
 
-    inputs = ["start", "cmd_done", "resp", "stop_data", "read_done", "write_done", "otp_ready"]
+    inputs = ["start", "cmd_done", "resp", "read_done", "write_done", "otp_ready"]
     outputs = ["sel_clk", "gen_otp", "new_otp", "start_cmd", "index", "arg", "start_d", "fail", "success"]
 
     def __init__(self):
