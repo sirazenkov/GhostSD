@@ -1,11 +1,12 @@
 # GhostSD (Work in progress)
+
+[![design-simulation](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml/badge.svg)](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml)
+
 GOST-based SDSC-card encryptor implemented on boards:
 - [iCESugar-nano](https://github.com/wuxx/icesugar-nano)
 - [Tang Primer 20K](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html)
 
-[![design-simulation](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml/badge.svg)](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml)
-
-![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/photo.jpg?raw=true)
+![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/photo.png?raw=true)
 
 ### Directory structure
 docs - diagrams describing the project and photos \
