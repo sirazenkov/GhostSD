@@ -26,7 +26,6 @@ module d_driver (
   // RAM with processed data (for sending)
   input [3:0] irdata,
 
-  output reg ostop_data,
   output     oread_done,
   output     owrite_done
 );
@@ -89,15 +88,6 @@ module d_driver (
 
   assign oread_done  = state == WAIT_SEND;
   assign owrite_done = state == IDLE;
-
-  always @(posedge iclk or posedge irst) begin
-    if (irst)
-      ostop_data <= 1'b0;
-    else if ((state == RCV_DATA || state == SEND_DATA) && &counter_ram)
-      ostop_data <= 1'b1;
-    else
-      ostop_data <= 1'b0;
-  end
 
   always @(posedge iclk or posedge irst) begin
     if (irst) state <= IDLE;

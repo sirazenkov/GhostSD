@@ -12,7 +12,6 @@ module sd_fsm (
   input istart,
   input icmd_done,
   input [31:0] iresp,
-  input istop_data,
   input iread_done,
   input iwrite_done,
   input iotp_ready,
@@ -114,16 +113,16 @@ module sd_fsm (
     if (start && state == IDLE)
       next_state = CMD55;
     else if (state == READ) begin
-      if (istop_data || iwrite_done)
+      if (iread_done || iwrite_done)
         next_state = CMD12;
     end
     else if (state == WRITE) begin
-      if (istop_data)
+      if (iwrite_done)
         next_state = CMD12;
     end
     else if (state == WAIT) begin
-      if (iwrite_done)                   next_state = CMD18;
-      else if (iread_done && iotp_ready) next_state = CMD25;
+      if (iwrite_done)     next_state = CMD18;
+      else if (iotp_ready) next_state = CMD25;
     end
     else if (icmd_done) begin
       case(state)
