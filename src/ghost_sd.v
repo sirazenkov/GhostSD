@@ -105,7 +105,7 @@ module ghost_sd (
 
   otp_gen otp_gen_inst (
     .irst(rst),
-    .iclk(clk_sd),
+    .iclk(iclk),
 
     .istart(gen_otp),
   
@@ -131,7 +131,7 @@ module ghost_sd (
         .raddr   (addr),
         .din     (wdata_otp),
         .write_en(write_en_otp_ram[i]),
-        .wclk    (clk_sd),
+        .wclk    (iclk),
         .rclk    (clk_sd),
         .dout    (rdata_otp[i])
       );

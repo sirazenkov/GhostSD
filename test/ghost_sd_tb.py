@@ -25,18 +25,18 @@ class GhostSD_BFM():
 
     async def start_operation(self):
         await FallingEdge(self.dut.oclk_sd)
-        self.dut.istart.value = 1
+        self.dut.istart_n.value = 0
         await FallingEdge(self.dut.oclk_sd)
-        self.dut.istart.value = 0
+        self.dut.istart_n.value = 1
 
     async def reset(self):
         await FallingEdge(self.dut.iclk)
-        self.dut.irst.value      = 1 
+        self.dut.irst_n.value    = 0 
         self.dut.iocmd_sd.value  = 1
         self.dut.iodata_sd.value = 0xF
-        self.dut.istart.value    = 0
+        self.dut.istart_n.value  = 1
         await FallingEdge(self.dut.iclk)
-        self.dut.irst.value = 0
+        self.dut.irst_n.value = 1
         await FallingEdge(self.dut.iclk)
 
     async def check_cmd_field(self, field, length):
@@ -79,36 +79,40 @@ class GhostSD_BFM():
         await FallingEdge(self.dut.oclk_sd)
         return
 
-    async def send_block(self, block, crc_packets):
-        await FallingEdge(self.dut.oclk_sd)
-        self.dut.iodata_sd.value = 0 # Start bit
-        await FallingEdge(self.dut.oclk_sd)
-        for i in range(1024):
-            self.dut.iodata_sd.value = block[i]
+    async def send_blocks(self, blocks, crc_packets):
+        for j in range(8):
             await FallingEdge(self.dut.oclk_sd)
-        for i in range(16):
-            self.dut.iodata_sd.value = crc_packets[i]
+            self.dut.iodata_sd.value = 0 # Start bit
             await FallingEdge(self.dut.oclk_sd)
-        self.dut.iodata_sd.value = 0xF # End bit
+            for i in range(1024):
+                self.dut.iodata_sd.value = blocks[j][i]
+                await FallingEdge(self.dut.oclk_sd)
+            for i in range(16):
+                self.dut.iodata_sd.value = crc_packets[j][i]
+                await FallingEdge(self.dut.oclk_sd)
+            self.dut.iodata_sd.value = 0xF # End bit
 
-    async def receive_block(self):
-        await FallingEdge(self.dut.odata0_sd)
-        await ClockCycles(self.dut.oclk_sd, 2, rising=False)
-        block = []
-        for i in range(1024):
-            block.append(int(self.dut.odata_sd.value))
+    async def receive_blocks(self):
+        blocks = [[] for i in range(8)]
+        for j in range(8):
+            await FallingEdge(self.dut.odata0_sd)
+            await ClockCycles(self.dut.oclk_sd, 2, rising=False)
+            for i in range(1024):
+                blocks[j].append(int(self.dut.odata_sd.value))
+                await FallingEdge(self.dut.oclk_sd)
+            for i in range(16):
+                await FallingEdge(self.dut.oclk_sd)
             await FallingEdge(self.dut.oclk_sd)
-        for i in range(16):
-            await FallingEdge(self.dut.oclk_sd)
-        await FallingEdge(self.dut.oclk_sd)
-        self.dut.iodata_sd.value = 0xF # Not busy
-        return block
+            self.dut.iodata_sd.value = 0xE # Busy
+            await self.random_delay(10);
+            self.dut.iodata_sd.value = 0xF
+        return blocks
 
     async def check_finish(self):
         return (int(self.dut.osuccess.value), int(self.dut.ofail.value)) == (1,0)
 
     async def random_delay(self, upper_bound):
-        delay = randint(0,upper_bound)
+        delay = randint(1,upper_bound)
         await ClockCycles(self.dut.oclk_sd, delay)
 
 @cocotb.test()
@@ -119,9 +123,9 @@ async def ghost_sd_tb(_):
     cocotb.start_soon(Clock(bfm.dut.iclk, 27, units="ns").start())
     await bfm.reset()
     
-    block = [randint(0,15) for i in range(1024)]
-    original_block = block
-    crc_packets = gen_crc16_packets(block)
+    blocks = [[randint(0,15) for i in range(1024)] for j in range(8)]
+    original_blocks = blocks
+    crc_packets = [gen_crc16_packets(block) for block in blocks]
 
     for i in range(2): # Encrypt, decrypt
         await bfm.start_operation()
@@ -159,22 +163,22 @@ async def ghost_sd_tb(_):
             await bfm.random_delay(10)
             await bfm.send_response(trans.index, trans.resp, trans.resp_crc)
             logger.info(f"Response {trans.resp} for {trans.index} sent!");
-            if(trans.index == 17 and trans.arg == 0):
-                await bfm.send_block(block, crc_packets)
-                logger.info(f"Block of data sent!");
-            elif(trans.index == 24):
-                received_block = await bfm.receive_block()
-                logger.info(f"Block of data received!");
+            if(trans.index == 18 and trans.arg == 0):
+                await bfm.send_blocks(blocks, crc_packets)
+                logger.info(f"Blocks of data sent!");
+            elif(trans.index == 25):
+                received_blocks = await bfm.receive_blocks()
+                logger.info(f"Blocks of data received!");
                 if(i == 1):
-                    if(received_block == original_block):
+                    if(received_blocks == original_blocks):
                         logger.info("GhostSD operation is valid!")
                     else:
                         logger.error("GhostSD operation is invalid!")
                         passed = False
                         break
                 else:
-                    block = received_block
-                    crc_packets = gen_crc16_packets(block)
+                    blocks = received_blocks
+                    crc_packets = [gen_crc16_packets(block) for block in blocks]
         if(not passed):
             break 
         await ClockCycles(bfm.dut.oclk_sd, 2, rising=False)
