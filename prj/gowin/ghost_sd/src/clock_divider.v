@@ -15,6 +15,7 @@ module clock_divider (
   wire fast_clk, slow_clk;
 
   Gowin_rPLL rPLL_inst (
+        .reset(irst),
         .clkout(fast_clk),  //output clkout
         .clkoutd(slow_clk), //output clkoutd
         .clkin(iclk)        //input clkin

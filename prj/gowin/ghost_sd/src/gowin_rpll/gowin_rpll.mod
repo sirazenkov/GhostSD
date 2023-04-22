@@ -19,7 +19,7 @@
 -odiv_sel 32
 -dyn_sdiv_sel 60
 -dyn_da_en true
--rst_sig false
+-rst_sig true
 -rst_sig_p false
 -fclkin 27
 -clkfb_sel 0

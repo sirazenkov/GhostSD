@@ -25,4 +25,4 @@ LANG=0
 LOCK_EN=false
 MODE_GENERAL=true
 PLL_PWD=false
-RESET_PLL=false
+RESET_PLL=true
