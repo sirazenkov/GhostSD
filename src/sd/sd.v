@@ -39,7 +39,7 @@ module sd (
 );
 
   wire start_cmd, cmd_done;
-  wire start_d, read_done, write_done;
+  wire start_d, check_status, read_done, write_done;
   wire [5:0]  index;
   wire [31:0] resp, arg;
 
@@ -49,6 +49,7 @@ module sd (
 
     .istart(istart),
 
+    .icheck_status (check_status),
     .iread_done    (read_done),
     .iwrite_done   (write_done),
 
@@ -106,6 +107,7 @@ module sd (
     .owrite_en(owrite_en),
     .irdata   (irdata),
 
+    .ocheck_status(check_status),
     .oread_done (read_done),
     .owrite_done(write_done)
   );

@@ -26,6 +26,7 @@ module d_driver (
   // RAM with processed data (for sending)
   input [3:0] irdata,
 
+  output reg ocheck_status,
   output     oread_done,
   output     owrite_done
 );
@@ -86,6 +87,15 @@ module d_driver (
   assign oaddr     = counter[9:0];
   assign owrite_en = state == RCV_DATA;
 
+  always @(posedge iclk or posedge irst) begin
+    if (irst)
+      ocheck_status <= 1'b0;
+    else if (state != next_state & next_state == BUSY)
+      ocheck_status <= 1'b1;
+    else
+      ocheck_status <= 1'b0;
+  end
+
   assign oread_done  = state == WAIT_SEND;
   assign owrite_done = state == IDLE;
 
@@ -97,17 +107,17 @@ module d_driver (
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE:      if (istart)                  next_state = WAIT_RCV;
-      WAIT_RCV:  if (~|data)                  next_state = RCV_DATA;
-      RCV_DATA:  if (&counter[9:0])           next_state = CHECK_CRC;
-      CHECK_CRC: if (counter[4])              next_state = &counter_ram ? WAIT_SEND : WAIT_RCV;
-                 else if (crc != data)        next_state = IDLE;
-      WAIT_SEND: if (istart)                  next_state = SEND_DATA; // Wait until data is processed
-      SEND_DATA: if (counter[10])             next_state = SEND_CRC;
-      SEND_CRC:  if (counter[4])              next_state = SEND_END;
-      SEND_END:                               next_state = BUSY;
-      BUSY:      if (idata_sd[0] && ~data[0]) next_state = &counter_ram ? IDLE : SEND_DATA;
-      default:                                next_state = IDLE;
+      IDLE:      if (istart)           next_state = WAIT_RCV;
+      WAIT_RCV:  if (~|data)           next_state = RCV_DATA;
+      RCV_DATA:  if (&counter[9:0])    next_state = CHECK_CRC;
+      CHECK_CRC: if (counter[4])       next_state = &counter_ram ? WAIT_SEND : WAIT_RCV;
+                 else if (crc != data) next_state = IDLE;
+      WAIT_SEND: if (istart)           next_state = SEND_DATA; // Wait until data is processed
+      SEND_DATA: if (counter[10])      next_state = SEND_CRC;
+      SEND_CRC:  if (counter[4])       next_state = SEND_END;
+      SEND_END:                        next_state = BUSY;
+      BUSY:      if (istart)           next_state = &counter_ram ? IDLE : SEND_DATA;
+      default:                         next_state = IDLE;
     endcase
   end
 
