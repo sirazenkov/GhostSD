@@ -41,7 +41,8 @@ module sd (
   wire start_cmd, cmd_done;
   wire start_d, check_status, read_done, write_done;
   wire [5:0]  index;
-  wire [31:0] resp, arg;
+  wire [31:0] arg;
+  wire [75:0] resp;
 
   sd_fsm sd_fsm_inst (
     .irst(irst),

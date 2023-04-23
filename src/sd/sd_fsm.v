@@ -11,7 +11,7 @@ module sd_fsm (
 
   input istart,
   input icmd_done,
-  input [31:0] iresp,
+  input [75:0] iresp,
   input iread_done,
   input icheck_status,
   input iwrite_done,
@@ -89,6 +89,14 @@ module sd_fsm (
       rca <= iresp[31:16];
   end
 
+  reg [19:0] max_addr_sd;
+  always @(posedge iclk or posedge irst) begin
+    if (irst)
+      max_addr_sd <= 20'd0;
+    else if (state != next_state && state == CMD9)
+      max_addr_sd <= (iresp[65:54]+1'b1) << (iresp[75:72]+iresp[41:39]-10);
+  end
+
   always @(*) begin
     oarg = {32{1'b1}};
     if (state == CMD55 && ~osel_clk)
@@ -146,9 +154,9 @@ module sd_fsm (
         ACMD23:  next_state = CMD25;
         CMD25:   next_state = WRITE;
         CMD13:   next_state = iresp[8] ? (!iwrite_done ? WRITE : 
-                                                         iresp[12:9] == 4'd4 ? CMD18 :
-                                                                              CMD13) : 
-                                          CMD13;
+                              iresp[12:9] != 4'd4 ? CMD13 :
+                              (addr_sd == max_addr_sd ? CMD15 : 
+                              CMD18) ) : CMD13;
         default: next_state = IDLE;
       endcase
     end

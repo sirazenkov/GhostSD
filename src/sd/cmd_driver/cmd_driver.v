@@ -19,7 +19,7 @@ module cmd_driver (
   input [5:0]  icmd_index, // Command index
   input [31:0] icmd_arg,   // Command argument  
 
-  output [31:0] oresp, // Received response
+  output [75:0] oresp, // Received response
   output        odone  // Operation done
 );
 
@@ -45,7 +45,7 @@ module cmd_driver (
 
   reg [7:0]  counter     =  8'd0;
   reg        crc_failed  =  1'b0;
-  reg [39:0] cmd_content = 40'd0;
+  reg [75:0] cmd_content = 76'd0;
 
   wire change_state;
   assign change_state = ~|counter;
@@ -55,7 +55,7 @@ module cmd_driver (
   wire crc_data, crc;
  
   assign rst_crc = irst || state == IDLE || state == WAIT_RESP;
-  assign crc_data = state == RCV_RESP ? icmd_sd : cmd_content[39];
+  assign crc_data = state == RCV_RESP ? icmd_sd : cmd_content[75];
   assign unload = state == SEND_CRC || state == RCV_CRC;
 
   crc7 crc7_inst (
@@ -111,19 +111,19 @@ module cmd_driver (
 
   always @(posedge iclk or posedge irst) begin
     if (irst) 
-      cmd_content <= 40'd0;
+      cmd_content <= 76'd0;
     else if (state == IDLE && next_state == SEND_CMD)
-      cmd_content <= {1'b0, 1'b1, icmd_index, icmd_arg};
+      cmd_content <= {1'b0, 1'b1, icmd_index, icmd_arg, 36'd0};
     else if (state == SEND_CMD)  
-      cmd_content <= {cmd_content[38:0], 1'b0};
+      cmd_content <= {cmd_content[74:0], 1'b0};
     else if (state == RCV_RESP)
-      cmd_content <= {cmd_content[38:0], icmd_sd};
+      cmd_content <= {cmd_content[74:0], icmd_sd};
   end
 
-  assign ocmd_sd = (state == SEND_CMD) ? cmd_content[39] :
+  assign ocmd_sd = (state == SEND_CMD) ? cmd_content[75] :
                    (state == SEND_CRC) ? crc : 1'b1;
   assign ocmd_sd_en = state == SEND_CMD || state == SEND_CRC || state == SEND_END;
-  assign oresp = cmd_content[31:0];
+  assign oresp = cmd_content[75:0];
   assign odone = state == DONE;
 
 endmodule
