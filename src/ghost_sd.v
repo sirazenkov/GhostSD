@@ -28,7 +28,7 @@ module ghost_sd (
       $dumpvars(0, ghost_sd);
       #1;
     end
-  `endif  
+  `endif
 
   wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
 
@@ -51,6 +51,12 @@ module ghost_sd (
 
   wire sel_clk;
 
+  reg debounce_rst = 1, rst = 0;
+  always @(posedge iclk) begin
+    debounce_rst <= irst_n;
+    rst <= ~debounce_rst;
+  end
+
   clock_divider clock_divider_inst (
     .irst(rst),
     .iclk(iclk),
@@ -62,12 +68,6 @@ module ghost_sd (
   always @(posedge clk_sd) begin
     debounce_start <= istart_n;
     start <= ~debounce_start;
-  end
-
-  reg debounce_rst = 1, rst = 0;
-  always @(posedge iclk) begin
-    debounce_rst <= irst_n;
-    rst <= ~debounce_rst;
   end
 
   sd sd_inst (
