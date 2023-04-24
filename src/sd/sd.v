@@ -39,7 +39,7 @@ module sd (
 );
 
   wire start_cmd, cmd_done;
-  wire start_d, check_status, read_done, write_done;
+  wire status_d, start_d, check_status, read_done, write_done;
   wire [5:0]  index;
   wire [31:0] arg;
   wire [75:0] resp;
@@ -66,7 +66,8 @@ module sd (
     .icmd_done (cmd_done),
     .iresp     (resp),
     
-    .ostart_d(start_d),
+    .ostatus_d(status_d),
+    .ostart_d (start_d),
 
     .ofail   (ofail),
     .osuccess(osuccess)
@@ -100,6 +101,7 @@ module sd (
     .odata_sd   (odata_sd),
     .odata_sd_en(odata_sd_en),
 
+    .istatus(status_d),
     .istart (start_d),
 
     .osel_ram (osel_ram),
