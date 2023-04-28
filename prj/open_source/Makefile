@@ -26,12 +26,12 @@ bitstream:
 
 ###### Use sudo ######
 program:
-	icesprog work/ghost_sd.bin
-	icesprog -c 3
 	icesprog -g PA7 -m out
 	icesprog -g PA5 -m out
 	icesprog -g PA7 -w 1
 	icesprog -g PA5 -w 1
+	icesprog work/ghost_sd.bin
+	icesprog -c 3
 
 reset:
 	icesprog -g PA7 -w o
