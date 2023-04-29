@@ -6,18 +6,18 @@
 
 -mod_name Gowin_rPLL
 -file_name gowin_rpll
--path C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/prj/gowin/ghost_sd/src/gowin_rpll/
+-path C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/prj/gowin/src/gowin_rpll/
 -type PLL
 -rPll true
 -file_type vlg
 -dev_type GW2A-18C
 -dyn_idiv_sel false
--idiv_sel 5
+-idiv_sel 3
 -dyn_fbdiv_sel false
--fbdiv_sel 9
+-fbdiv_sel 11
 -dyn_odiv_sel false
--odiv_sel 16
--dyn_sdiv_sel 122
+-odiv_sel 8
+-dyn_sdiv_sel 124
 -dyn_da_en true
 -rst_sig true
 -rst_sig_p false

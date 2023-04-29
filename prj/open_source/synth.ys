@@ -14,8 +14,9 @@ read_verilog ../../src/sd/cmd_driver/crc7.v
 read_verilog ../../src/sd/d_driver/d_driver.v
 read_verilog ../../src/sd/d_driver/crc16.v
 
-proc
-opt
-
-synth_ice40 -top ghost_sd -json work/ghost_sd.json
+synth_ice40 -top ghost_sd \
+            -json work/ghost_sd.json \
+            -abc9 \
+            -device lp \
+            -abc2
 

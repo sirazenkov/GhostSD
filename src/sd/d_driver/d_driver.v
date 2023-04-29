@@ -5,7 +5,10 @@
 //description: D lines driver
 //===============================
 
-module d_driver (
+module d_driver
+#(
+  parameter RAM_BLOCKS = 8
+)(
   input irst, // Global reset
   input iclk, // SD clock
 
@@ -17,7 +20,8 @@ module d_driver (
   input istatus,
   input istart,
 
-  output [2:0] osel_ram,
+  output [$clog2(RAM_BLOCKS)-1:0] osel_ram,
+
   output [9:0] oaddr, // Data address in RAM
 
   // RAM for received data
@@ -55,9 +59,10 @@ module d_driver (
     BUSY           = 4'b1010;
   reg [3:0] state = IDLE, next_state;
 
-  reg [3:0]  data        =  4'd0;
-  reg [10:0] counter     = 11'd0;
-  reg [2:0]  counter_ram =  3'd0;
+  reg [3:0]  data    =  4'd0;
+  reg [10:0] counter = 11'd0;
+
+  reg [$clog2(RAM_BLOCKS)-1:0] counter_ram = {($clog2(RAM_BLOCKS)){1'b0}};
 
   wire unload = state == CHECK_CRC || state == SEND_CRC;
 
@@ -144,9 +149,10 @@ module d_driver (
 
   always @(posedge iclk or posedge irst) begin
     if (irst)
-      counter_ram <= 3'd0;
+      counter_ram <= {($clog2(RAM_BLOCKS)){1'b0}};
     else if (state != next_state && (state == CHECK_CRC || state == BUSY))
-      counter_ram <= next_state == WAIT_RCV || next_state == SEND_DATA ? counter_ram + 1'b1 : 3'd0;
+      counter_ram <= next_state == WAIT_RCV || next_state == SEND_DATA ? counter_ram + 1'b1 :
+                                                                         {($clog2(RAM_BLOCKS)){1'b0}};
   end
 
   always @(posedge iclk or posedge irst) begin

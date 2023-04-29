@@ -19,8 +19,17 @@ module ghost_sd (
   output osuccess,
   output ofail
 );
+
   parameter KEY = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
   parameter IV = 32'hb97b7f46;
+
+  `ifdef COCOTB_SIM
+    parameter RAM_BLOCKS = 8;
+  `elsif YOSYS
+    parameter RAM_BLOCKS = 8;
+  `else
+    parameter RAM_BLOCKS = 16;
+  `endif
 
   `ifdef COCOTB_SIM
     initial begin
@@ -35,17 +44,18 @@ module ghost_sd (
   wire [3:0] idata_sd, odata_sd;
   wire       data_sd_en;
 
-  wire gen_otp, otp_ready, new_otp;
+  wire gen_otp, otp_ready, new_otp, clk_otp;
 
-  wire [2:0] sel_ram,      sel_ram_otp;
+  wire [$clog2(RAM_BLOCKS)-1:0] sel_ram, sel_ram_otp;
+
   wire       write_en_raw, write_en_otp;
   wire [3:0] wdata_raw,    wdata_otp;
   wire [9:0] addr,         addr_otp;
   wire [3:0] block_otp,    block_raw;
   wire [3:0] res_block;
 
-  wire [3:0] rdata_raw [0:7], rdata_otp [0:7];
-  wire [7:0] write_en_raw_ram, write_en_otp_ram;
+  wire [3:0] rdata_raw [0:RAM_BLOCKS-1], rdata_otp [0:RAM_BLOCKS-1];
+  wire [RAM_BLOCKS-1:0] write_en_raw_ram, write_en_otp_ram;
 
   wire success, fail;
 
@@ -61,6 +71,7 @@ module ghost_sd (
     .irst(rst),
     .iclk(iclk),
     .isel_clk(sel_clk),
+    .oclk_otp(clk_otp),
     .oclk_sd(clk_sd)
   );
 
@@ -70,7 +81,9 @@ module ghost_sd (
     start <= ~debounce_start;
   end
 
-  sd sd_inst (
+  sd #(
+    .RAM_BLOCKS(RAM_BLOCKS)
+  ) sd_inst (
     .irst(rst),
     .iclk(clk_sd),
 
@@ -103,9 +116,11 @@ module ghost_sd (
     .ofail   (fail)
   );
 
-  otp_gen otp_gen_inst (
+  otp_gen #(
+    .RAM_BLOCKS(RAM_BLOCKS)
+  ) otp_gen_inst (
     .irst(rst),
-    .iclk(clk_sd),
+    .iclk(clk_otp),
 
     .istart(gen_otp),
   
@@ -124,14 +139,14 @@ module ghost_sd (
 
   genvar i;
   generate
-    for(i = 0; i < 8; i = i + 1) begin : ram
+    for(i = 0; i < RAM_BLOCKS; i = i + 1) begin : ram
       assign write_en_otp_ram[i] = write_en_otp & (sel_ram_otp == i);
       ram_4k_block otp_block (
         .waddr   (addr_otp),
         .raddr   (addr),
         .din     (wdata_otp),
         .write_en(write_en_otp_ram[i]),
-        .wclk    (clk_sd),
+        .wclk    (clk_otp),
         .rclk    (clk_sd),
         .dout    (rdata_otp[i])
       );
