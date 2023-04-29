@@ -44,7 +44,7 @@ module ghost_sd (
   wire [3:0] idata_sd, odata_sd;
   wire       data_sd_en;
 
-  wire gen_otp, otp_ready, new_otp;
+  wire gen_otp, otp_ready, new_otp, clk_otp;
 
   wire [$clog2(RAM_BLOCKS)-1:0] sel_ram, sel_ram_otp;
 
@@ -71,6 +71,7 @@ module ghost_sd (
     .irst(rst),
     .iclk(iclk),
     .isel_clk(sel_clk),
+    .oclk_otp(clk_otp),
     .oclk_sd(clk_sd)
   );
 
@@ -119,12 +120,7 @@ module ghost_sd (
     .RAM_BLOCKS(RAM_BLOCKS)
   ) otp_gen_inst (
     .irst(rst),
-    
-    `ifdef YOSYS
-    .iclk(iclk),
-    `else
-    .iclk(clk_sd),
-    `endif
+    .iclk(clk_otp),
 
     .istart(gen_otp),
   
@@ -150,13 +146,7 @@ module ghost_sd (
         .raddr   (addr),
         .din     (wdata_otp),
         .write_en(write_en_otp_ram[i]),
-
-        `ifdef YOSYS
-        .wclk(iclk),
-        `else
-        .wclk(clk_sd),
-         `endif
-
+        .wclk    (clk_otp),
         .rclk    (clk_sd),
         .dout    (rdata_otp[i])
       );
