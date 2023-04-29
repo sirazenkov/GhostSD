@@ -5,7 +5,10 @@
 //description: SD Bus controller
 //===============================
 
-module sd (
+module sd
+#(
+  parameter RAM_BLOCKS = 8
+)(
   input irst, // Global reset
   input iclk, // System clock (36 MHz)
   
@@ -28,7 +31,8 @@ module sd (
   input  iotp_ready, // One-time pad block ready
 
   // RAM blocks
-  output [2:0] osel_ram, // Select RAM block
+  output [$clog2(RAM_BLOCKS)-1:0] osel_ram, // Select RAM block
+
   output [9:0] oaddr,  // Data address in RAM
   input  [3:0] irdata, // RAM with processed data (for sending)
   output [3:0] owdata, // RAM for received data
@@ -44,7 +48,9 @@ module sd (
   wire [31:0] arg;
   wire [75:0] resp;
 
-  sd_fsm sd_fsm_inst (
+  sd_fsm #(
+    .RAM_BLOCKS(RAM_BLOCKS)
+  ) sd_fsm_inst (
     .irst(irst),
     .iclk(iclk),
 
@@ -92,7 +98,9 @@ module sd (
   );
   
   // D lines driver
-  d_driver d_driver_inst (
+  d_driver #(
+    .RAM_BLOCKS(RAM_BLOCKS)
+  ) d_driver_inst (
     .irst(irst),
     .iclk(iclk),
 

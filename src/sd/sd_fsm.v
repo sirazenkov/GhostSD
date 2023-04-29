@@ -5,7 +5,10 @@
 //description: SD Bus controller FSM
 //==================================
 
-module sd_fsm (
+module sd_fsm
+#(
+  parameter RAM_BLOCKS = 8
+)(
   input irst,
   input iclk,
 
@@ -71,14 +74,14 @@ module sd_fsm (
 
   assign oindex = state;
 
-  reg [19:0] addr_sd = 20'd0;
+  reg [31-9-$clog2(RAM_BLOCKS):0] addr_sd = (32-9-$clog2(RAM_BLOCKS))'d0;
   always @(posedge iclk or posedge irst) begin
     if (irst)
-      addr_sd <= 20'd0;
+      addr_sd <= (32-9-$clog2(RAM_BLOCKS))'d0;
     else if (state == WRITE && next_state == CMD12)
       addr_sd <= addr_sd + 1'b1;
     else if (state == CMD15)
-      addr_sd <= 20'd0;
+      addr_sd <= (32-9-$clog2(RAM_BLOCKS))'d0;
   end
 
   reg [15:0] rca = 16'd0;
@@ -89,12 +92,12 @@ module sd_fsm (
       rca <= iresp[31:16];
   end
 
-  reg [19:0] max_addr_sd;
+  reg [31-9-$clog2(RAM_BLOCKS):0] max_addr_sd = (32-9-$clog2(RAM_BLOCKS))'d0;
   always @(posedge iclk or posedge irst) begin
     if (irst)
-      max_addr_sd <= 20'd0;
+      max_addr_sd <= (32-9-$clog2(RAM_BLOCKS))'d0;
     else if (state != next_state && state == CMD9)
-      max_addr_sd <= (iresp[65:54]+1'b1) << (iresp[75:72]+iresp[41:39]-10);
+      max_addr_sd <= (iresp[65:54]+1'b1) << (iresp[75:72]+iresp[41:39]+2-9-$clog2(RAM_BLOCKS));
   end
 
   always @(*) begin
@@ -114,8 +117,8 @@ module sd_fsm (
     else if (state == ACMD23)
       oarg[22:0] = 23'd8;
     else if (state == CMD18 || state == CMD25) begin
-      oarg[11:0]  = 12'd0;
-      oarg[31:12] = addr_sd;
+      oarg[9+$clog2(RAM_BLOCKS)-1:0] = (9+$clog2(RAM_BLOCKS))'d0;
+      oarg[31:9+$clog2(RAM_BLOCKS)] = addr_sd;
     end
   end
 
