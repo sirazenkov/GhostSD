@@ -7,7 +7,6 @@
     <FileList>
         <File path="src/clock_divider.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_clkdiv/gowin_clkdiv2.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_clkdiv/gowin_clkdiv4.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_dcs/gowin_dcs.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
         <File path="../../src/ghost_sd.v" type="file.verilog" enable="1"/>

@@ -22,13 +22,13 @@ module clock_divider (
         .clkin(iclk)        //input clkin
     );
 
-  Gowin_CLKDIV2 CLKDIV2_inst (
+  Gowin_CLKDIV2 CLKDIV2_slow_inst (
         .clkout(slow_clk), //output clkout
         .hclkin(clk_0p8M), //input hclkin
         .resetn(~irst)     //input resetn
   );
 
-  Gowin_CLKDIV4 CLKDIV4_inst (
+  Gowin_CLKDIV2 CLKDIV2_fast_inst (
         .clkout(fast_clk), //output clkout
         .hclkin(oclk_otp), //input hclkin
         .resetn(~irst)     //input resetn
