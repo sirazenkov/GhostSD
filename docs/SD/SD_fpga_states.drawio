@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-04-24T18:33:02.221Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="EOqEWD_3F7AkQh6o3NsC" version="21.1.2" type="device">
+<mxfile host="Electron" modified="2023-04-29T18:04:22.098Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="4nqOUjHkrt_Wfsh96tVs" version="21.1.2" type="device">
   <diagram id="W-F6sWLnjnpeOiXVLfIf" name="Страница 1">
-    <mxGraphModel dx="467" dy="305" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
+    <mxGraphModel dx="780" dy="504" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -485,12 +485,12 @@
             <Array as="points" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="aPma8QNDWVgNgcFO_JeX-3" value="!write_done &amp;amp; resp[8] &amp;amp; resp[12:9] == 7 / start_d" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;rotation=10;" parent="FiximQ_GM6fYsw_34OFd-23" vertex="1" connectable="0">
+        <mxCell id="aPma8QNDWVgNgcFO_JeX-3" value="!write_done &amp;amp; resp[8] &amp;amp; resp[12:9] == 6 / start_d" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;rotation=10;" parent="FiximQ_GM6fYsw_34OFd-23" vertex="1" connectable="0">
           <mxGeometry x="-0.0083" y="11" relative="1" as="geometry">
             <mxPoint x="-1" y="-22" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="aPma8QNDWVgNgcFO_JeX-1" value="Status bits: prg state and ready for data" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=14;position=0.48;position2=0.47;base=10;" parent="1" vertex="1">
+        <mxCell id="aPma8QNDWVgNgcFO_JeX-1" value="Status bits: rcv state and ready for data" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=14;position=0.48;position2=0.47;base=10;" parent="1" vertex="1">
           <mxGeometry x="266" y="817" width="136.5" height="42" as="geometry" />
         </mxCell>
         <mxCell id="aPma8QNDWVgNgcFO_JeX-4" value="Read card status" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;size=10;position=0.58;position2=0.88;base=10;" parent="1" vertex="1">
