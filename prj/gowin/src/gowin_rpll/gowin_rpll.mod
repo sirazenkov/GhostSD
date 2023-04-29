@@ -12,12 +12,12 @@
 -file_type vlg
 -dev_type GW2A-18C
 -dyn_idiv_sel false
--idiv_sel 9
+-idiv_sel 3
 -dyn_fbdiv_sel false
--fbdiv_sel 25
+-fbdiv_sel 11
 -dyn_odiv_sel false
 -odiv_sel 8
--dyn_sdiv_sel 94
+-dyn_sdiv_sel 124
 -dyn_da_en true
 -rst_sig true
 -rst_sig_p false
@@ -31,5 +31,4 @@
 -en_clkoutd true
 -clkoutd_bypass false
 -clkoutd_src CLKOUT
--en_clkoutd3 true
--clkoutd3_src CLKOUT
+-en_clkoutd3 false

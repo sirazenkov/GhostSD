@@ -4,8 +4,8 @@
 -part_number GW2A-LV18PG256C8/I7
 
 
--mod_name Gowin_CLKDIV
--file_name gowin_clkdiv
+-mod_name Gowin_CLKDIV2
+-file_name gowin_clkdiv2
 -path C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/prj/gowin/src/gowin_clkdiv/
 -type CLKDIV
 -file_type vlg
