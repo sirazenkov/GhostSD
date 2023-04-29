@@ -16,7 +16,9 @@ placeNroute:
 	--threads 4 \
 	--tmg-ripup \
 	--parallel-refine \
-	--pre-pack constraints.py
+	--promote-logic \
+	--pre-pack constraints.py \
+	--seed 3
 
 timing:
 	icetime -d lp1k -P cm36 -p ghost_sd.pcf work/ghost_sd.asc -c 36 -m -t
