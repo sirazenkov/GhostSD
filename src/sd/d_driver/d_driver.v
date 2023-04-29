@@ -58,7 +58,7 @@ module d_driver
   reg [3:0]  data    =  4'd0;
   reg [10:0] counter = 11'd0;
 
-  reg [$clog2(RAM_BLOCKS)-1:0] counter_ram = ($clog2(RAM_BLOCKS))'d0;
+  reg [$clog2(RAM_BLOCKS)-1:0] counter_ram = {($clog2(RAM_BLOCKS)){1'b0}};
 
   wire unload = state == CHECK_CRC || state == SEND_CRC;
 
@@ -141,10 +141,10 @@ module d_driver
 
   always @(posedge iclk or posedge irst) begin
     if (irst)
-      counter_ram <= ($clog2(RAM_BLOCKS))'d0;
+      counter_ram <= {($clog2(RAM_BLOCKS)){1'b0}};
     else if (state != next_state && (state == CHECK_CRC || state == BUSY))
       counter_ram <= next_state == WAIT_RCV || next_state == SEND_DATA ? counter_ram + 1'b1 :
-                                                                         ($clog2(RAM_BLOCKS))'d0;
+                                                                         {($clog2(RAM_BLOCKS)){1'b0}};
   end
 
   always @(posedge iclk or posedge irst) begin

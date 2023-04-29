@@ -35,7 +35,7 @@ module otp_gen
     WRITE_BLOCK = 2'b11;
   reg [1:0] state = IDLE, next_state;
 
-  reg [9+$clog2(RAM_BLOCKS):0] counter = (10+$clog2(RAM_BLOCKS))'d0;
+  reg [9+$clog2(RAM_BLOCKS):0] counter = {(10+$clog2(RAM_BLOCKS)){1'b0}};
 
   always @(*) begin
     next_state = state;
@@ -66,7 +66,7 @@ module otp_gen
 
   always @(posedge iclk or posedge irst) begin
     if (irst) begin
-      counter     <= (10+$clog2(RAM_BLOCKS))'d0;
+      counter     <= {(10+$clog2(RAM_BLOCKS)){1'b0}};
       plain_block <= 64'd0;
     end else begin
       case(state)
