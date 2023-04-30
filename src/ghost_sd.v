@@ -6,12 +6,7 @@
 //==========================================
 
 module ghost_sd (
-  `ifdef YOSYS
   input irst_n,
-  `elsif COCOTB_SIM
-  input irst_n,
-  `endif
-
   input iclk, // System clock
 
   input istart_n,  
@@ -66,28 +61,14 @@ module ghost_sd (
 
   wire sel_clk;
 
-  `ifdef YOSYS
   reg debounce_rst = 1, rst = 0;
   always @(posedge iclk) begin
     debounce_rst <= irst_n;
     rst <= ~debounce_rst;
   end
-  `elsif COCOTB_SIM
-  wire rst;
-  assign rst = ~irst_n;
-  `else
-  wire rst;
-  `endif
 
   clock_divider clock_divider_inst (
-    `ifdef YOSYS
     .irst(rst),
-    `elsif COCOTB_SIM
-    .irst(rst),
-    `else
-    .orst(rst),
-    `endif
-
     .iclk(iclk),
     .isel_clk(sel_clk),
     .oclk_otp(clk_otp),

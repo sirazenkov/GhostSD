@@ -4,15 +4,16 @@
 //GOWIN Version: V1.9.8.07 Education
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18C
-//Created Time: Sun Apr 30 12:39:54 2023
+//Created Time: Sun Apr 30 13:02:45 2023
 
-module Gowin_rPLL (clkout, lock, clkoutd, clkin);
+module Gowin_rPLL (clkout, clkoutd, reset, clkin);
 
 output clkout;
-output lock;
 output clkoutd;
+input reset;
 input clkin;
 
+wire lock_o;
 wire clkoutp_o;
 wire clkoutd3_o;
 wire gw_gnd;
@@ -21,11 +22,11 @@ assign gw_gnd = 1'b0;
 
 rPLL rpll_inst (
     .CLKOUT(clkout),
-    .LOCK(lock),
+    .LOCK(lock_o),
     .CLKOUTP(clkoutp_o),
     .CLKOUTD(clkoutd),
     .CLKOUTD3(clkoutd3_o),
-    .RESET(gw_gnd),
+    .RESET(reset),
     .RESET_P(gw_gnd),
     .CLKIN(clkin),
     .CLKFB(gw_gnd),
