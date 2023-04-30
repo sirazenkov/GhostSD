@@ -17,13 +17,13 @@
 -fbdiv_sel 11
 -dyn_odiv_sel false
 -odiv_sel 8
--dyn_sdiv_sel 124
+-dyn_sdiv_sel 128
 -dyn_da_en true
--rst_sig true
+-rst_sig false
 -rst_sig_p false
 -fclkin 27
 -clkfb_sel 0
--en_lock false
+-en_lock true
 -clkout_bypass false
 -clkout_ft_dir 1
 -en_clkoutp false

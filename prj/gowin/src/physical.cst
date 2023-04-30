@@ -26,7 +26,4 @@ IO_LOC "istart_n" C7;
 IO_PORT "istart_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
 IO_LOC "iclk" H11;
 IO_PORT "iclk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
-IO_LOC "irst_n" D7;
-IO_PORT "irst_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
-CLOCK_LOC "rst" BUFG = SR;
 CLOCK_LOC "clock_divider_inst/fast_clk" BUFG = CLK;
