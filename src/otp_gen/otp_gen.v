@@ -26,7 +26,7 @@ module otp_gen
   output [3:0] owdata,
   output       owrite_en,
 
-  output odone
+  output reg odone
 );
 
   localparam [1:0]
@@ -100,7 +100,12 @@ module otp_gen
   assign owdata    = enc_block[4*(16-counter[3:0])-1 -: 4];
   assign owrite_en = state == WRITE_BLOCK;
 
-  assign odone = state == IDLE;
+  always @(posedge iclk or posedge irst) begin
+    if (irst)
+      odone <= 1'b0;
+    else
+      odone <= state == IDLE;
+  end
 
 endmodule
 

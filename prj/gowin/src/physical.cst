@@ -4,7 +4,7 @@
 //GOWIN Version: 1.9.8.07 Education
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18C
-//Created Time: Tue 04 25 02:52:10 2023
+//Created Time: Sun 04 30 14:26:00 2023
 
 IO_LOC "oclk_sd" T7;
 IO_PORT "oclk_sd" IO_TYPE=LVCMOS33 SLEW_RATE=SLOW PULL_MODE=NONE DRIVE=8;
@@ -26,7 +26,8 @@ IO_LOC "istart_n" C7;
 IO_PORT "istart_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
 IO_LOC "iclk" H11;
 IO_PORT "iclk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
-CLOCK_LOC "clock_divider_inst/fast_clk" BUFG = CLK;
 IO_LOC "irst_n" D7;
 IO_PORT "irst_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
 CLOCK_LOC "rst" BUFG = SR;
+CLOCK_LOC "oclk_sd_d" BUFG = CLK;
+CLOCK_LOC "clk_otp" BUFG = CLK;
