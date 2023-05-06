@@ -3,5 +3,5 @@ all:
 
 program:
 	programmer_cli --device GW2A-18C \
-				   --run 2 \
-				   --fsFile "$(shell pwd)/impl/pnr/ghost_sd.fs"
+		       --run 2 \
+		       --fsFile "$(shell pwd)/impl/pnr/ghost_sd.fs"
