@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-05-06T06:20:34.123Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="RW_LbB4QaSx-tddrbca7" version="21.1.2" type="device">
+<mxfile host="Electron" modified="2023-05-06T16:19:10.546Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="n7gzfEzdkHzUSBpPXDxk" version="21.1.2" type="device">
   <diagram id="W-F6sWLnjnpeOiXVLfIf" name="Страница 1">
-    <mxGraphModel dx="1114" dy="720" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
+    <mxGraphModel dx="557" dy="360" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -151,7 +151,7 @@
             <mxPoint x="19" y="-10" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="iV3B52UpifQztuAh5zCx-8" value="&lt;b&gt;CMD18&lt;/b&gt;&lt;br&gt;arg[31:0] = addr &amp;lt;&amp;lt; 12" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+        <mxCell id="iV3B52UpifQztuAh5zCx-8" value="&lt;b&gt;CMD18&lt;/b&gt;&lt;br&gt;arg[31:0] = addr &amp;lt;&amp;lt; (9 + log2(RAM)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
           <mxGeometry x="405" y="676.72" width="81" height="80" as="geometry" />
         </mxCell>
         <mxCell id="iV3B52UpifQztuAh5zCx-9" value="" style="curved=1;endArrow=none;html=1;rounded=0;exitX=1;exitY=0;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uSQaB37fGGaGv9yWWpCC-1" target="iV3B52UpifQztuAh5zCx-2" edge="1">
@@ -168,7 +168,7 @@
             <mxPoint x="-52" y="-27" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="iV3B52UpifQztuAh5zCx-11" value="&lt;b&gt;CMD25&lt;/b&gt;&lt;br&gt;arg[31:0] = addr &amp;lt;&amp;lt; 12" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+        <mxCell id="iV3B52UpifQztuAh5zCx-11" value="&lt;b&gt;CMD25&lt;/b&gt;&lt;br&gt;arg[31:0] = addr &amp;lt;&amp;lt; (9 + log2(RAM)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
           <mxGeometry x="555" y="880" width="81" height="80" as="geometry" />
         </mxCell>
         <mxCell id="iV3B52UpifQztuAh5zCx-12" value="" style="curved=1;endArrow=classic;html=1;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.913;exitY=0.223;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="iV3B52UpifQztuAh5zCx-8" edge="1">
