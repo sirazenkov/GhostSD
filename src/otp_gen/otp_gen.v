@@ -36,6 +36,8 @@ module otp_gen
   reg [1:0] state = IDLE, next_state;
 
   reg [9+$clog2(RAM_BLOCKS):0] counter = {(10+$clog2(RAM_BLOCKS)){1'b0}};
+  
+  wire done_gost;
 
   always @(*) begin
     next_state = state;
@@ -57,8 +59,6 @@ module otp_gen
 
   reg  [63:0] plain_block = 64'd0;
   wire [63:0] enc_block;
-  
-  wire done_gost;
 
   always @(posedge iclk) begin
     start_gost <= state != next_state && next_state == GEN_BLOCK;
