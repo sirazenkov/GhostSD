@@ -42,6 +42,14 @@ module sd
   output ofail
 );
 
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("wave.vcd");
+       $dumpvars(0, sd);
+       #1;
+     end
+  `endif
+
   wire start_cmd, cmd_done;
   wire status_d, start_d, check_status, read_done, write_done;
   wire [5:0]  index;

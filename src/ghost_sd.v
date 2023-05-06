@@ -6,10 +6,19 @@
 //==========================================
 
 module ghost_sd (
+  `ifndef YOSYS
   input irst_n,
+  `else
+  input irst,
+  `endif
+
   input iclk, // System clock
 
+  `ifndef YOSYS
   input istart_n,  
+  `else
+  input istart,  
+  `endif
 
   // SD lines
   inout       iocmd_sd,  // CMD line
@@ -61,11 +70,16 @@ module ghost_sd (
 
   wire sel_clk;
 
-  reg debounce_rst = 1, rst = 0;
-  always @(posedge iclk) begin
-    debounce_rst <= irst_n;
-    rst <= ~debounce_rst;
-  end
+  `ifndef YOSYS
+    reg debounce_rst = 1, rst = 0;
+    always @(posedge iclk) begin
+      debounce_rst <= irst_n;
+      rst <= ~debounce_rst;
+    end
+  `else
+    wire rst;
+    assign rst = irst;
+  `endif
 
   clock_divider clock_divider_inst (
     .irst(rst),
@@ -75,11 +89,16 @@ module ghost_sd (
     .oclk_sd(clk_sd)
   );
 
-  reg debounce_start = 1, start = 0;
-  always @(posedge clk_sd) begin
-    debounce_start <= istart_n;
-    start <= ~debounce_start;
-  end
+  `ifndef YOSYS
+    reg debounce_start = 1, start = 0;
+    always @(posedge clk_sd) begin
+      debounce_start <= istart_n;
+      start <= ~debounce_start;
+    end
+  `else
+    wire start;
+    assign start = istart;
+  `endif
 
   sd #(
     .RAM_BLOCKS(RAM_BLOCKS)

@@ -30,20 +30,20 @@ bitstream:
 program:
 	icesprog -g PA9 -m out
 	icesprog -g PA10 -m out
-	icesprog -g PA9 -w 1
-	icesprog -g PA10 -w 1
+	icesprog -g PA9 -w 0
+	icesprog -g PA10 -w 0
 	icesprog work/ghost_sd.bin
 	icesprog -c 3
 
 reset:
-	icesprog -g PA9 -w o
-	sleep 1
 	icesprog -g PA9 -w 1
+	sleep 1
+	icesprog -g PA9 -w 0
 
 start:
-	icesprog -g PA10 -w 0
-	sleep 1
 	icesprog -g PA10 -w 1
+	sleep 1
+	icesprog -g PA10 -w 0
 
 read_fail:
 	icesprog -g PA6 -m in
