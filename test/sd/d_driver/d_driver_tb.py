@@ -88,12 +88,13 @@ class D_driver_BFM():
                 if(int(self.dut.odata_sd.value) != crc_packets[j][i]):
                     crc_failed = True
                 await FallingEdge(self.dut.iclk)
-            self.dut.idata_sd.value = 0xE
             await self.random_delay(10)
-            self.dut.idata_sd.value = 0xF
+            await FallingEdge(self.dut.iclk)
+            self.dut.istart.value = 1
             if (j != 7):
                 await RisingEdge(self.dut.odata_sd_en)
                 await FallingEdge(self.dut.iclk)
+                self.dut.istart.value = 0
         await RisingEdge(self.dut.owrite_done)
         blocks_equal = expected_blocks == blocks
         return (blocks_equal, crc_failed)

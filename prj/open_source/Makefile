@@ -1,6 +1,6 @@
 YOSYS =
 
-all: synth placeNroute timing bitstream
+all: synth placeNroute bitstream
 
 synth: 
 	mkdir work
@@ -18,10 +18,8 @@ placeNroute:
 	--parallel-refine \
 	--promote-logic \
 	--pre-pack constraints.py \
+	--ignore-loops \
 	--seed 3
-
-timing:
-	icetime -d lp1k -P cm36 -p ghost_sd.pcf work/ghost_sd.asc -c 36 -m -t
 
 bitstream:
 	icepack work/ghost_sd.asc work/ghost_sd.bin
@@ -30,20 +28,20 @@ bitstream:
 program:
 	icesprog -g PA9 -m out
 	icesprog -g PA10 -m out
-	icesprog -g PA9 -w 1
-	icesprog -g PA10 -w 1
+	icesprog -g PA9 -w 0
+	icesprog -g PA10 -w 0
 	icesprog work/ghost_sd.bin
 	icesprog -c 3
 
 reset:
-	icesprog -g PA9 -w o
-	sleep 1
 	icesprog -g PA9 -w 1
+	sleep 1
+	icesprog -g PA9 -w 0
 
 start:
-	icesprog -g PA10 -w 0
-	sleep 1
 	icesprog -g PA10 -w 1
+	sleep 1
+	icesprog -g PA10 -w 0
 
 read_fail:
 	icesprog -g PA6 -m in

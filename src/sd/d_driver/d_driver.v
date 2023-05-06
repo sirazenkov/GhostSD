@@ -17,6 +17,7 @@ module d_driver
   output [3:0] odata_sd,
   output       odata_sd_en,
 
+  input istatus,
   input istart,
 
   output [$clog2(RAM_BLOCKS)-1:0] osel_ram,
@@ -44,15 +45,18 @@ module d_driver
   `endif
 
   localparam [3:0]
-    IDLE      = 4'b0000,
-    WAIT_RCV  = 4'b0001,
-    RCV_DATA  = 4'b0011,
-    CHECK_CRC = 4'b0010,
-    WAIT_SEND = 4'b0110,
-    SEND_DATA = 4'b0111,
-    SEND_CRC  = 4'b0101,
-    SEND_END  = 4'b0100,
-    BUSY      = 4'b1100;
+    IDLE           = 4'b0000,
+    WAIT_STATUS    = 4'b0001,
+    RCV_STATUS     = 4'b0011,
+    STATUS_TIMEOUT = 4'b0010,
+    WAIT_RCV       = 4'b0110,
+    RCV_DATA       = 4'b0111,
+    CHECK_CRC      = 4'b0101,
+    WAIT_SEND      = 4'b0100,
+    SEND_DATA      = 4'b1101,
+    SEND_CRC       = 4'b1111,
+    SEND_END       = 4'b1110,
+    BUSY           = 4'b1010;
   reg [3:0] state = IDLE, next_state;
 
   reg [3:0]  data    =  4'd0;
@@ -112,17 +116,21 @@ module d_driver
   always @(*) begin
     next_state = state;
     case(state)
-      IDLE:      if (istart)           next_state = WAIT_RCV;
-      WAIT_RCV:  if (~|data)           next_state = RCV_DATA;
-      RCV_DATA:  if (&counter[9:0])    next_state = CHECK_CRC;
-      CHECK_CRC: if (counter[4])       next_state = &counter_ram ? WAIT_SEND : WAIT_RCV;
-                 else if (crc != data) next_state = IDLE;
-      WAIT_SEND: if (istart)           next_state = SEND_DATA; // Wait until data is processed
-      SEND_DATA: if (counter[10])      next_state = SEND_CRC;
-      SEND_CRC:  if (counter[4])       next_state = SEND_END;
-      SEND_END:                        next_state = BUSY;
-      BUSY:      if (istart)           next_state = &counter_ram ? IDLE : SEND_DATA;
-      default:                         next_state = IDLE;
+      IDLE:           if (istart)             next_state = WAIT_RCV;
+                      else if (istatus)       next_state = WAIT_STATUS;
+      WAIT_STATUS:    if (!data[0])           next_state = RCV_STATUS;
+      RCV_STATUS:     if (counter == 11'd143) next_state = STATUS_TIMEOUT;
+      STATUS_TIMEOUT: if (counter == 11'd7)   next_state = IDLE;
+      WAIT_RCV:       if (~|data)             next_state = RCV_DATA;
+      RCV_DATA:       if (&counter[9:0])      next_state = CHECK_CRC;
+      CHECK_CRC:      if (counter[4])         next_state = &counter_ram ? WAIT_SEND : WAIT_RCV;
+                      else if (crc != data)   next_state = IDLE;
+      WAIT_SEND:      if (istart)             next_state = SEND_DATA; // Wait until data is processed
+      SEND_DATA:      if (counter[10])        next_state = SEND_CRC;
+      SEND_CRC:       if (counter[4])         next_state = SEND_END;
+      SEND_END:                               next_state = BUSY;
+      BUSY:           if (istart)             next_state = &counter_ram ? IDLE : SEND_DATA;
+      default:                                next_state = IDLE;
     endcase
   end
 

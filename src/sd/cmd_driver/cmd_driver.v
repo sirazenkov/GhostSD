@@ -81,9 +81,9 @@ module cmd_driver (
       SEND_END:                            next_state = icmd_index == 6'd15 ? DONE : WAIT_RESP;
       WAIT_RESP: if (!icmd_sd)             next_state = RCV_RESP;
       RCV_RESP:  if (change_state)         next_state = RCV_CRC;
-      RCV_CRC:   if (change_state)         next_state = crc_failed ? IDLE : BUSY;
-      BUSY:      if (change_state)         next_state = DONE;
-      default: next_state = IDLE;
+      RCV_CRC:   if (change_state)         next_state = BUSY;
+      BUSY:      if (change_state)         next_state = crc_failed ? IDLE : DONE;
+      default:                             next_state = IDLE;
     endcase
   end
 
