@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-// Date        : Sun May  7 03:11:27 2023
+// Date        : Sun May  7 03:04:24 2023
 // Host        : DESKTOP-0KDN2IG running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode funcsim
-//               g:/CS/MyProjects/GhostSD/prj/xilinx/ghost_sd.gen/sources_1/ip/clk_gen/clk_gen_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top clk_gen -prefix
+//               clk_gen_ clk_gen_sim_netlist.v
 // Design      : clk_gen
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -35,7 +35,6 @@ module clk_gen
         .sd_fast_clk(sd_fast_clk));
 endmodule
 
-(* ORIG_REF_NAME = "clk_gen_clk_wiz" *) 
 module clk_gen_clk_gen_clk_wiz
    (otp_clk,
     sd_fast_clk,
@@ -101,7 +100,7 @@ module clk_gen_clk_gen_clk_wiz
     .CLKFBOUT_USE_FINE_PS("FALSE"),
     .CLKIN1_PERIOD(8.000000),
     .CLKIN2_PERIOD(0.000000),
-    .CLKOUT0_DIVIDE_F(7.000000),
+    .CLKOUT0_DIVIDE_F(6.000000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
     .CLKOUT0_PHASE(0.000000),
     .CLKOUT0_USE_FINE_PS("FALSE"),

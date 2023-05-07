@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-// Date        : Sun May  7 03:11:27 2023
+// Date        : Sun May  7 03:04:24 2023
 // Host        : DESKTOP-0KDN2IG running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode synth_stub
-//               g:/CS/MyProjects/GhostSD/prj/xilinx/ghost_sd.gen/sources_1/ip/clk_gen/clk_gen_stub.v
+// Command     : write_verilog -force -mode synth_stub -rename_top clk_gen -prefix
+//               clk_gen_ clk_gen_stub.v
 // Design      : clk_gen
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7z020clg400-1
