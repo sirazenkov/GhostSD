@@ -17,12 +17,3 @@ set_property -dict {PACKAGE_PIN Y16 IOSTANDARD LVCMOS33} [get_ports {iodata_sd[0
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {iodata_sd[3]}]
 set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33} [get_ports oclk_sd]
 set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports {iodata_sd[1]}]
-
-
-
-
-
-
-
-
-

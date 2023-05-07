@@ -243,12 +243,12 @@ module ghost_sd (
     assign osuccess  = success;
     assign ofail     = fail;
     assign odata0_sd = iodata_sd[0];
-  `elsif YOSYS
-    assign osuccess = success;
-    assign ofail    = fail;
-  `else
+  `elsif GOWIN
     assign osuccess = success ? 1'b0 : 1'bz;
     assign ofail    = fail ? 1'b0 : 1'bz;
+  `else
+    assign osuccess = success;
+    assign ofail    = fail;
   `endif
 
 endmodule
