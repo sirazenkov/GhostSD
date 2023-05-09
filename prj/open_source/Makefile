@@ -1,6 +1,6 @@
 YOSYS =
 
-all: synth placeNroute bitstream
+all: synth placeNroute timing bitstream
 
 synth: 
 	mkdir work
@@ -20,6 +20,9 @@ placeNroute:
 	--pre-pack constraints.py \
 	--ignore-loops \
 	--seed 3
+
+timing:
+	icetime -d lp1k -P cm36 -p ghost_sd.pcf work/ghost_sd.asc -c 36 -m -t	 
 
 bitstream:
 	icepack work/ghost_sd.asc work/ghost_sd.bin

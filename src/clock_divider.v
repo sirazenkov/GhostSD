@@ -21,7 +21,7 @@ module clock_divider (
       counter <= counter + 1'b1;  
   end
 
-  assign oclk_sd  = isel_clk ? counter[0] : counter[6];
+  assign oclk_sd  = isel_clk ? iclk : counter[6];
   assign oclk_otp = iclk;
 
 endmodule
