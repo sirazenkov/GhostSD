@@ -18,6 +18,7 @@ module otp_gen_tb;
   reg  [255:0] key = 256'hFFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF; 
   reg  [31:0] IV = 32'd0;
 
+  wire [2:0] sel_ram;
   wire [9:0] addr;
   wire [3:0] wdata;
   wire       write_en;
@@ -34,6 +35,8 @@ module otp_gen_tb;
 
     .ikey(key),
     .iIV(IV),
+
+    .osel_ram(sel_ram),
 
     .oaddr(addr),
     .owdata(wdata),

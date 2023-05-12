@@ -20,11 +20,11 @@ module otp_gen
   input [31:0]  iIV, // Initialization vector
 
   // RAM for OTP
-  output [$clog2(RAM_BLOCKS)-1:0] osel_ram,
+  output reg [$clog2(RAM_BLOCKS)-1:0] osel_ram,
 
-  output [9:0] oaddr,
-  output [3:0] owdata,
-  output       owrite_en,
+  output reg [9:0] oaddr,
+  output reg [3:0] owdata,
+  output reg       owrite_en,
 
   output odone
 );
@@ -95,10 +95,21 @@ module otp_gen
     .odone (done_gost)
   );
 
-  assign osel_ram  = counter[10+$clog2(RAM_BLOCKS)-1:10];
-  assign oaddr     = counter[9:0];
-  assign owdata    = enc_block[4*(16-counter[3:0])-1 -: 4];
-  assign owrite_en = state == WRITE_BLOCK;
+  always @(posedge iclk or posedge irst) begin
+    if (irst) begin
+      osel_ram  <= {$clog2(RAM_BLOCKS){1'b0}};
+
+      oaddr     <= 10'd0;
+      owdata    <=  4'd0;
+      owrite_en <=  1'b0;
+    end else begin
+      osel_ram  <= counter[10+$clog2(RAM_BLOCKS)-1:10];
+
+      oaddr     <= counter[9:0];
+      owdata    <= enc_block[4*(16-counter[3:0])-1 -: 4];
+      owrite_en <= state == WRITE_BLOCK;
+    end
+  end
 
   assign odone = state == IDLE;
 
