@@ -13,7 +13,7 @@ module clock_divider (
   output oclk_sd
 );
 
-  wire fast_clk;
+  wire slow_clk, fast_clk;
 
   clk_gen clk_gen_inst (
     .reset(irst),
@@ -29,7 +29,13 @@ module clock_divider (
     else
       counter <= counter + 1'b1;  
   end
-
-  assign oclk_sd  = isel_clk ? fast_clk : counter[8];
+  assign slow_clk = counter[8];
+    
+  BUFGMUX_CTRL BUFGMUX_CTRL_inst (
+      .O(oclk_sd),
+      .I0(slow_clk),
+      .I1(fast_clk),
+      .S(isel_clk)
+   );
 
 endmodule
