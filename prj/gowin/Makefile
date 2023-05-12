@@ -1,3 +1,5 @@
+GOWIN = 
+
 all:
 	gw_sh build.tcl
 

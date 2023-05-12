@@ -6,7 +6,7 @@
 //==========================================
 
 module ghost_sd (
-  `ifndef YOSYS
+  `ifdef GOWIN
   input irst_n,
   `else
   input irst,
@@ -14,7 +14,7 @@ module ghost_sd (
 
   input iclk, // System clock
 
-  `ifndef YOSYS
+  `ifdef GOWIN
   input istart_n,  
   `else
   input istart,  
@@ -36,8 +36,10 @@ module ghost_sd (
     parameter RAM_BLOCKS = 8;
   `elsif YOSYS
     parameter RAM_BLOCKS = 8;
-  `else
+  `elsif GOWIN
     parameter RAM_BLOCKS = 16;
+  `else
+    parameter RAM_BLOCKS = 32;
   `endif
 
   `ifdef COCOTB_SIM
@@ -70,15 +72,21 @@ module ghost_sd (
 
   wire sel_clk;
 
-  `ifndef YOSYS
+  `ifdef GOWIN
     reg debounce_rst = 1, rst = 0;
     always @(posedge iclk) begin
       debounce_rst <= irst_n;
       rst <= ~debounce_rst;
     end
-  `else
+  `elsif YOSYS
     wire rst;
     assign rst = irst;
+  `else
+    reg debounce_rst = 1, rst = 0;
+    always @(posedge iclk) begin
+      debounce_rst <= irst;
+      rst <= debounce_rst;
+    end
   `endif
 
   clock_divider clock_divider_inst (
@@ -89,15 +97,21 @@ module ghost_sd (
     .oclk_sd(clk_sd)
   );
 
-  `ifndef YOSYS
+  `ifdef GOWIN
     reg debounce_start = 1, start = 0;
     always @(posedge clk_sd) begin
       debounce_start <= istart_n;
       start <= ~debounce_start;
     end
-  `else
+  `elsif YOSYS
     wire start;
     assign start = istart;
+  `else
+    reg debounce_start = 1, start = 0;
+    always @(posedge clk_sd) begin
+      debounce_start <= istart;
+      start <= debounce_start;
+    end
   `endif
 
   sd #(
@@ -229,12 +243,12 @@ module ghost_sd (
     assign osuccess  = success;
     assign ofail     = fail;
     assign odata0_sd = iodata_sd[0];
-  `elsif YOSYS
-    assign osuccess = success;
-    assign ofail    = fail;
-  `else
+  `elsif GOWIN
     assign osuccess = success ? 1'b0 : 1'bz;
     assign ofail    = fail ? 1'b0 : 1'bz;
+  `else
+    assign osuccess = success;
+    assign ofail    = fail;
   `endif
 
 endmodule
