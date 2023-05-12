@@ -39,7 +39,7 @@ module ghost_sd (
   `elsif GOWIN
     parameter RAM_BLOCKS = 16;
   `else
-    parameter RAM_BLOCKS = 16;
+    parameter RAM_BLOCKS = 32;
   `endif
 
   `ifdef COCOTB_SIM
