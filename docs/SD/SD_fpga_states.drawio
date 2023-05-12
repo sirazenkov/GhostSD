@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-05-06T16:19:10.546Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="n7gzfEzdkHzUSBpPXDxk" version="21.1.2" type="device">
+<mxfile host="Electron" modified="2023-05-09T02:56:57.292Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="PytB8v8afsaygQo3kvGm" version="21.2.8" type="device">
   <diagram id="W-F6sWLnjnpeOiXVLfIf" name="Страница 1">
-    <mxGraphModel dx="557" dy="360" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
+    <mxGraphModel dx="378" dy="247" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -13,9 +13,9 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="qRXMPcI1Dn7AzMj5gLD0-2" value="write_done &amp;amp; resp[8] &amp;amp; resp[12:9] == 4&lt;br&gt;&amp;amp; addr != max_addr / start_d, sel_clk = 1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;rotation=-12;" parent="qRXMPcI1Dn7AzMj5gLD0-1" vertex="1" connectable="0">
+        <mxCell id="qRXMPcI1Dn7AzMj5gLD0-2" value="write_done &amp;amp; resp[8] &amp;amp; resp[12:9] == 4&lt;br&gt;&amp;amp; addr != max_addr / start_d, sel_clk = 1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;rotation=-14;" parent="qRXMPcI1Dn7AzMj5gLD0-1" vertex="1" connectable="0">
           <mxGeometry x="-0.0083" y="11" relative="1" as="geometry">
-            <mxPoint x="-20" y="-26" as="offset" />
+            <mxPoint x="-13" y="-28" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="KcrwTRFAVIsgEg5xFYBQ-48" value="&lt;b&gt;IDLE&lt;/b&gt;&lt;br&gt;new_otp = 1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
@@ -163,9 +163,9 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="3IAR5GJ20SgWrVae4V0t-1" value="resp[12:9] == 4 / status_d" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="iV3B52UpifQztuAh5zCx-9" vertex="1" connectable="0">
+        <mxCell id="3IAR5GJ20SgWrVae4V0t-1" value="resp[12:9] == 4 /&lt;br&gt;status_d, gen_otp" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="iV3B52UpifQztuAh5zCx-9" vertex="1" connectable="0">
           <mxGeometry x="0.2333" y="-13" relative="1" as="geometry">
-            <mxPoint x="-52" y="-27" as="offset" />
+            <mxPoint x="-42" y="-30" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="iV3B52UpifQztuAh5zCx-11" value="&lt;b&gt;CMD25&lt;/b&gt;&lt;br&gt;arg[31:0] = addr &amp;lt;&amp;lt; (9 + log2(RAM)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
@@ -178,11 +178,6 @@
             <Array as="points">
               <mxPoint x="510" y="670" />
             </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="iV3B52UpifQztuAh5zCx-13" value="/ gen_otp" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="iV3B52UpifQztuAh5zCx-12" vertex="1" connectable="0">
-          <mxGeometry x="-0.367" y="-7" relative="1" as="geometry">
-            <mxPoint x="17" y="-8" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="iV3B52UpifQztuAh5zCx-14" value="" style="curved=1;endArrow=classic;html=1;rounded=0;entryX=0.937;entryY=0.255;entryDx=0;entryDy=0;exitX=0.017;exitY=0.612;exitDx=0;exitDy=0;entryPerimeter=0;exitPerimeter=0;" parent="1" source="khvH6Rz9v-6Bei9KLh18-3" target="FiximQ_GM6fYsw_34OFd-17" edge="1">
@@ -321,7 +316,7 @@
           <mxGeometry x="951" y="367" width="82" height="28.25" as="geometry" />
         </mxCell>
         <mxCell id="V_0UxdWH2Facl6ypG54b-12" value="Status bits: tran state" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=5;position=0.51;position2=0.5;base=10;" parent="1" vertex="1">
-          <mxGeometry x="274" y="474.88" width="117" height="19.12" as="geometry" />
+          <mxGeometry x="284" y="463.88" width="117" height="19.12" as="geometry" />
         </mxCell>
         <mxCell id="V_0UxdWH2Facl6ypG54b-15" value="max_addr =\(&lt;br&gt;(C\_SIZE+1)*2^{READ\_BL\_LEN+C\_SIZE\_MULT-10}\)" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=7;position=0.03;position2=0;base=14;" parent="1" vertex="1">
           <mxGeometry x="910" y="467" width="357" height="27" as="geometry" />
@@ -413,9 +408,9 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="ealqef27TZtwAK4QdaB--7" value="write_done / addr_sd++" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-30;" parent="ealqef27TZtwAK4QdaB--6" vertex="1" connectable="0">
+        <mxCell id="ealqef27TZtwAK4QdaB--7" value="write_done / addr_sd++, gen_otp" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=-25;" parent="ealqef27TZtwAK4QdaB--6" vertex="1" connectable="0">
           <mxGeometry x="0.1416" y="-10" relative="1" as="geometry">
-            <mxPoint x="-66" y="17" as="offset" />
+            <mxPoint x="6" y="-20" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="xf-47bPqlKCnGC8mKcVy-6" value="Stop data transmission" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;size=16;position=0.37;position2=0.27;base=9;" parent="1" vertex="1">
@@ -500,7 +495,7 @@
           <mxGeometry x="850" y="628" width="50" height="45.72" as="geometry" />
         </mxCell>
         <mxCell id="qRXMPcI1Dn7AzMj5gLD0-3" value="Status bits: tran state and ready for data.&lt;br&gt;Switch to fast&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;(&amp;lt;= 50 MHz clock)." style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=14;position=0.5;position2=0.57;base=10;" parent="1" vertex="1">
-          <mxGeometry x="240" y="681.25" width="120" height="70.95" as="geometry" />
+          <mxGeometry x="240" y="679.25" width="120" height="70.95" as="geometry" />
         </mxCell>
         <mxCell id="uSQaB37fGGaGv9yWWpCC-1" value="&lt;b&gt;CMD6&lt;/b&gt;&lt;br&gt;arg[30:1] = 0&lt;br&gt;else 1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
           <mxGeometry x="268" y="539" width="81" height="80" as="geometry" />

@@ -214,12 +214,12 @@ module sd_fsm
     end else if (state != next_state) begin
       ostart_cmd <= (next_state != IDLE && next_state != READ && next_state != WRITE && next_state != OTP) ? 1'b1 : 1'b0;
       if (next_state == CMD18 || next_state == WRITE) ostart_d <= 1'b1;
-      if (next_state == READ) ogen_otp <= 1'b1;
+      if (next_state == CMD12) ogen_otp <= state == WRITE ? 1'b1 : 1'b0;
     end else begin
       ostart_cmd <= icmd_done && (next_state == CMD13 || next_state == CMD6) ? 1'b1 : 1'b0;
       ostatus_d  <= icmd_done && state == CMD6 && next_state == CMD6 ? 1'b1 : 1'b0;
       ostart_d   <= 1'b0;
-      ogen_otp   <= 1'b0;
+      ogen_otp   <= icmd_done && state == CMD6 && next_state == CMD6 ? 1'b1 : 1'b0;
     end
   end
   

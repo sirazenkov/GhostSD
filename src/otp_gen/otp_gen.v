@@ -75,7 +75,7 @@ module otp_gen
             plain_block <= {iIV, {32{1'b0}}};
         GEN_BLOCK:
           if (done_gost)
-            plain_block <= plain_block + 1'b1;
+            plain_block[22:0] <= plain_block[22:0] + 1'b1;
         WRITE_BLOCK:
           counter <= counter + 1'b1;
       endcase
@@ -103,4 +103,3 @@ module otp_gen
   assign odone = state == IDLE;
 
 endmodule
-
