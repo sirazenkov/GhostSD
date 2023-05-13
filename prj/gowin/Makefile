@@ -9,4 +9,4 @@ program:
 		       --fsFile "$(shell pwd)/impl/pnr/ghost_sd.fs"
 
 clean:
-	
+	rm -rf impl ghost_sd.gprj.user
