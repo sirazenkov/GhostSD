@@ -1,3 +1,4 @@
+add_file -type verilog "./src/define.vh"
 add_file -type verilog "./src/clock_divider.v"
 add_file -type verilog "./src/gowin_clkdiv/gowin_clkdiv.v"
 add_file -type verilog "./src/gowin_dcs/gowin_dcs.v"
