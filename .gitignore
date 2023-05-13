@@ -17,3 +17,8 @@ ghost_sd.hw/
 ghost_sd.ip_user_files/
 ghost_sd.runs/
 ghost_sd.sim/
+.Xil
+*.jou
+*.log
+usage_statistics_webtalk.*
+*.bit
