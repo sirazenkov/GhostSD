@@ -7,6 +7,9 @@ GOST-based SDSC-card encryptor implemented on boards:
 - [Tang Primer 20K (with Dock ext-board)](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html)
 - [PYNQ-Z1](https://digilent.com/reference/programmable-logic/pynq-z1/start)
 
+Using the GOST block cipher (Magma) in counter mode.
+More details in GOST R 34.12-2015 (RFC 8891) and GOST R 34.13-2015.
+
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/photo.png?raw=true)
 
 ### Directory structure
@@ -59,5 +62,5 @@ test - Testbenches written in Python and Verilog
 Run simulation: `cd test; make`. \
 After simulation you may delete output files with `make cleanall`.
 
-### Project scheme
+### Project setup
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_system.png?raw=true)
