@@ -50,7 +50,7 @@ module ghost_sd (
     end
   `endif
 
-  wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd, clk_sd_glob;
+  wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
 
   wire [3:0] idata_sd, odata_sd;
   wire       data_sd_en;
@@ -99,7 +99,7 @@ module ghost_sd (
 
   `ifdef GOWIN
     reg debounce_start = 1, start = 0;
-    always @(posedge clk_sd_glob) begin
+    always @(posedge oclk_sd) begin
       debounce_start <= istart_n;
       start <= ~debounce_start;
     end
@@ -108,7 +108,7 @@ module ghost_sd (
     assign start = istart;
   `else
     reg debounce_start = 1, start = 0;
-    always @(posedge clk_sd_glob) begin
+    always @(posedge oclk_sd) begin
       debounce_start <= istart;
       start <= debounce_start;
     end
@@ -118,7 +118,7 @@ module ghost_sd (
     .RAM_BLOCKS(RAM_BLOCKS)
   ) sd_inst (
     .irst(rst),
-    .iclk(clk_sd_glob),
+    .iclk(oclk_sd),
 
     .icmd_sd    (icmd_sd),
     .ocmd_sd    (ocmd_sd),
@@ -180,7 +180,7 @@ module ghost_sd (
         .din     (wdata_otp),
         .write_en(write_en_otp_ram[i]),
         .wclk    (clk_otp_glob),
-        .rclk    (clk_sd_glob),
+        .rclk    (oclk_sd),
         .dout    (rdata_otp[i])
       );
 
@@ -190,8 +190,8 @@ module ghost_sd (
         .raddr   (addr),
         .din     (wdata_raw),
         .write_en(write_en_raw_ram[i]),
-        .wclk    (clk_sd_glob),
-        .rclk    (clk_sd_glob),
+        .wclk    (oclk_sd),
+        .rclk    (oclk_sd),
         .dout    (rdata_raw[i])
       );
     end
@@ -214,14 +214,12 @@ module ghost_sd (
   `ifdef YOSYS
     SB_GB clk_sd_buf (
       .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_sd),
-      .GLOBAL_BUFFER_OUTPUT(clk_sd_glob)
+      .GLOBAL_BUFFER_OUTPUT(oclk_sd)
     );
   `else
-    assign clk_sd_glob = clk_sd;
+    assign oclk_sd = clk_sd;
   `endif
    
-  assign oclk_sd = clk_sd_glob;
-
   `ifdef YOSYS
     SB_IO #(
       .PIN_TYPE(6'b101001),
