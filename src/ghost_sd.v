@@ -50,12 +50,12 @@ module ghost_sd (
     end
   `endif
 
-  wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
+  wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd, clk_sd_glob;
 
   wire [3:0] idata_sd, odata_sd;
   wire       data_sd_en;
 
-  wire gen_otp, otp_ready, new_otp, clk_otp;
+  wire gen_otp, otp_ready, new_otp, clk_otp, clk_otp_glob;
 
   wire [$clog2(RAM_BLOCKS)-1:0] sel_ram, sel_ram_otp;
 
@@ -99,7 +99,7 @@ module ghost_sd (
 
   `ifdef GOWIN
     reg debounce_start = 1, start = 0;
-    always @(posedge clk_sd) begin
+    always @(posedge clk_sd_glob) begin
       debounce_start <= istart_n;
       start <= ~debounce_start;
     end
@@ -108,7 +108,7 @@ module ghost_sd (
     assign start = istart;
   `else
     reg debounce_start = 1, start = 0;
-    always @(posedge clk_sd) begin
+    always @(posedge clk_sd_glob) begin
       debounce_start <= istart;
       start <= debounce_start;
     end
@@ -118,7 +118,7 @@ module ghost_sd (
     .RAM_BLOCKS(RAM_BLOCKS)
   ) sd_inst (
     .irst(rst),
-    .iclk(clk_sd),
+    .iclk(clk_sd_glob),
 
     .icmd_sd    (icmd_sd),
     .ocmd_sd    (ocmd_sd),
@@ -153,7 +153,7 @@ module ghost_sd (
     .RAM_BLOCKS(RAM_BLOCKS)
   ) otp_gen_inst (
     .irst(rst),
-    .iclk(clk_otp),
+    .iclk(clk_otp_glob),
 
     .istart(gen_otp),
   
@@ -179,8 +179,8 @@ module ghost_sd (
         .raddr   (addr),
         .din     (wdata_otp),
         .write_en(write_en_otp_ram[i]),
-        .wclk    (clk_otp),
-        .rclk    (clk_sd),
+        .wclk    (clk_otp_glob),
+        .rclk    (clk_sd_glob),
         .dout    (rdata_otp[i])
       );
 
@@ -190,8 +190,8 @@ module ghost_sd (
         .raddr   (addr),
         .din     (wdata_raw),
         .write_en(write_en_raw_ram[i]),
-        .wclk    (clk_sd),
-        .rclk    (clk_sd),
+        .wclk    (clk_sd_glob),
+        .rclk    (clk_sd_glob),
         .dout    (rdata_raw[i])
       );
     end
@@ -202,14 +202,31 @@ module ghost_sd (
 
   assign res_block = block_raw ^ block_otp;
 
-  assign oclk_sd  = clk_sd;
+  `ifdef YOSYS
+    SB_GB clk_otp_buf (
+      .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_otp),
+      .GLOBAL_BUFFER_OUTPUT(clk_otp_glob)
+    );
+  `else
+    assign clk_otp_glob = clk_otp;
+  `endif
+
+  `ifdef YOSYS
+    SB_GB clk_sd_buf (
+      .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_sd),
+      .GLOBAL_BUFFER_OUTPUT(clk_sd_glob)
+    );
+  `else
+    assign clk_sd_glob = clk_sd;
+  `endif
+   
+  assign oclk_sd = clk_sd_glob;
 
   `ifdef YOSYS
     SB_IO #(
       .PIN_TYPE(6'b101001),
-      .PULLUP(1'b0),
       .IO_STANDARD("SB_LVCMOS")
-    ) cmd_io (
+    ) cmd_io_buf (
       .CLOCK_ENABLE(1'b0),
       .PACKAGE_PIN(iocmd_sd),
       .OUTPUT_ENABLE(cmd_sd_en),
@@ -218,9 +235,8 @@ module ghost_sd (
     );
     SB_IO #(
       .PIN_TYPE(6'b101001),
-      .PULLUP(1'b0),
       .IO_STANDARD("SB_LVCMOS")
-    ) data_io [3:0] (
+    ) data_io_buf [3:0] (
       .CLOCK_ENABLE(1'b0),
       .PACKAGE_PIN(iodata_sd),
       .OUTPUT_ENABLE(data_sd_en),
