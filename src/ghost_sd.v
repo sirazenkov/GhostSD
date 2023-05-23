@@ -203,21 +203,17 @@ module ghost_sd (
   assign res_block = block_raw ^ block_otp;
 
   `ifdef YOSYS
+    SB_GB clk_sd_buf (
+      .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_sd),
+      .GLOBAL_BUFFER_OUTPUT(oclk_sd)
+    );
     SB_GB clk_otp_buf (
       .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_otp),
       .GLOBAL_BUFFER_OUTPUT(clk_otp_glob)
     );
   `else
+    assign oclk_sd      = clk_sd ;
     assign clk_otp_glob = clk_otp;
-  `endif
-
-  `ifdef YOSYS
-    SB_GB clk_sd_buf (
-      .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_sd),
-      .GLOBAL_BUFFER_OUTPUT(oclk_sd)
-    );
-  `else
-    assign oclk_sd = clk_sd;
   `endif
    
   `ifdef YOSYS

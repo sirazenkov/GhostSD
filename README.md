@@ -37,7 +37,7 @@ test - Testbenches written in Python and Verilog
 1. Connect the [PMOD microSD-card shield](https://aliexpress.ru/item/1005002079993579.html?spm=a2g0o.store_pc_allProduct.8148356.28.66223d9caZHKJO&pdp_npi=2%40dis%21RUB%21219%2C17%20%D1%80%D1%83%D0%B1.%21219%2C17%20%D1%80%D1%83%D0%B1.%21%21%21%21%21%40211675ce16734350768246290efb9d%2112000018671910390%21sh&sku_id=12000018671910390) to the FPGA board the same way as on the photo.
 2. Insert your microSD card in the shield and connect the FPGA board to the computer.
 3. Switch directory to `prj/<flow>` where chosen flow depends on the board you're using.
-4. Run `make`. This will run synthesis, place & route, timing analysis and generate a bitstream.
+4. Run `make`. This will run synthesis, place & route and generate a bitstream.
 5. Program the device with `make program` (might require `sudo`).
 6. Reset the design:
     - `sudo make reset` for iCESugar-nano
