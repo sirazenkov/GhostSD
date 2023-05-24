@@ -155,7 +155,7 @@ module sd_fsm
     end
     else if (state == OTP) begin
       if (iotp_ready)
-        next_state = CMD55;
+        next_state = CMD25;
     end
     else if (icmd_done) begin
       case(state)
@@ -167,8 +167,8 @@ module sd_fsm
         CMD7:    next_state = CMD55;
         CMD6:    next_state = switch ? CMD13 : (tran_state ? CMD6 : IDLE);
         CMD18:   next_state = iresp[31] ? CMD15 : READ;
-        CMD12:   next_state = iwrite_done ? CMD13 : OTP;
-        ACMD23:  next_state = CMD25;
+        CMD12:   next_state = iwrite_done ? CMD13 : CMD55;
+        ACMD23:  next_state = OTP;
         CMD25:   next_state = WRITE;
         CMD13:   next_state = iresp[8] ? (!iwrite_done && iresp[12:9] == 4'd6 ? WRITE : 
                               !tran_state ? CMD13 :
