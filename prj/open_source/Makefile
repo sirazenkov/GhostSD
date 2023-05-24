@@ -31,7 +31,7 @@ program:
 	icesprog -g PA9 -w 0
 	icesprog -g PA10 -w 0
 	icesprog work/ghost_sd.bin
-	icesprog -c 3
+	icesprog -c 4
 
 reset:
 	icesprog -g PA9 -w 1
