@@ -17,7 +17,6 @@ placeNroute:
 	--tmg-ripup \
 	--parallel-refine \
 	--promote-logic \
-	--pre-pack constraints.py \
 	--ignore-loops \
 	--seed 1
 

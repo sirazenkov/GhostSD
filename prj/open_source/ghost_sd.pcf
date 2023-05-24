@@ -1,3 +1,6 @@
+##############################
+# Port assignments
+##############################
 # System clock (36 MHz)
 set_io iclk D1
 
@@ -16,3 +19,12 @@ set_io iodata_sd[3] C6
 # Status
 set_io osuccess B6 # LED
 set_io ofail F5
+
+
+##############################
+# Clocks
+##############################
+set_frequency iclk 72
+set_frequency oclk_sd 18
+set_frequency clk_otp_glob 72
+
