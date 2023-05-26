@@ -20,9 +20,8 @@ test - Testbenches written in Python and Verilog
 
 ### Required software
 - Open-source flow (iCESugar-nano)
-    - [Yosys](https://github.com/YosysHQ/yosys) (synthesis)
+    - [yosys](https://github.com/YosysHQ/yosys) (synthesis)
     - [nextpnr](https://github.com/YosysHQ/nextpnr) (place & route)
-    - [icetime](https://github.com/YosysHQ/icestorm/tree/master/icetime) (timing analysis)
     - [icepack](https://github.com/YosysHQ/icestorm/tree/master/icepack) (bitstream generation)
     - [icesprog](https://github.com/wuxx/icesugar/tree/master/tools/src) (device programming and debug)
 - Gowin flow (Tang Primer 20K)
