@@ -7,9 +7,9 @@
     <FileList>
         <File path="src/define.vh" type="file.verilog" enable="1"/>
         <File path="src/clock_divider.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_clkdiv/gowin_clkdiv.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_dcs/gowin_dcs.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll/gowin_rpll_otp.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll/gowin_rpll_sd.v" type="file.verilog" enable="1"/>
         <File path="../../src/ghost_sd.v" type="file.verilog" enable="1"/>
         <File path="../../src/otp_gen/gost/gost.v" type="file.verilog" enable="1"/>
         <File path="../../src/otp_gen/gost/round/round.v" type="file.verilog" enable="1"/>

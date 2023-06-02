@@ -13,20 +13,19 @@ module clock_divider (
   output oclk_sd
 );
 
-  wire clk_1p4M, slow_clk, fast_clk;
+  wire slow_clk, fast_clk;
 
-  Gowin_rPLL rPLL_inst (
+  Gowin_rPLL_otp rPLL_inst_otp (
         .reset(irst),
         .clkout(oclk_otp),   //output clkout
-        .clkoutd(clk_1p4M),  //output clkoutd
-        .clkoutd3(fast_clk), //output clkoutd3
         .clkin(iclk)         //input clkin
-    );
+  );
 
-  Gowin_CLKDIV CLKDIV_inst (
-        .clkout(slow_clk), //output clkout
-        .hclkin(clk_1p4M), //input hclkin
-        .resetn(~irst)     //input resetn
+  Gowin_rPLL_sd rPLL_inst_sd (
+        .reset(irst),
+        .clkout(fast_clk),   //output clkout
+        .clkoutd(slow_clk),  //output clkoutd
+        .clkin(iclk)         //input clkin
   );
 
   Gowin_DCS DCS_inst (

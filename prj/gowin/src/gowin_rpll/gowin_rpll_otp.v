@@ -4,18 +4,18 @@
 //GOWIN Version: V1.9.8.07 Education
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18C
-//Created Time: Wed May 03 18:13:32 2023
+//Created Time: Sat Jun 03 00:45:57 2023
 
-module Gowin_rPLL (clkout, clkoutd, clkoutd3, reset, clkin);
+module Gowin_rPLL_otp (clkout, reset, clkin);
 
 output clkout;
-output clkoutd;
-output clkoutd3;
 input reset;
 input clkin;
 
 wire lock_o;
 wire clkoutp_o;
+wire clkoutd_o;
+wire clkoutd3_o;
 wire gw_gnd;
 
 assign gw_gnd = 1'b0;
@@ -24,8 +24,8 @@ rPLL rpll_inst (
     .CLKOUT(clkout),
     .LOCK(lock_o),
     .CLKOUTP(clkoutp_o),
-    .CLKOUTD(clkoutd),
-    .CLKOUTD3(clkoutd3),
+    .CLKOUTD(clkoutd_o),
+    .CLKOUTD3(clkoutd3_o),
     .RESET(reset),
     .RESET_P(gw_gnd),
     .CLKIN(clkin),
@@ -40,9 +40,9 @@ rPLL rpll_inst (
 
 defparam rpll_inst.FCLKIN = "27";
 defparam rpll_inst.DYN_IDIV_SEL = "false";
-defparam rpll_inst.IDIV_SEL = 8;
+defparam rpll_inst.IDIV_SEL = 1;
 defparam rpll_inst.DYN_FBDIV_SEL = "false";
-defparam rpll_inst.FBDIV_SEL = 49;
+defparam rpll_inst.FBDIV_SEL = 12;
 defparam rpll_inst.DYN_ODIV_SEL = "false";
 defparam rpll_inst.ODIV_SEL = 4;
 defparam rpll_inst.PSDA_SEL = "0000";
@@ -56,9 +56,9 @@ defparam rpll_inst.CLKFB_SEL = "internal";
 defparam rpll_inst.CLKOUT_BYPASS = "false";
 defparam rpll_inst.CLKOUTP_BYPASS = "false";
 defparam rpll_inst.CLKOUTD_BYPASS = "false";
-defparam rpll_inst.DYN_SDIV_SEL = 108;
+defparam rpll_inst.DYN_SDIV_SEL = 2;
 defparam rpll_inst.CLKOUTD_SRC = "CLKOUT";
 defparam rpll_inst.CLKOUTD3_SRC = "CLKOUT";
 defparam rpll_inst.DEVICE = "GW2A-18C";
 
-endmodule //Gowin_rPLL
+endmodule //Gowin_rPLL_otp

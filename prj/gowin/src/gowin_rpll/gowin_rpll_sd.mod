@@ -4,20 +4,20 @@
 -part_number GW2A-LV18PG256C8/I7
 
 
--mod_name Gowin_rPLL
--file_name gowin_rpll
+-mod_name Gowin_rPLL_sd
+-file_name gowin_rpll_sd
 -path C:/Users/semen/Documents/CS/MyProjects/GhostSD/GhostSD/prj/gowin/src/gowin_rpll/
 -type PLL
 -rPll true
 -file_type vlg
 -dev_type GW2A-18C
 -dyn_idiv_sel false
--idiv_sel 9
+-idiv_sel 7
 -dyn_fbdiv_sel false
--fbdiv_sel 50
+-fbdiv_sel 13
 -dyn_odiv_sel false
--odiv_sel 4
--dyn_sdiv_sel 108
+-odiv_sel 16
+-dyn_sdiv_sel 126
 -dyn_da_en true
 -rst_sig true
 -rst_sig_p false
@@ -31,5 +31,4 @@
 -en_clkoutd true
 -clkoutd_bypass false
 -clkoutd_src CLKOUT
--en_clkoutd3 true
--clkoutd3_src CLKOUT
+-en_clkoutd3 false
