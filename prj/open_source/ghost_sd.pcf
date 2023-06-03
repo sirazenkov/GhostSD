@@ -24,7 +24,7 @@ set_io ofail F5
 ##############################
 # Clocks
 ##############################
-set_frequency iclk 72
+set_frequency iclk 36
 set_frequency oclk_sd 18
-set_frequency clk_otp_glob 72
+set_frequency clk_otp_glob 36
 

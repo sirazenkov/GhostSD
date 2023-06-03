@@ -8,15 +8,17 @@ synth:
 
 placeNroute:
 	nextpnr-ice40 \
+	--top ghost_sd \
 	--lp1k --package cm36 \
         --json work/ghost_sd.json \
         --pcf ghost_sd.pcf \
         --asc work/ghost_sd.asc \
 	--opt-timing \
-	--threads 4 \
+	--threads 8 \
 	--tmg-ripup \
 	--parallel-refine \
 	--promote-logic \
+	--ignore-rel-clk \
 	--ignore-loops \
 	--seed 1
 
@@ -30,7 +32,7 @@ program:
 	icesprog -g PA9 -w 0
 	icesprog -g PA10 -w 0
 	icesprog work/ghost_sd.bin
-	icesprog -c 4
+	icesprog -c 3
 
 reset:
 	icesprog -g PA9 -w 1
