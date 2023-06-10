@@ -1,6 +1,6 @@
 create_clock -period 8.000 -name sys_clk_pin -waveform {0.000 4.000} -add [get_ports iclk]
 
-create_generated_clock -name slow_clk -source [get_ports iclk] -divide_by 512 [get_pins {clock_divider_inst/counter_reg[8]/Q}]
+create_generated_clock -name slow_clk -source [get_pins clock_divider_inst/clk_gen_inst/inst/mmcm_adv_inst/CLKOUT1] -divide_by 128 [get_pins {clock_divider_inst/counter_reg[6]/Q}]
 
 set_false_path -to [get_ports {ofail osuccess}]
 set_false_path -from [get_ports {irst istart}]

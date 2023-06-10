@@ -22,14 +22,14 @@ module clock_divider (
     .sd_fast_clk(fast_clk)
   );
   
-  reg [8:0] counter = 9'd0; 
-  always @(posedge iclk or posedge irst) begin
+  reg [6:0] counter = 7'd0; 
+  always @(posedge fast_clk or posedge irst) begin
     if (irst)
-      counter <= 9'd0;
+      counter <= 7'd0;
     else
       counter <= counter + 1'b1;  
   end
-  assign slow_clk = counter[8];
+  assign slow_clk = counter[6];
     
   BUFGMUX_CTRL BUFGMUX_CTRL_inst (
       .O(oclk_sd),
