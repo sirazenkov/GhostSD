@@ -17,11 +17,6 @@ set_false_path -from [get_clocks -of_objects [get_pins clock_divider_inst/clk_ge
 set_false_path -from [get_clocks {slow_clk}] -to [get_clocks -of_objects [get_pins clock_divider_inst/clk_gen_inst/inst/mmcm_adv_inst/CLKOUT0]]
 set_false_path -from [get_clocks -of_objects [get_pins clock_divider_inst/clk_gen_inst/inst/mmcm_adv_inst/CLKOUT0]] -to [get_clocks {slow_clk}]
 
-set_input_delay -clock [get_clocks {slow_clk}] -min 2.500 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]
-set_input_delay -clock [get_clocks {slow_clk}] -max 14.000 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]
-set_output_delay -clock [get_clocks {slow_clk}] -min -2.000 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]
-set_output_delay -clock [get_clocks {slow_clk}] -max 6.000 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]
-
 set_input_delay -add -clock [get_clocks sd_fast_clk_clk_gen] -min 2.500 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]
 set_input_delay -add -clock [get_clocks sd_fast_clk_clk_gen] -max 14.000 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]
 set_output_delay -add -clock [get_clocks sd_fast_clk_clk_gen] -min -2.000 [get_ports -filter { NAME =~  "*io*" && DIRECTION == "INOUT" }]

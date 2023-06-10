@@ -45,7 +45,7 @@ create_generated_clock -name sd_slow_clk
                        [get_pins {clock_divider_inst/DCS_inst/dcs_inst/CLKOUT}]
 create_generated_clock -name sd_slow_clk_out
                        -source [get_pins {clock_divider_inst/DCS_inst/dcs_inst/CLKOUT}]
-                       -master_clock sd_fast_clk
+                       -master_clock sd_slow_clk
                        -edges{1 2 3}
                        [get_ports {oclk_sd}]
 
@@ -53,7 +53,8 @@ set_clock_groups -asynchronous -group [get_clocks {otp_clk}] -group [get_clocks 
 set_clock_groups -asynchronous -group [get_clocks {otp_clk}] -group [get_clocks {sd_slow_clk}]
 set_clock_groups -exclusive -group [get_clocks {sd_slow_clk}] -group [get_clocks {sd_fast_clk}]
 set_clock_groups -exclusive -group [get_clocks {sd_slow_clk}] -group [get_clocks {sd_fast_clk_out}]
-
+set_clock_groups -exclusive -group [get_clocks {sd_fast_clk}] -group [get_clocks {sd_slow_clk}]
+set_clock_groups -exclusive -group [get_clocks {sd_fast_clk}] -group [get_clocks {sd_slow_clk_out}]
 
 set_false_path -from [get_clocks {otp_clk}] -to [get_clocks {sd_fast_clk}] -setup
 set_false_path -from [get_clocks {otp_clk}] -to [get_clocks {sd_slow_clk}] -setup
@@ -67,8 +68,8 @@ set_input_delay -clock [get_clocks {sd_fast_clk_out}]
                 -max 14
                 [get_ports {iocmd_sd, iodata_sd[*]}]
 set_output_delay -clock [get_clocks {sd_fast_clk_out}]
-                -min 10
+                -min -2
                 [get_ports {iocmd_sd, iodata_sd[*]}]
 set_output_delay -clock [get_clocks {sd_fast_clk_out}]
-                -max 10
+                -max 6
                 [get_ports {iocmd_sd, iodata_sd[*]}]
