@@ -53,7 +53,6 @@ set_clock_groups -asynchronous -group [get_clocks {otp_clk}] -group [get_clocks 
 set_clock_groups -asynchronous -group [get_clocks {otp_clk}] -group [get_clocks {sd_slow_clk}]
 set_clock_groups -exclusive -group [get_clocks {sd_slow_clk}] -group [get_clocks {sd_fast_clk}]
 set_clock_groups -exclusive -group [get_clocks {sd_slow_clk}] -group [get_clocks {sd_fast_clk_out}]
-set_clock_groups -exclusive -group [get_clocks {sd_fast_clk}] -group [get_clocks {sd_slow_clk}]
 set_clock_groups -exclusive -group [get_clocks {sd_fast_clk}] -group [get_clocks {sd_slow_clk_out}]
 
 set_false_path -from [get_clocks {otp_clk}] -to [get_clocks {sd_fast_clk}] -setup
