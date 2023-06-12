@@ -218,22 +218,20 @@ module ghost_sd (
    
   `ifdef YOSYS
     SB_IO #(
-      .PIN_TYPE(6'b101000),
+      .PIN_TYPE(6'b101001),
       .IO_STANDARD("SB_LVCMOS")
     ) cmd_io_buf (
-      .CLOCK_ENABLE(1'b1),
-      .INPUT_CLK(oclk_sd),
+      .CLOCK_ENABLE(1'b0),
       .PACKAGE_PIN(iocmd_sd),
       .OUTPUT_ENABLE(cmd_sd_en),
       .D_OUT_0(ocmd_sd),
       .D_IN_0(icmd_sd)
     );
     SB_IO #(
-      .PIN_TYPE(6'b101000),
+      .PIN_TYPE(6'b101001),
       .IO_STANDARD("SB_LVCMOS")
     ) data_io_buf [3:0] (
-      .CLOCK_ENABLE(1'b1),
-      .INPUT_CLK(oclk_sd),
+      .CLOCK_ENABLE(1'b0),
       .PACKAGE_PIN(iodata_sd),
       .OUTPUT_ENABLE(data_sd_en),
       .D_OUT_0(odata_sd),

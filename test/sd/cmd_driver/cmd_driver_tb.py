@@ -91,7 +91,6 @@ class CMD_driver_BFM():
                     self.dut.icmd_sd.value = 1 & (crc >> (6-i))
                 await FallingEdge(self.dut.iclk)
         self.dut.icmd_sd.value = 1
-        await ClockCycles(self.dut.iclk, 1, rising=False) # Input register delay
         await ClockCycles(self.dut.iclk, 9, rising=False) # Timeout between commands
         return int(self.dut.odone.value)
 
