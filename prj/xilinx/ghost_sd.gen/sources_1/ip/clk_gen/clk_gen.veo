@@ -57,6 +57,7 @@
 //----------------------------------------------------------------------------
 // _otp_clk__175.00000______0.000______50.0______189.056____233.292
 // sd_fast_clk__50.00000______0.000______50.0______229.608____233.292
+// sd_slow_clk___8.20313______0.000______50.0______325.337____233.292
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -74,6 +75,7 @@
     // Clock out ports
     .otp_clk(otp_clk),     // output otp_clk
     .sd_fast_clk(sd_fast_clk),     // output sd_fast_clk
+    .sd_slow_clk(sd_slow_clk),     // output sd_slow_clk
     // Status and control signals
     .reset(reset), // input reset
    // Clock in ports
