@@ -31,3 +31,9 @@ IO_PORT "irst_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
 CLOCK_LOC "rst" BUFG = SR;
 CLOCK_LOC "oclk_sd_d" BUFG = CLK;
 CLOCK_LOC "clk_otp" BUFG = CLK;
+
+INS_LOC "sd_inst/cmd_driver_inst/cmd_sd_s0" R8
+INS_LOC "sd_inst/d_driver_inst/data_sd_3_s0" T6
+INS_LOC "sd_inst/d_driver_inst/data_sd_2_s0" P6
+INS_LOC "sd_inst/d_driver_inst/data_sd_1_s0" T8
+INS_LOC "sd_inst/d_driver_inst/data_sd_0_s0" P8

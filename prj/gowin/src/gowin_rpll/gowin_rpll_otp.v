@@ -4,7 +4,7 @@
 //GOWIN Version: V1.9.8.07 Education
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18C
-//Created Time: Sat Jun 03 00:45:57 2023
+//Created Time: Mon Jun 12 22:33:34 2023
 
 module Gowin_rPLL_otp (clkout, reset, clkin);
 
@@ -40,9 +40,9 @@ rPLL rpll_inst (
 
 defparam rpll_inst.FCLKIN = "27";
 defparam rpll_inst.DYN_IDIV_SEL = "false";
-defparam rpll_inst.IDIV_SEL = 1;
+defparam rpll_inst.IDIV_SEL = 8;
 defparam rpll_inst.DYN_FBDIV_SEL = "false";
-defparam rpll_inst.FBDIV_SEL = 12;
+defparam rpll_inst.FBDIV_SEL = 49;
 defparam rpll_inst.DYN_ODIV_SEL = "false";
 defparam rpll_inst.ODIV_SEL = 4;
 defparam rpll_inst.PSDA_SEL = "0000";
