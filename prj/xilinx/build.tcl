@@ -1,11 +1,12 @@
 open_project ghost_sd.xpr
+update_compile_order -fileset sources_1
 
-set_param general.maxThreads 32
+reset_run synth_1
+launch_runs synth_1 -jobs 4
+wait_on_run synth_1
 
-synth_design -top ghost_sd
-opt_design
-place_design
-phys_opt_design
-route_design
+reset_run impl_1
+launch_runs impl_1 -to_step write_bitstream -jobs 4
+wait_on_run impl_1
 
-write_bitstream -force ghost_sd.bit
+close_project
