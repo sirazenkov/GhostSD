@@ -59,14 +59,6 @@ module d_driver
     BUSY           = 4'b1010;
   reg [3:0] state = IDLE, next_state;
 
-  reg [3:0] data_sd;
-  always @(posedge iclk or posedge irst) begin
-    if (irst)
-      data_sd <= 4'h0;
-    else
-      data_sd <= idata_sd;
-  end
-
   reg [3:0]  data    =  4'd0;
   reg [10:0] counter = 11'd0;
 
@@ -152,7 +144,7 @@ module d_driver
     else if (state == SEND_CRC)
       data <= next_state == SEND_END ? 4'hF : crc;
     else
-      data <= data_sd;
+      data <= idata_sd;
   end
 
   always @(posedge iclk or posedge irst) begin

@@ -9,8 +9,8 @@ create_clock -name iclk -period 37.037 -waveform {0 18.518} [get_ports {iclk}]
 create_generated_clock -name otp_clk
                        -source [get_ports {iclk}]
                        -master_clock iclk
-                       -multiply_by 50
-                       -divide_by 9
+                       -multiply_by 13
+                       -divide_by 2
                        [get_pins {clock_divider_inst/rPLL_inst_otp/rpll_inst/CLKOUT}]
 
 create_generated_clock -name fast_clk
@@ -79,17 +79,4 @@ set_output_delay -clock [get_clocks {sd_fast_clk_out}]
                 [get_ports {iocmd_sd, iodata_sd[*]}]
 set_output_delay -clock [get_clocks {sd_fast_clk_out}]
                 -max 6
-                [get_ports {iocmd_sd, iodata_sd[*]}]
-
-set_input_delay -clock [get_clocks {sd_slow_clk_out}]
-                -min 0
-                [get_ports {iocmd_sd, iodata_sd[*]}]
-set_input_delay -clock [get_clocks {sd_slow_clk_out}]
-                -max 50
-                [get_ports {iocmd_sd, iodata_sd[*]}]
-set_output_delay -clock [get_clocks {sd_slow_clk_out}]
-                -min -5
-                [get_ports {iocmd_sd, iodata_sd[*]}]
-set_output_delay -clock [get_clocks {sd_slow_clk_out}]
-                -max 5
                 [get_ports {iocmd_sd, iodata_sd[*]}]
