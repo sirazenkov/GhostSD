@@ -71,7 +71,9 @@ class CMD_driver_BFM():
         if(index == 2 or index == 9):
             self.dut.icmd_sd.value = 1
             for i in range(133):
-                if(i == 6):
+                if(i < 6 or i == 50 or i == 52):
+                    self.dut.icmd_sd.value = 1
+                else:
                     self.dut.icmd_sd.value = 0
                 await FallingEdge(self.dut.iclk)
         else:

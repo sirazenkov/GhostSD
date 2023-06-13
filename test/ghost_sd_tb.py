@@ -25,18 +25,18 @@ class GhostSD_BFM():
 
     async def start_operation(self):
         await FallingEdge(self.dut.oclk_sd)
-        self.dut.istart_n.value = 0
+        self.dut.istart.value = 1
         await FallingEdge(self.dut.oclk_sd)
-        self.dut.istart_n.value = 1
+        self.dut.istart.value = 0
 
     async def reset(self):
         await FallingEdge(self.dut.iclk)
-        self.dut.irst_n.value    = 0 
-        self.dut.iocmd_sd.value  = 1
+        self.dut.irst.value = 1 
+        self.dut.iocmd_sd.value = 1
         self.dut.iodata_sd.value = 0xF
-        self.dut.istart_n.value  = 1
+        self.dut.istart.value = 0
         await FallingEdge(self.dut.iclk)
-        self.dut.irst_n.value = 1
+        self.dut.irst.value = 0
         await FallingEdge(self.dut.iclk)
 
     async def check_cmd_field(self, field, length):
@@ -56,7 +56,9 @@ class GhostSD_BFM():
         if(index == 2):
             self.dut.iocmd_sd.value = 1
             for i in range(133):
-                if(i == 6):
+                if(i < 6 or i == 50 or i == 53 or i == 86):
+                    self.dut.iocmd_sd.value = 1
+                else:
                     self.dut.iocmd_sd.value = 0
                 await FallingEdge(self.dut.oclk_sd)
         else:
