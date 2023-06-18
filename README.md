@@ -25,7 +25,7 @@ test - Testbenches written in Python and Verilog
     - [icepack](https://github.com/YosysHQ/icestorm/tree/master/icepack) (bitstream generation)
     - [icesprog](https://github.com/wuxx/icesugar/tree/master/tools/src) (device programming and debug)
 - Gowin flow (Tang Primer 20K)
-    - [Gowin EDA](https://www.gowinsemi.com/en/support/home/)
+    - [Gowin EDA Education (v1.9.8.07)](https://www.gowinsemi.com/en/support/home/)
 - Xilinx flow (PYNQ-Z1)
     - [Vivado (2020.2)](https://www.xilinx.com/products/design-tools/vivado.html)
 - Simulation
