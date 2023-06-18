@@ -1,4 +1,4 @@
-# GhostSD (Work in progress)
+# GhostSD
 
 [![design-simulation](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml/badge.svg)](https://github.com/sirazenkov/GhostSD/actions/workflows/simulation.yml)
 
@@ -7,7 +7,7 @@ GOST-based SDSC-card encryptor implemented on boards:
 - [Tang Primer 20K (with Dock ext-board)](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html)
 - [PYNQ-Z1](https://digilent.com/reference/programmable-logic/pynq-z1/start)
 
-Using the GOST block cipher (Magma) in counter mode.
+Using the 64-bit GOST block cipher (Magma) in counter mode. \
 More details in GOST R 34.12-2015 (RFC 8891) and GOST R 34.13-2015.
 
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/photo.png?raw=true)
@@ -57,9 +57,16 @@ test - Testbenches written in Python and Verilog
     - looking if LED 4 on Tang Primer 20K lighted up
     - looking if LD3 on PYNQ-Z1 lighted up
 
-### Simulation
-Run simulation: `cd test; make`. \
-After simulation you may delete output files with `make cleanall`.
+### Simulation (work in progress)
+Run simulation: `cd test; make` \
+After simulation you may delete output files with `make cleanall`
 
 ### Project setup
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_system.png?raw=true)
+
+### Operating time
+Flow        |  1GB  |  2 GB  | Blocks per transaction |  OTP/SD clk (MHz) |
+------------|-------|--------|------------------------|-------------------|
+Open-source | 13.23 |  26.57 |           8            |   36/18           |
+Gowin       | 5.35  |  10.57 |           16           |   175/50          |
+Xilinx      | 3.54  |  6.24  |           128          |   175/50          |
