@@ -65,8 +65,8 @@ After simulation you may delete output files with `make cleanall`
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_system.png?raw=true)
 
 ### Operating time
-Flow        |  1GB  |  2 GB  | Blocks per transaction |  OTP/SD clk (MHz) |
-------------|-------|--------|------------------------|-------------------|
-Open-source | 13.23 |  26.57 |           8            |   36/18           |
-Gowin       | 5.35  |  10.57 |           16           |   175/50          |
-Xilinx      | 3.54  |  6.24  |           128          |   175/50          |
+Flow        |  1 GB   |  2 GB    | Blocks per transaction |  OTP/SD clk (MHz) |
+------------|---------|----------|------------------------|-------------------|
+Open-source | 13m 23s |  26m 57s |           8            |   36/18           |
+Gowin       | 5m 35s  |  10m 57s |           16           |   175/50          |
+Xilinx      | 3m 54s  |  6m 24s  |           128          |   175/50          |
