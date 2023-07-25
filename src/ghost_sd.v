@@ -6,7 +6,7 @@
 //==========================================
 
 module ghost_sd (
-  `ifdef GOWIN
+  `ifdef INV_PORTS
   input irst_n,
   `else
   input irst,
@@ -14,10 +14,10 @@ module ghost_sd (
 
   input iclk, // System clock
 
-  `ifdef GOWIN
-  input istart_n,  
+  `ifdef INV_PORTS
+  input istart_n,
   `else
-  input istart,  
+  input istart,
   `endif
 
   // SD lines
@@ -38,7 +38,7 @@ module ghost_sd (
     parameter RAM_BLOCKS = 8;
   `elsif GOWIN
     parameter RAM_BLOCKS = 16;
-  `else
+  `else // Xilinx
     parameter RAM_BLOCKS = 128;
   `endif
 
@@ -72,15 +72,15 @@ module ghost_sd (
 
   wire sel_clk;
 
-  `ifdef GOWIN
+  `ifdef YOSYS
+    wire rst;
+    assign rst = irst;
+  `elsif INV_PORTS
     reg debounce_rst = 1, rst = 0;
     always @(posedge iclk) begin
       debounce_rst <= irst_n;
       rst <= ~debounce_rst;
     end
-  `elsif YOSYS
-    wire rst;
-    assign rst = irst;
   `else
     reg debounce_rst = 1, rst = 0;
     always @(posedge iclk) begin
@@ -97,15 +97,15 @@ module ghost_sd (
     .oclk_sd(clk_sd)
   );
 
-  `ifdef GOWIN
+  `ifdef YOSYS
+    wire start;
+    assign start = istart;
+  `elsif INV_PORTS
     reg debounce_start = 1, start = 0;
     always @(posedge oclk_sd) begin
       debounce_start <= istart_n;
       start <= ~debounce_start;
     end
-  `elsif YOSYS
-    wire start;
-    assign start = istart;
   `else
     reg debounce_start = 1, start = 0;
     always @(posedge oclk_sd) begin
@@ -211,12 +211,7 @@ module ghost_sd (
       .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_otp),
       .GLOBAL_BUFFER_OUTPUT(clk_otp_glob)
     );
-  `else
-    assign oclk_sd      = clk_sd ;
-    assign clk_otp_glob = clk_otp;
-  `endif
-   
-  `ifdef YOSYS
+
     SB_IO #(
       .PIN_TYPE(6'b101000),
       .IO_STANDARD("SB_LVCMOS")
@@ -240,6 +235,9 @@ module ghost_sd (
       .D_IN_0(idata_sd)
     );
   `else
+    assign oclk_sd      = clk_sd ;
+    assign clk_otp_glob = clk_otp;
+
     assign icmd_sd  = iocmd_sd;
     assign idata_sd = iodata_sd;
 
@@ -255,7 +253,7 @@ module ghost_sd (
     assign osuccess  = success;
     assign ofail     = fail;
     assign odata0_sd = iodata_sd[0];
-  `elsif GOWIN
+  `elsif INV_PORTS
     assign osuccess = success ? 1'b0 : 1'bz;
     assign ofail    = fail ? 1'b0 : 1'bz;
   `else

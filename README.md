@@ -70,3 +70,8 @@ Flow        |  1 GB   |  2 GB    | Blocks per transaction |  OTP/SD clk (MHz) |
 Open-source | 13m 23s |  26m 57s |           8            |   36/18           |
 Gowin       | 5m 35s  |  10m 57s |           16           |   175/50          |
 Xilinx      | 3m 54s  |  6m 24s  |           128          |   175/50          |
+
+#### TODO:
+1. Testbenches with pytest
+2. Extrnal memory support
+3. SDHC and SDXC cards support
