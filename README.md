@@ -72,6 +72,5 @@ Gowin       | 5m 35s  |  10m 57s |           16           |   175/50          |
 Xilinx      | 3m 54s  |  6m 24s  |           128          |   175/50          |
 
 #### TODO:
-1. Testbenches with pytest
-2. Extrnal memory support
-3. SDHC and SDXC cards support
+1. External memory support
+2. SDHC and SDXC cards support
