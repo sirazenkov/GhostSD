@@ -11,6 +11,14 @@ module s_box (
   output [31:0] oword
 );
 
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("wave.vcd");
+       $dumpvars(0, s_box);
+       #1;
+     end
+  `endif
+
   reg [31:0] word;
   assign oword = word;
 
