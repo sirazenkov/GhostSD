@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: S-boxes for Magma cipher round
 //===========================================
+`timescale 1ns/100ps
 
 module s_box (
   input  [31:0] iword,
