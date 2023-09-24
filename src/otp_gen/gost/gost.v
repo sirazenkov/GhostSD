@@ -18,6 +18,14 @@ module gost (
   output        odone
 );
 
+  `ifdef COCOTB_SIM
+     initial begin
+       $dumpfile("wave.vcd");
+       $dumpvars(0, gost);
+       #1;
+     end
+  `endif
+
   localparam [1:0]
     IDLE = 2'b00,
     ENC  = 2'b01,
