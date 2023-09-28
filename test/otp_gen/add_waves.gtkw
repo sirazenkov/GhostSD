@@ -1,10 +1,10 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Sun Sep 24 11:45:56 2023
+[*] Thu Sep 28 04:45:18 2023
 [*]
 [dumpfile] "/home/user/MyProjects/GhostSD/test/otp_gen/sim_build/wave.vcd"
-[dumpfile_mtime] "Sun Sep 24 11:43:24 2023"
-[dumpfile_size] 18059264
+[dumpfile_mtime] "Thu Sep 28 04:42:51 2023"
+[dumpfile_size] 48545792
 [savefile] "/home/user/MyProjects/GhostSD/test/otp_gen/add_waves.gtkw"
 [timestart] 0
 [size] 1853 1025
@@ -13,7 +13,7 @@
 [sst_width] 223
 [signals_width] 134
 [sst_expanded] 1
-[sst_vpaned_height] 301
+[sst_vpaned_height] 598
 @28
 otp_gen.irst
 otp_gen.iclk
@@ -31,7 +31,7 @@ otp_gen.owdata[3:0]
 otp_gen.owrite_en
 otp_gen.odone
 otp_gen.state[1:0]
-@22
+@25
 otp_gen.counter[12:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -8,7 +8,7 @@
 import os
 import cocotb
 from cocotb.runner import get_runner
-from cocotb.triggers import Timer, RisingEdge, FallingEdge
+from cocotb.triggers import Timer, RisingEdge, FallingEdge, with_timeout
 from cocotb.clock import Clock
 
 test_dir = os.path.dirname(__file__)
@@ -16,7 +16,7 @@ rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'src'))
 
 @cocotb.test()
 async def otp_gen_tb(dut):
-    """One-time pad generator module testbench (EMPTY)""" 
+    """One-time pad generator module testbench""" 
     istart = dut.istart
     dut.ikey.value = int('FFEEDDCCBBAA99887766554433221100F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF', 16)
     dut.iIV.value = 0
@@ -28,8 +28,18 @@ async def otp_gen_tb(dut):
     istart.value = 1
     await FallingEdge(dut.iclk) 
     istart.value = 0 
-    await RisingEdge(dut.odone) 
-    await FallingEdge(dut.iclk) 
+
+    counter = 0
+    size = 1024 * 8 # RAM block size * RAM_BLOCKS
+    while(counter < size):
+        await with_timeout(RisingEdge(dut.owrite_en), 6000, 'ns')
+        for i in range(16):
+            await FallingEdge(dut.iclk) 
+            address = int(dut.osel_ram.value) << 10 | int(dut.oaddr.value)
+            assert (address == counter) and int(dut.owrite_en) == 1, f"OTP write failed for address {counter}"
+            counter = counter + 1
+    
+    assert int(dut.odone.value) == 1, "Done signal not set" 
 
 def test_otp_gen():
     sim = os.getenv("SIM", "icarus")

@@ -11,5 +11,5 @@ jobs:
       - uses: actions/checkout@master
       - run: sudo apt install -y --no-install-recommends iverilog
       - run: pip3 install cocotb pytest
-      - run: SIM=icarus HDL_TOPLEVEL_LANG=verilog pytest test
+      - run: SIM=icarus HDL_TOPLEVEL_LANG=verilog pytest test -s
       - run: make -C test
