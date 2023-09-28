@@ -7,6 +7,8 @@ GOST-based SDSC-card encryptor implemented on boards:
 - [Tang Primer 20K (with Dock ext-board)](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html)
 - [PYNQ-Z1](https://digilent.com/reference/programmable-logic/pynq-z1/start)
 
+SD cards are described in the Physical Layer [Simplified Specification](https://www.sdcard.org/downloads/pls/) by the SD Card Association and the SD Group.
+
 Using the 64-bit GOST block cipher (Magma) in counter mode. \
 More details in GOST R 34.12-2015 (RFC 8891) and GOST R 34.13-2015.
 
@@ -16,7 +18,7 @@ More details in GOST R 34.12-2015 (RFC 8891) and GOST R 34.13-2015.
 docs - diagrams and photos describing the project \
 prj - project files for different flows \
 src - Verilog HDL synthesizable sources \
-test - Testbenches written in Python and Verilog
+test - testbenches written in Python and Verilog
 
 ### Required software
 - Open-source flow (iCESugar-nano)
