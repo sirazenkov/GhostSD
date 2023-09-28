@@ -60,10 +60,13 @@ test - Testbenches written in Python and Verilog
     - looking if LD3 on PYNQ-Z1 lighted up
 
 ### Simulation (work in progress)
-Run simulation: `cd test; make` \
-After simulation you may delete output files with `make cleanall`
+- Run simulation for the whole design: `SIM=icarus HDL_TOPLEVEL_LANG=verilog pytest test -s`
+- Run simulation for a specific module:
+    1. `cd test/<path to module's testbench>`
+    2. `SIM=icarus HDL_TOPLEVEL_LANG=verilog pytest test_<module_name>.py -s`
+    3. open waveform: `gtkwave sim_build/wave.vcd`. After the window opens, `Ctrl+O` and select `add_waves.gtkw` file in the folder with the testbench.
 
-### Project setup
+### Ports 
 ![alt text](https://github.com/sirazenkov/GhostSD/blob/master/docs/GhostSD_system.png?raw=true)
 
 ### Operating time
