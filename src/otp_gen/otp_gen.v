@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: OTP generator (based on GOST "Magma")
 //==================================================
+`timescale 1ns/100ps
 
 module otp_gen
 #(

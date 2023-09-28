@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: Clock divider for generating fast and slow SD clocks without PLLs
 //==============================================================================
+`timescale 1ns/100ps
 
 module clock_divider (
   input  irst,      // Global reset

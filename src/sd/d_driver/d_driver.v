@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: D lines driver
 //===============================
+`timescale 1ns/100ps
 
 module d_driver
 #(

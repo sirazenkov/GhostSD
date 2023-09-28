@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: CMD line driver
 //===============================
+`timescale 1ns/100ps
 
 module cmd_driver (
   input irst, // Global reset

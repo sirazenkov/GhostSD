@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: Top module of GhostSD project
 //==========================================
+`timescale 1ns/100ps
 
 module ghost_sd (
   `ifdef INV_PORTS

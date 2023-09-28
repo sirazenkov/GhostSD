@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: GOST (Magma) block cipher module
 //=============================================
+`timescale 1ns/100ps
 
 module gost (
   input irst,

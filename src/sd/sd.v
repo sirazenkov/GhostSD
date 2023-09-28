@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: SD Bus controller
 //===============================
+`timescale 1ns/100ps
 
 module sd
 #(

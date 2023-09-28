@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: CRC (cyclic redundancy check) with x^7 + x^3 + 1 polynomial
 //========================================================================
+`timescale 1ns/100ps
 
 module crc7 (
   input irst,

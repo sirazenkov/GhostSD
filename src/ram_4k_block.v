@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: 4Kb RAM memory block (1024x4)
 //==========================================
+`timescale 1ns/100ps
 
 module ram_4k_block (din, write_en, waddr, wclk, raddr, rclk, dout);
   parameter addr_width = 10;

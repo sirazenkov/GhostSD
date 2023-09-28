@@ -4,6 +4,7 @@
 //e-mail: sirazenkov@stud.tsu.ru
 //description: CRC (cyclic redundancy check) with x^16 + x^12 + x^5 + 1 polynomial
 //================================================================================
+`timescale 1ns/100ps
 
 module crc16 (
   input irst,
