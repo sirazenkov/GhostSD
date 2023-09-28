@@ -71,3 +71,4 @@ def test_crc7():
 
 if __name__ == "__main__":
     test_crc7()
+

@@ -50,3 +50,4 @@ def test_gost():
 
 if __name__ == "__main__":
     test_gost()
+
