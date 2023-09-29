@@ -106,7 +106,7 @@ module cmd_driver (
     else if (next_state == SEND_CMD)
       crc_failed <= 1'b0;
     else if (state == RCV_CRC && icmd_sd != crc
-	    && icmd_index != 6'd41 && icmd_index != 6'd2 && icmd_index != 6'd9) // Ignore R2 and R3 responses for now
+	    && icmd_index != 6'd41 && icmd_index != 6'd2 && icmd_index != 6'd9) // Ignore CRCs in R2 and R3 responses for now
       crc_failed <= 1'b1;
   end
 

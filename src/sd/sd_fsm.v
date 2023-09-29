@@ -120,7 +120,7 @@ module sd_fsm
       end
       CMD55, CMD9, CMD7, CMD13, CMD15: begin
         oarg[31:16] = rca;
-        if (CMD13) oarg[15] = 1'b0;
+        if (state == CMD13) oarg[15] = 1'b0;
       end
       CMD6: begin
         if (switch)
