@@ -24,7 +24,8 @@ def crc16(data):
 
 def gen_crc16_packets(block):
     lines_data = [0,0,0,0]
-    for i in range(1024):
+    block_len = len(block)
+    for i in range(block_len):
         for j in range(4):
             lines_data[j] = lines_data[j] << 1 | ((block[i] >> j) & 1)
     crc_values = [crc16(line_data) for line_data in lines_data]
@@ -63,6 +64,13 @@ transactions = (
     Transaction(55, RCA << 16 | ((1 << 16) - 1), (4 << 9) | (1 << 5)),
     Transaction(23, ((1 << 9) - 1) << 23 | 8,    4 << 9),
     Transaction(25, 0,                           4 << 9),
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)), # Receive 8 blocks
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(12, (1 << 32) - 1,               6 << 9),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (4 << 9) | (1 << 8)),

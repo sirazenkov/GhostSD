@@ -120,7 +120,7 @@ module d_driver
       IDLE:           if (istart)             next_state = WAIT_RCV;
                       else if (istatus)       next_state = WAIT_STATUS;
       WAIT_STATUS:    if (!data[0])           next_state = RCV_STATUS;
-      RCV_STATUS:     if (counter == 11'd143) next_state = STATUS_TIMEOUT;
+      RCV_STATUS:     if (counter == 11'd143) next_state = STATUS_TIMEOUT; // Ignore status CRC
       STATUS_TIMEOUT: if (counter == 11'd7)   next_state = IDLE;
       WAIT_RCV:       if (~|data)             next_state = RCV_DATA;
       RCV_DATA:       if (&counter[9:0])      next_state = CHECK_CRC;
