@@ -33,6 +33,36 @@ async def ram(dut):
         await FallingEdge(dut.iclk)
         dut.irdata.value = multiplex[int(dut.osel_ram.value)]
 
+async def send_status(dut):
+    blocks = [randint(0,15) for i in range(128)]
+    crc_packets = gen_crc16_packets(blocks)
+
+    await FallingEdge(dut.iclk)
+    dut.istatus.value = 1
+    await FallingEdge(dut.iclk)
+    dut.istatus.value = 0 
+
+    await random_delay(dut, 10)
+
+    await FallingEdge(dut.iclk)
+    dut.idata_sd.value = 0 # Start bit
+    await FallingEdge(dut.iclk)
+
+    for i in range(128):
+        dut.idata_sd.value = blocks[i]
+        await FallingEdge(dut.iclk)
+
+    for i in range(16):
+        dut.idata_sd.value = crc_packets[i]
+        await FallingEdge(dut.iclk)
+
+    dut.idata_sd.value = 0xF # End bit
+    await FallingEdge(dut.iclk)
+
+    await ClockCycles(dut.iclk, 8, rising=False)
+
+    return (int(dut.oread_done.value) == 1, int(dut.owrite_done.value) == 1)
+
 async def send_blocks(dut, blocks, crc_packets):
     await FallingEdge(dut.iclk)
     dut.istart.value = 1
@@ -100,6 +130,10 @@ async def d_driver_tb(dut):
     await FallingEdge(dut.iclk)
 
     cocotb.start_soon(ram(dut))
+
+    read_done, write_done = await send_status(dut)
+    assert not read_done, "Mixed up status and data!"
+    assert write_done, "Status read failed!"
 
     for i in range(NUM_OF_TRANSACTIONS):
         blocks = [[random.randint(0,15) for i in range(1024)] for j in range(RAM_BLOCKS)]
