@@ -1,29 +1,30 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Fri Mar 17 15:15:43 2023
+[*] Wed Oct  4 18:20:21 2023
 [*]
-[dumpfile] "/home/user/MyProjects/GhostSD/test/sd/wave.vcd"
-[dumpfile_mtime] "Fri Mar 17 15:11:58 2023"
-[dumpfile_size] 3121
+[dumpfile] "/home/user/MyProjects/GhostSD/test/sd/sim_build/wave.vcd"
+[dumpfile_mtime] "Wed Oct  4 18:14:22 2023"
+[dumpfile_size] 11012
 [savefile] "/home/user/MyProjects/GhostSD/test/sd/add_waves.gtkw"
-[timestart] 48000
-[size] 1460 992
-[pos] -1 -1
-*-19.000000 2490000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 0
+[size] 1853 1025
+[pos] -29 -29
+*-22.000000 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [sst_width] 223
 [signals_width] 254
 [sst_expanded] 1
-[sst_vpaned_height] 490
+[sst_vpaned_height] 636
 @28
 sd_fsm.irst
 sd_fsm.iclk
 sd_fsm.istart
 sd_fsm.icmd_done
-@25
-sd_fsm.iresp[31:0]
+@24
+sd_fsm.iresp[75:0]
 @28
-sd_fsm.idata_crc_fail
-sd_fsm.idata_done
+sd_fsm.iread_done
+sd_fsm.icheck_status
+sd_fsm.iwrite_done
 sd_fsm.iotp_ready
 sd_fsm.osel_clk
 sd_fsm.ogen_otp
@@ -33,6 +34,7 @@ sd_fsm.ostart_cmd
 sd_fsm.oindex[5:0]
 sd_fsm.oarg[31:0]
 @28
+sd_fsm.ostatus_d
 sd_fsm.ostart_d
 sd_fsm.ofail
 sd_fsm.osuccess

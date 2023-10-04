@@ -18,6 +18,13 @@ from random import randint
 
 from sequence import *
 
+async def reset(dut):
+    await FallingEdge(dut.iclk)
+    dut.irst.value = 1 
+    await FallingEdge(dut.iclk)
+    dut.irst.value = 0
+    await FallingEdge(dut.iclk)
+
 async def reset_inputs(dut):
     for i in inputs:
         setattr(getattr(dut, 'i'+ i), 'value', 0)
@@ -28,7 +35,7 @@ async def set_inputs(dut, input_values):
         setattr(getattr(dut, 'i'+ inputs[i]), 'value', input_values[i])
 
 async def check_outputs(dut, output_values):
-    return {o: int(getattr(getattr(dut, 'o' + outputs[i]), 'value')) == output_values[i] for i in range(len(outputs))}
+    return {outputs[i]: int(getattr(getattr(dut, 'o' + outputs[i]), 'value')) == output_values[i] for i in range(len(outputs))}
 
 async def random_delay(dut, upper_bound):
     delay = randint(0, upper_bound)
@@ -40,18 +47,18 @@ async def SD_FSM_tb(dut):
 
     cocotb.start_soon(Clock(dut.iclk, 55, units="ns").start())
 
-    await FallingEdge(dut.iclk)
-    dut.irst.value = 1 
-    await FallingEdge(dut.iclk)
-    dut.irst.value = 0
-    await FallingEdge(dut.iclk)
+    await reset_inputs(dut)
+
+    await reset(dut)
 
     for i in range(len(ivalues)):
         await set_inputs(dut, ivalues[i])
         await FallingEdge(dut.iclk)
         outputs_ok = await check_outputs(dut, ovalues[i])
         for output in outputs_ok:
-            assert outputs_ok[output], f"Output {output} after input {i} set incorrectly!"
+            assert outputs_ok[output], f"Output {output} after input {i+1} set incorrectly!"
+        if (int(dut.ofail.value)):
+            await reset(dut)
         await reset_inputs(dut)
         await random_delay(dut, 10)
 
