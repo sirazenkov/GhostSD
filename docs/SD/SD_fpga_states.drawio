@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-09-29T03:17:22.847Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.7.5 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36" etag="Q8i-rhX1Ze_099D47mVm" version="21.7.5" type="device">
+<mxfile host="Electron" modified="2023-10-04T18:50:19.253Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.7.5 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36" etag="GGJv9DvvhvJD3M3N4r11" version="21.7.5" type="device">
   <diagram id="W-F6sWLnjnpeOiXVLfIf" name="Страница 1">
-    <mxGraphModel dx="538" dy="348" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
+    <mxGraphModel dx="743" dy="480" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -516,8 +516,27 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="P-8jf4wCd94ptAYTving-1" value="Switch to high-speed mode" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;size=11;position=0.12;base=9;position2=0;" vertex="1" parent="1">
+        <mxCell id="WRUtvAvSbfNsNVR_seGz-1" value="resp[5]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WpsG6cYu1TuFdUD_wFij-9">
+          <mxGeometry x="-0.5408" y="-5" relative="1" as="geometry">
+            <mxPoint x="26" y="23" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="P-8jf4wCd94ptAYTving-1" value="Switch to high-speed mode" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;size=11;position=0.12;base=9;position2=0;" parent="1" vertex="1">
           <mxGeometry x="352" y="554" width="153" height="33" as="geometry" />
+        </mxCell>
+        <mxCell id="WRUtvAvSbfNsNVR_seGz-2" value="" style="curved=1;endArrow=classic;html=1;rounded=0;exitX=1;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="WpsG6cYu1TuFdUD_wFij-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="910" y="699" as="sourcePoint" />
+            <mxPoint x="883" y="625" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="940" y="656" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WRUtvAvSbfNsNVR_seGz-3" value="/ fail, sel_clk = 0" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="WRUtvAvSbfNsNVR_seGz-2">
+          <mxGeometry x="-0.5408" y="-5" relative="1" as="geometry">
+            <mxPoint x="39" y="-28" as="offset" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

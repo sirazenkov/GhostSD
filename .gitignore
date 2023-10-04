@@ -18,3 +18,8 @@ ghost_sd.sim/
 .Xil
 *.jou
 *.log
+
+# Diagrams
+*.bkp
+*dtmp
+

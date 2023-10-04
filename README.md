@@ -61,7 +61,7 @@ test - testbenches written in Python and Verilog
     - looking if LED 4 on Tang Primer 20K lighted up
     - looking if LD3 on PYNQ-Z1 lighted up
 
-### Simulation (work in progress)
+### Simulation
 - Run simulation for the whole design: `SIM=icarus HDL_TOPLEVEL_LANG=verilog pytest test -s`
 - Run simulation for a specific module:
     1. `cd test/<path to module's testbench>`
