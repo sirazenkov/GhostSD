@@ -47,32 +47,32 @@ class Transaction:
 
 RCA = randint(0, 1 << 16)
 
-transactions = (
-    Transaction(55, (1 << 16) - 1,               1 << 5),
-    Transaction(41, 1 << 31 | 3 << 20,           (1 << 31) | (3 << 20)),
-    Transaction(2,  (1 << 32) - 1,               0),
-    Transaction(3,  (1 << 32) - 1,               RCA << 16),
-    Transaction(9,  RCA << 16 | ((1 << 16) - 1), 9 << (80-6) | (1 << (47-6))),
-    Transaction(7,  RCA << 16 | ((1 << 16) - 1), 3 << 9),
-    Transaction(55, RCA << 16 | ((1 << 16) - 1), (4 << 9) | (1 << 5)),
-    Transaction(6,  (1 << 32) - 2,               4 << 9),
-    Transaction(6,  (1 << 31) + 1,               4 << 9),
-    Transaction(13, RCA << 16 | ((1 << 15) - 1), (5 << 9) | (1 << 8)),
-    Transaction(13, RCA << 16 | ((1 << 15) - 1), (4 << 9) | (1 << 8)),
-    Transaction(18, 0,                           4 << 9),
-    Transaction(12, (1 << 32) - 1,               5 << 9),
-    Transaction(55, RCA << 16 | ((1 << 16) - 1), (4 << 9) | (1 << 5)),
-    Transaction(23, ((1 << 9) - 1) << 23 | 8,    4 << 9),
-    Transaction(25, 0,                           4 << 9),
-    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)), # Receive 8 blocks
+transactions = (#index|         argument        |       response
+    Transaction(55, (1 << 16) - 1,               1 << 5),                                 # CMD55
+    Transaction(41, 1 << 31 | 3 << 20,           (1 << 31) | (3 << 20)),                  # ACDM41
+    Transaction(2,  (1 << 32) - 1,               0),                                      # CMD2
+    Transaction(3,  (1 << 32) - 1,               RCA << 16),                              # CMD3
+    Transaction(9,  RCA << 16 | ((1 << 16) - 1), 9 << (80-6) | (1 << (47-6))),            # CMD9
+    Transaction(7,  RCA << 16 | ((1 << 16) - 1), 3 << 9),                                 # CMD7
+    Transaction(55, RCA << 16 | ((1 << 16) - 1), (4 << 9) | (1 << 5)),                    # CMD55
+    Transaction(6,  (1 << 32) - 2,               4 << 9),                                 # ACMD6
+    Transaction(6,  (1 << 31) + 1,               4 << 9),                                 # CMD6
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (5 << 9) | (1 << 8)),                    # CMD13 (data state)
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (4 << 9) | (1 << 8)),                    # CMD13 (tran state)
+    Transaction(18, 0,                           4 << 9),                                 # CMD18
+    Transaction(12, (1 << 32) - 1,               5 << 9),                                 # CMD12
+    Transaction(55, RCA << 16 | ((1 << 16) - 1), (4 << 9) | (1 << 5)),                    # CMD55
+    Transaction(23, ((1 << 9) - 1) << 23 | 8,    4 << 9),                                 # ACMD23
+    Transaction(25, 0,                           4 << 9),                                 # CMD25
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)), # Receive 8 blocks # CMD13 (rcv state)
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),                    # same
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
     Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
-    Transaction(13, RCA << 16 | ((1 << 15) - 1), (6 << 9) | (1 << 8)),
-    Transaction(12, (1 << 32) - 1,               6 << 9),
-    Transaction(13, RCA << 16 | ((1 << 15) - 1), (4 << 9) | (1 << 8)),
-    Transaction(15, RCA << 16 | ((1 << 16) - 1), 0)
+    Transaction(12, (1 << 32) - 1,               6 << 9),                                 # CMD12
+    Transaction(13, RCA << 16 | ((1 << 15) - 1), (4 << 9) | (1 << 8)),                    # CMD13
+    Transaction(15, RCA << 16 | ((1 << 16) - 1), 0)                                       # CMD15
 )

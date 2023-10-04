@@ -11,7 +11,7 @@ from cocotb.clock import Clock
 from cocotb.runner import get_runner
 from cocotb.triggers import FallingEdge, RisingEdge, ClockCycles
 
-import random
+from random import randint
 
 test_dir = os.path.dirname(__file__)
 rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', 'src'))
@@ -112,7 +112,7 @@ async def receive_blocks(dut, expected_blocks, crc_packets):
     return (blocks_equal, crc_failed)
 
 async def random_delay(dut, upper_bound):
-    delay = random.randint(1, upper_bound)
+    delay = randint(1, upper_bound)
     await ClockCycles(dut.iclk, delay)
 
 @cocotb.test()
@@ -136,7 +136,7 @@ async def d_driver_tb(dut):
     assert write_done, "Status read failed!"
 
     for i in range(NUM_OF_TRANSACTIONS):
-        blocks = [[random.randint(0,15) for i in range(1024)] for j in range(RAM_BLOCKS)]
+        blocks = [[randint(0,15) for i in range(1024)] for j in range(RAM_BLOCKS)]
         crc_packets = [gen_crc16_packets(block) for block in blocks]
 
         await random_delay(dut, 10)

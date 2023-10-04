@@ -11,7 +11,7 @@ from cocotb.clock import Clock
 from cocotb.runner import get_runner
 from cocotb.triggers import FallingEdge, ClockCycles
 
-import random
+from random import randint
 
 test_dir = os.path.dirname(__file__)
 rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', 'src'))
@@ -80,7 +80,7 @@ async def send_response(dut, index, resp, crc):
     return int(dut.odone.value)
 
 async def random_delay(dut, upper_bound):
-    delay = random.randint(0,upper_bound)
+    delay = randint(0,upper_bound)
     await ClockCycles(dut.iclk, delay)
 
 @cocotb.test()

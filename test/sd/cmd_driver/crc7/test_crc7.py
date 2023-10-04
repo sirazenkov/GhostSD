@@ -11,7 +11,7 @@ from cocotb.clock import Clock
 from cocotb.runner import get_runner
 from cocotb.triggers import FallingEdge
 
-import random
+from random import randint
 
 test_dir = os.path.dirname(__file__)
 rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', '..', 'src'))
@@ -51,7 +51,7 @@ async def crc7_tb(dut):
 
     for i in range(NUM_OF_SAMPLES):
         await reset(dut)
-        block = random.randint(0,1<<39)
+        block = randint(0,1<<39)
         expected_crc7 = crc7(block)
         rtl_crc7 = await calc_crc(dut, block)
         assert rtl_crc7 == expected_crc7, f"CRC7 calculation failed on sample {i}: expected - {expected_crc7}, calculated - {rtl_crc7}!"
