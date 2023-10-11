@@ -22,8 +22,8 @@ test - testbenches written in Python and Verilog
 
 ### Required software
 - Open-source flow (iCESugar-nano)
-    - [yosys](https://github.com/YosysHQ/yosys) (synthesis)
-    - [nextpnr](https://github.com/YosysHQ/nextpnr) (place & route)
+    - [yosys (v0.34)](https://github.com/YosysHQ/yosys) (synthesis)
+    - [nextpnr (v0.6)](https://github.com/YosysHQ/nextpnr) (place & route)
     - [icepack](https://github.com/YosysHQ/icestorm/tree/master/icepack) (bitstream generation)
     - [icesprog](https://github.com/wuxx/icesugar/tree/master/tools/src) (device programming and debug)
 - Gowin flow (Tang Primer 20K)
@@ -74,7 +74,7 @@ test - testbenches written in Python and Verilog
 ### Operating time
 Flow        |  1 GB   |  2 GB    | Blocks per transaction |  OTP/SD clk (MHz) |
 ------------|---------|----------|------------------------|-------------------|
-Open-source | 13m 23s |  26m 57s |           8            |   36/18           |
+Open-source | 13m 23s |  27m 4s  |           8            |   36/18           |
 Gowin       | 5m 35s  |  10m 57s |           16           |   175/50          |
 Xilinx      | 3m 54s  |  6m 24s  |           128          |   175/50          |
 

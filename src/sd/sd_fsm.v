@@ -118,10 +118,8 @@ module sd_fsm
         oarg[21:20] = 2'b11;
         oarg[31]    = 1'b1;
       end
-      CMD55, CMD9, CMD7, CMD13, CMD15: begin
-        oarg[31:16] = rca;
-        oarg[15] = 1'b0;
-      end
+      CMD55, CMD9, CMD7, CMD13, CMD15:
+        oarg[31:15] = {rca, 1'b0};
       CMD6: begin
         if (switch)
           oarg[30:1] = 30'd0;

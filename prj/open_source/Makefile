@@ -50,4 +50,4 @@ read_fail:
 ######################
 
 clean:
-	rm -rf work
+	rm -rf work abc.history
