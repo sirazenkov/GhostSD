@@ -127,7 +127,7 @@ module sd_fsm
           oarg[0] = 1'b0;
       end
       ACMD23:
-        oarg[22:0] = 23'd8;
+        oarg[22:0] = RAM_BLOCKS;
       CMD18, CMD25: begin
         oarg[9+$clog2(RAM_BLOCKS)-1:0] = {(9+$clog2(RAM_BLOCKS)){1'b0}};
         oarg[31:9+$clog2(RAM_BLOCKS)]  = addr_sd;
