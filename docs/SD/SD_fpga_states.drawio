@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-10-06T15:38:33.236Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.7.5 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36" etag="uG_Ou6_x3Cg4-OWxsQTv" version="21.7.5" type="device">
+<mxfile host="Electron" modified="2023-12-04T04:08:57.916Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="jydBQlPTAPdRNgr_FHxz" version="22.1.2" type="device">
   <diagram id="W-F6sWLnjnpeOiXVLfIf" name="Страница 1">
-    <mxGraphModel dx="975" dy="630" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
+    <mxGraphModel dx="624" dy="403" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -318,8 +318,8 @@
         <mxCell id="V_0UxdWH2Facl6ypG54b-12" value="Status bits: tran state" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=5;position=0.51;position2=0.5;base=10;" parent="1" vertex="1">
           <mxGeometry x="284" y="463.88" width="117" height="19.12" as="geometry" />
         </mxCell>
-        <mxCell id="V_0UxdWH2Facl6ypG54b-15" value="" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=93;position=0.41;position2=0.43;base=13;rotation=-180;" parent="1" vertex="1">
-          <mxGeometry x="598" y="461" width="360" height="114" as="geometry" />
+        <mxCell id="V_0UxdWH2Facl6ypG54b-15" value="" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#dae8fc;strokeColor=#6c8ebf;size=93;position=0.47;position2=0.52;base=15;rotation=-180;" parent="1" vertex="1">
+          <mxGeometry x="598" y="461" width="415" height="114" as="geometry" />
         </mxCell>
         <mxCell id="2bQfTvNvb8pTR67cu4QD-6" value="Read 512-byte&lt;br&gt;&amp;nbsp;blocks&amp;nbsp; of data" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;size=15;position=0.29;base=12;" parent="1" vertex="1">
           <mxGeometry x="564.5" y="600" width="55" height="73.72" as="geometry" />
@@ -483,8 +483,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="QcZeySL0DEU8IEuh86An-1" value="max_addr =\(&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;(C\_SIZE+1)*2^{READ\_BL\_LEN+C\_SIZE\_MULT-10}\)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="598" y="554" width="360" height="21" as="geometry" />
+        <mxCell id="QcZeySL0DEU8IEuh86An-1" value="max_addr =\(&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;(C\_SIZE+1)*2^{READ\_BL\_LEN+C\_SIZE\_MULT+2-log2(RAM)}\)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="598" y="554" width="420" height="21" as="geometry" />
         </mxCell>
         <mxCell id="WpsG6cYu1TuFdUD_wFij-3" value="" style="curved=1;endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="iV3B52UpifQztuAh5zCx-11" target="WpsG6cYu1TuFdUD_wFij-5" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
