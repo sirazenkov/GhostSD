@@ -16,12 +16,14 @@ More details in GOST R 34.12-2015 (RFC 8891) and GOST R 34.13-2015.
 
 ### Directory structure
 docs - diagrams and photos describing the project \
-prj - project files for different flows \
+platform - project files for different flows \
+prj - project files open-source flow \
 src - Verilog HDL synthesizable sources \
 test - testbenches written in Python and Verilog
 
 ### Required software
 - Open-source flow (iCESugar-nano)
+    - [hdlmake](http://ohwr.org/project/hdl-make) (build system)
     - [yosys (v0.34)](https://github.com/YosysHQ/yosys) (synthesis)
     - [nextpnr (v0.6)](https://github.com/YosysHQ/nextpnr) (place & route)
     - [icepack](https://github.com/YosysHQ/icestorm/tree/master/icepack) (bitstream generation)
