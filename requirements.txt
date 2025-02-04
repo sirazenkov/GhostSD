@@ -1,0 +1,1 @@
+hdlmake @ git+http://ohwr.org/project/hdl-make@master

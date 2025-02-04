@@ -6,19 +6,22 @@ abc.history
 __pycache__/
 sim_build/
 
-# Gowin flow
-impl/
-ghost_sd.gprj.user
-
-# Xilinx flow
-ghost_sd.cache/
-ghost_sd.hw/
-ghost_sd.gen/
-ghost_sd.runs/
-ghost_sd.sim/
-.Xil
-*.jou
-*.log
+# hdlmake
+platform/**/*.*
+platform/**/synthesize*
+platform/**/par*
+platform/**/bitstream*
+platform/**/project*
+platform/**/Makefile
+!platform/**/Manifest.py
+!platform/**/constr/*.cst
+!platform/**/constr/*.sdc
+!platform/**/constr/*.xdc
+!platform/**/core/*/*.ipc
+!platform/**/core/*/*.mod
+!platform/**/core/*/*.xci
+!platform/**/rtl/*.v
+!platform/**/rtl/*.sv
 
 # Diagrams
 *.bkp
