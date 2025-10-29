@@ -7,7 +7,6 @@ syn_family = "NA"
 syn_top = "ghost_sd"
 syn_project = "ghost_sd"
 syn_tool = "gowin"
-syn_path = "/opt/soft/Gowin/Gowin_V1.9.11_linux/IDE/bin/"
 
 modules = {
   "local" : [
