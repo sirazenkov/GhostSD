@@ -7,7 +7,7 @@
 
 import os
 import cocotb
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import Timer, RisingEdge, FallingEdge
 from cocotb.clock import Clock
 
@@ -23,7 +23,7 @@ async def gost_tb(dut):
     dut.iblock.value = int('FEDCBA9876543210', 16)
     ciphertext = int('4EE901E5C2D8CA3D', 16)
 
-    cocotb.start_soon(Clock(dut.iclk, 40, units="ns").start())
+    cocotb.start_soon(Clock(dut.iclk, 40, unit="ns").start())
 
     await FallingEdge(dut.iclk) 
     istart.value = 1
@@ -41,7 +41,7 @@ def test_gost():
                        os.path.join(rtl_dir, 'otp_gen', 'gost', 'gost.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="gost",
             always=True,
     )

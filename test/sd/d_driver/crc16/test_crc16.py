@@ -8,7 +8,7 @@
 import os
 import cocotb
 from cocotb.clock import Clock
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import FallingEdge
 
 from random import randint
@@ -47,7 +47,7 @@ async def crc16_tb(dut):
     """CRC16 module testbench""" 
     passed = True
 
-    cocotb.start_soon(Clock(dut.iclk, 40, units="ns").start())
+    cocotb.start_soon(Clock(dut.iclk, 40, unit="ns").start())
 
     for i in range(NUM_OF_SAMPLES):
         await reset(dut)
@@ -62,7 +62,7 @@ def test_crc16():
     verilog_sources = [os.path.join(rtl_dir, 'sd', 'd_driver', 'crc16.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="crc16",
             always=True,
     )

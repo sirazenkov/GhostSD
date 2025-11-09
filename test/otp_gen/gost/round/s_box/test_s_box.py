@@ -7,7 +7,7 @@
 
 import os
 import cocotb
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import Timer
 
 test_dir = os.path.dirname(__file__)
@@ -23,7 +23,7 @@ async def s_box_tb(dut):
 
     for i in range(len(dataset)-1):
         iword.value = dataset[i]
-        await Timer(1, units='ns')
+        await Timer(1, unit='ns')
         assert int(oword.value) == dataset[i+1], f"S-box operation failed on {i+1} input value: output expected - {dataset[i+1]}, calculated - {int(oword.value)}!"
 
 def test_s_box():
@@ -32,7 +32,7 @@ def test_s_box():
     verilog_sources = [os.path.join(rtl_dir, 'otp_gen', 'gost', 'round', 's_box.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="s_box",
             always=True,
     )

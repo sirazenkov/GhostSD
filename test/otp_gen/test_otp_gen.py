@@ -7,7 +7,7 @@
 
 import os
 import cocotb
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import Timer, RisingEdge, FallingEdge, with_timeout
 from cocotb.clock import Clock
 
@@ -22,7 +22,7 @@ async def otp_gen_tb(dut):
     dut.iIV.value = 0
     dut.inew_otp.value = 0
 
-    cocotb.start_soon(Clock(dut.iclk, 40, units="ns").start())
+    cocotb.start_soon(Clock(dut.iclk, 40, unit="ns").start())
 
     await FallingEdge(dut.iclk) 
     istart.value = 1
@@ -36,7 +36,7 @@ async def otp_gen_tb(dut):
         for i in range(16):
             await FallingEdge(dut.iclk) 
             address = int(dut.osel_ram.value) << 10 | int(dut.oaddr.value)
-            assert (address == counter) and int(dut.owrite_en) == 1, f"OTP write failed for address {counter}"
+            assert (address == counter) and int(dut.owrite_en.value) == 1, f"OTP write failed for address {counter}"
             counter = counter + 1
     
     assert int(dut.odone.value) == 1, "Done signal not set" 
@@ -50,7 +50,7 @@ def test_otp_gen():
                        os.path.join(rtl_dir, 'otp_gen', 'otp_gen.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="otp_gen",
             always=True,
     )

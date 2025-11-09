@@ -8,7 +8,7 @@
 import os
 import cocotb
 from cocotb.clock import Clock
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import FallingEdge, ClockCycles
 
 test_dir = os.path.dirname(__file__)
@@ -45,7 +45,7 @@ async def random_delay(dut, upper_bound):
 async def SD_FSM_tb(dut):
     """SD controller FSM testbench""" 
 
-    cocotb.start_soon(Clock(dut.iclk, 55, units="ns").start())
+    cocotb.start_soon(Clock(dut.iclk, 55, unit="ns").start())
 
     await reset_inputs(dut)
 
@@ -68,7 +68,7 @@ def test_sd_fsm():
     verilog_sources = [os.path.join(rtl_dir, 'sd', 'sd_fsm.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="sd_fsm",
             always=True,
     )

@@ -8,7 +8,7 @@
 import os
 import cocotb
 from cocotb.clock import Clock
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import FallingEdge, ClockCycles
 
 from random import randint
@@ -87,7 +87,7 @@ async def random_delay(dut, upper_bound):
 async def cmd_driver_tb(dut):
     """CMD line's driver testbench"""
 
-    cocotb.start_soon(Clock(dut.iclk, 55, units="ns").start())
+    cocotb.start_soon(Clock(dut.iclk, 55, unit="ns").start())
 
     await FallingEdge(dut.iclk)
     dut.irst.value     = 1 
@@ -128,7 +128,7 @@ def test_cmd_driver():
                        os.path.join(rtl_dir, 'sd', 'cmd_driver', 'cmd_driver.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="cmd_driver",
             always=True,
     )

@@ -8,7 +8,7 @@
 import os
 import cocotb
 from cocotb.clock import Clock
-from cocotb.runner import get_runner
+from cocotb_tools.runner import get_runner
 from cocotb.triggers import FallingEdge, RisingEdge, ClockCycles
 
 from random import randint
@@ -127,7 +127,7 @@ async def random_delay(dut, upper_bound):
 async def ghost_sd_tb(dut):
     """GhostSD testbench""" 
 
-    cocotb.start_soon(Clock(dut.iclk, 27, units="ns").start())
+    cocotb.start_soon(Clock(dut.iclk, 27, unit="ns").start())
 
     await reset(dut) 
     blocks = [[randint(0,15) for i in range(1024)] for j in range(RAM_BLOCKS)]
@@ -146,7 +146,7 @@ async def ghost_sd_tb(dut):
 
         for trans in transactions:
             await FallingEdge(dut.iocmd_sd)
-            await ClockCycles(dut.oclk_sd, 2) 
+            await ClockCycles(dut.oclk_sd, 2)
 
             index_ok = await check_cmd_field(dut, trans.index, 6)
             assert index_ok, f"Failed receiving command index {trans.index} during cycle {i}!"
@@ -196,7 +196,7 @@ def test_ghost_sd():
                        os.path.join(rtl_dir, 'ghost_sd.v')]
     runner = get_runner(sim)
     runner.build(
-            verilog_sources=verilog_sources,
+            sources=verilog_sources,
             hdl_toplevel="ghost_sd",
             always=True,
     )
