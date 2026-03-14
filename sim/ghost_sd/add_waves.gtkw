@@ -5,7 +5,7 @@
 [dumpfile] "/home/user/MyProjects/GhostSD/test/sim_build/wave.vcd"
 [dumpfile_mtime] "Fri Sep 29 04:30:18 2023"
 [dumpfile_size] 327005
-[savefile] "/home/user/MyProjects/GhostSD/test/add_waves.gtkw"
+[savefile] "./add_waves.gtkw"
 [timestart] 0
 [size] 1853 1025
 [pos] -29 -29

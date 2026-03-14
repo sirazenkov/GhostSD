@@ -14,10 +14,10 @@ from cocotb.triggers import FallingEdge, RisingEdge, ClockCycles
 from random import randint
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 import sys
-sys.path.append(os.path.join(test_dir, '../../'))
+sys.path.append(os.path.join(test_dir, '../'))
 from common import *
 
 RAM_BLOCKS = 8
@@ -155,8 +155,8 @@ async def d_driver_tb(dut):
 def test_d_driver():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'sd', 'd_driver', 'crc16.v'),
-                       os.path.join(rtl_dir, 'sd', 'd_driver', 'd_driver.v')]
+    verilog_sources = [os.path.join(rtl_dir, 'crc16.v'),
+                       os.path.join(rtl_dir, 'd_driver.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -168,4 +168,3 @@ def test_d_driver():
 
 if __name__ == "__main__":
     test_d_driver()
-

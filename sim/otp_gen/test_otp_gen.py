@@ -12,7 +12,7 @@ from cocotb.triggers import Timer, RisingEdge, FallingEdge, with_timeout
 from cocotb.clock import Clock
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 @cocotb.test()
 async def otp_gen_tb(dut):
@@ -44,10 +44,10 @@ async def otp_gen_tb(dut):
 def test_otp_gen():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'otp_gen', 'gost', 'round', 's_box.v'),
-                       os.path.join(rtl_dir, 'otp_gen', 'gost', 'round', 'round.v'),
-                       os.path.join(rtl_dir, 'otp_gen', 'gost', 'gost.v'),
-                       os.path.join(rtl_dir, 'otp_gen', 'otp_gen.v')]
+    verilog_sources = [os.path.join(rtl_dir, 's_box.v'),
+                       os.path.join(rtl_dir, 'round.v'),
+                       os.path.join(rtl_dir, 'gost.v'),
+                       os.path.join(rtl_dir, 'otp_gen.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -59,4 +59,3 @@ def test_otp_gen():
 
 if __name__ == "__main__":
     test_otp_gen()
-

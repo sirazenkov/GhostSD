@@ -12,7 +12,7 @@ from cocotb_tools.runner import get_runner
 from cocotb.triggers import FallingEdge, ClockCycles
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 from random import randint
 
@@ -65,7 +65,7 @@ async def SD_FSM_tb(dut):
 def test_sd_fsm():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'sd', 'sd_fsm.v')]
+    verilog_sources = [os.path.join(rtl_dir, 'sd_fsm.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -77,4 +77,3 @@ def test_sd_fsm():
 
 if __name__ == "__main__":
     test_sd_fsm()
-

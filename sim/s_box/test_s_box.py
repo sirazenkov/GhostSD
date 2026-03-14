@@ -11,7 +11,7 @@ from cocotb_tools.runner import get_runner
 from cocotb.triggers import Timer
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 @cocotb.test()
 async def s_box_tb(dut):
@@ -29,7 +29,7 @@ async def s_box_tb(dut):
 def test_s_box():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'otp_gen', 'gost', 'round', 's_box.v')]
+    verilog_sources = [os.path.join(rtl_dir, 's_box.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -41,4 +41,3 @@ def test_s_box():
 
 if __name__ == "__main__":
     test_s_box()
-

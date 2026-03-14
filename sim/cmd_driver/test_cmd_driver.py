@@ -14,10 +14,10 @@ from cocotb.triggers import FallingEdge, ClockCycles
 from random import randint
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 import sys
-sys.path.append(os.path.join(test_dir, '../../'))
+sys.path.append(os.path.join(test_dir, '../'))
 from common import crc7, Transaction, RCA, transactions
 
 async def send_cmd(dut, index, arg):
@@ -124,8 +124,8 @@ async def cmd_driver_tb(dut):
 def test_cmd_driver():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'sd', 'cmd_driver', 'crc7.v'),
-                       os.path.join(rtl_dir, 'sd', 'cmd_driver', 'cmd_driver.v')]
+    verilog_sources = [os.path.join(rtl_dir, 'crc7.v'),
+                       os.path.join(rtl_dir, 'cmd_driver.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -137,4 +137,3 @@ def test_cmd_driver():
 
 if __name__ == "__main__":
     test_cmd_driver()
-

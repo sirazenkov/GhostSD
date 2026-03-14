@@ -14,10 +14,10 @@ from cocotb.triggers import FallingEdge
 from random import randint
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 import sys
-sys.path.append(os.path.join(test_dir, '../../../'))
+sys.path.append(os.path.join(test_dir, '../'))
 from common import crc7
 
 NUM_OF_SAMPLES = 100 
@@ -59,7 +59,7 @@ async def crc7_tb(dut):
 def test_crc7():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'sd', 'cmd_driver', 'crc7.v')]
+    verilog_sources = [os.path.join(rtl_dir, 'crc7.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -71,4 +71,3 @@ def test_crc7():
 
 if __name__ == "__main__":
     test_crc7()
-

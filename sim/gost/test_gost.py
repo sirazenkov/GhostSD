@@ -12,7 +12,7 @@ from cocotb.triggers import Timer, RisingEdge, FallingEdge
 from cocotb.clock import Clock
 
 test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', '..', 'src'))
+rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
 
 @cocotb.test()
 async def gost_tb(dut):
@@ -36,9 +36,9 @@ async def gost_tb(dut):
 def test_gost():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'otp_gen', 'gost', 'round', 's_box.v'),
-                       os.path.join(rtl_dir, 'otp_gen', 'gost', 'round', 'round.v'),
-                       os.path.join(rtl_dir, 'otp_gen', 'gost', 'gost.v')]
+    verilog_sources = [os.path.join(rtl_dir, 's_box.v'),
+                       os.path.join(rtl_dir, 'round.v'),
+                       os.path.join(rtl_dir, 'gost.v')]
     runner = get_runner(sim)
     runner.build(
             sources=verilog_sources,
@@ -50,4 +50,3 @@ def test_gost():
 
 if __name__ == "__main__":
     test_gost()
-
