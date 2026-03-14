@@ -73,7 +73,7 @@ module gost (
         ENC: begin
           if (round_done) begin
             if (next_state == DONE)
-              block <= (round_oblock[31:0] << 32) | round_oblock[63:32];
+              block <= {round_oblock[31:0], round_oblock[63:32]};
             else
               block <= round_oblock;
             counter <= counter + 1'b1;
@@ -84,7 +84,7 @@ module gost (
   end
 
   always @(posedge iclk or posedge irst) begin
-    if (irst) round_key <= 5'd0;
+    if (irst) round_key <= 32'd0;
     else begin
       case(counter)
         5'd0, 5'd8,  5'd16, 5'd31 : round_key <= ikey[255:224];

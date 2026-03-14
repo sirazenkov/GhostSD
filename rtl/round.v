@@ -64,7 +64,7 @@ module round (
     end
   end
 
-  assign oblock = (iblock[31:0] << 32) | half_block;
+  assign oblock = {iblock[31:0], half_block};
   assign odone  = state == DONE;
 
 endmodule
