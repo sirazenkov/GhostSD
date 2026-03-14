@@ -1,0 +1,23 @@
+read_verilog rtl/top.v
+read_verilog rtl/clock_divider.v
+
+read_verilog ../../rtl/ghost_sd.v
+read_verilog ../../rtl/ram_4k_block.v
+
+read_verilog ../../rtl/otp_gen.v
+read_verilog ../../rtl/gost.v
+read_verilog ../../rtl/round.v
+read_verilog ../../rtl/s_box.v
+
+read_verilog ../../rtl/sd.v
+read_verilog ../../rtl/sd_fsm.v
+read_verilog ../../rtl/cmd_driver.v
+read_verilog ../../rtl/crc7.v
+read_verilog ../../rtl/d_driver.v
+read_verilog ../../rtl/crc16.v
+
+synth_ice40 -top top \
+            -json work/ghost_sd.json \
+            -abc9 \
+            -device lp \
+            -abc2

@@ -3,12 +3,12 @@ YOSYS =
 all: synth placeNroute bitstream
 
 synth: 
-	mkdir work
+	mkdir -p work
 	yosys synth.ys
 
 placeNroute:
 	nextpnr-ice40 \
-	--top ghost_sd \
+	--top top \
 	--lp1k --package cm36 \
         --json work/ghost_sd.json \
         --pcf ghost_sd.pcf \

@@ -23,6 +23,9 @@ platform/**/Makefile
 !platform/**/rtl/*.v
 !platform/**/rtl/*.sv
 
+#Non-hdlmake flow
+!platform/icesugar-nano/*
+
 # Diagrams
 *.bkp
 *dtmp
