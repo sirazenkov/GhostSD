@@ -1,12 +1,13 @@
 ##############################
 # Port assignments
 ##############################
+set_io irst B3
+
 # System clock (36 MHz)
 set_io iclk D1
 
-# Buttons
-set_io irst A3 # Reset
-set_io istart B3 # Start
+# UART RX
+set_io rxd A3
 
 # SD interface
 set_io oclk_sd E3
@@ -24,5 +25,5 @@ set_io ofail F5
 # Clocks
 ##############################
 set_frequency iclk 36
-set_frequency oclk_sd 18
+set_frequency oclk_sd 36
 set_frequency clk_otp 36

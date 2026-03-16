@@ -4,3 +4,6 @@
 [submodule "sub/sd"]
 	path = sub/sd
 	url = https://github.com/sirazenkov/sd
+[submodule "sub/verilog-uart"]
+	path = sub/verilog-uart
+	url = https://github.com/alexforencich/verilog-uart

@@ -15,12 +15,10 @@ module clock_divider (
 
   reg [6:0] counter = 7'd0; 
   always @(posedge iclk or posedge irst) begin
-    if (irst)
-      counter <= 7'd0;
-    else
-      counter <= counter + 1'b1;  
+    if (irst) counter <= 7'd0;
+    else      counter <= counter + 1'b1;
   end
 
-  assign oclk_sd  = isel_clk ? counter[0] : counter[6];
+  assign oclk_sd  = isel_clk ? iclk : counter[6];
 
 endmodule

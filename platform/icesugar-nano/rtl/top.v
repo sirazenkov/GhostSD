@@ -9,25 +9,42 @@ module top (
   input irst,
   input iclk, // System clock
 
-  input istart,
-
   // SD bus
   inout       iocmd_sd,  // CMD line
   inout [3:0] iodata_sd, // D[3:0] line
   output      oclk_sd,   // CLK line
 
-  output osuccess,
-  output ofail
+  input rxd
 );
 
-  parameter KEY = 256'h34d20ac43f554f1d2fd101496787e3954e39d417e33528f13c005501aa1a9e47;
-  parameter IV = 32'hb97b7f46;
-
   parameter RAM_BLOCKS = 8;
+
+  reg  [31:0] iv;
+  reg [256:0] key;
+  reg         start;
 
   wire clk_sd;
   wire clk_otp;
   wire sel_clk_sd;
+
+  uart_rx #(
+    .DATA_WIDTH()
+  ) uart_rx_inst (
+    .clk(iclk),
+    .rst(irst),
+
+    .m_axis_tdata (),
+    .m_axis_tvalid(),
+    .m_axis_tready(),
+
+    .rxd(rxd),
+
+    .rx_busy         (),
+    .rx_overrun_error(),
+    .rx_frame_error  (),
+
+    .prescale()
+  );
 
   clock_divider clock_divider_inst (
     .irst    (irst),
@@ -53,10 +70,10 @@ module top (
     .iclk_sd    (oclk_sd),
     .osel_clk_sd(sel_clk_sd),
 
-    .istart     (istart),
+    .istart     (start),
 
-    .ikey       (KEY),
-    .iiv        (IV),
+    .ikey       (key),
+    .iiv        (iv),
 
     .iocmd_sd   (iocmd_sd),
     .iodata_sd  (iodata_sd),
