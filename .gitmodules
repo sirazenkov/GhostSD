@@ -1,0 +1,3 @@
+[submodule "sub/magma"]
+	path = sub/magma
+	url = https://github.com/sirazenkov/magma
