@@ -23,6 +23,9 @@ platform/**/Makefile
 !platform/**/rtl/*.v
 !platform/**/rtl/*.sv
 
+# LibreLane
+!platform/**/config.json
+
 #Non-hdlmake flow
 !platform/icesugar-nano/*
 

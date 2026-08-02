@@ -1,0 +1,22 @@
+{
+  "DESIGN_NAME": "ghostsd",
+  "VERILOG_FILES": [
+     "../../rtl/ghost_sd.v",
+     "../../rtl/clock_divider.v",
+     "../../rtl/ram_4k_block.v",
+
+     "../../sub/magma/rtl/otp_gen.v",
+     "../../sub/magma/rtl/gost.v",
+     "../../sub/magma/rtl/round.v",
+     "../../sub/magma/rtl/s_box.v",
+
+     "../../sub/sd/rtl/sd.v",
+     "../../sub/sd/rtl/sd_fsm.v",
+     "../../sub/sd/rtl/cmd_driver.v",
+     "../../sub/sd/rtl/crc7.v",
+     "../../sub/sd/rtl/d_driver.v",
+     "../../sub/sd/rtl/crc16.v"
+  ],
+  "CLOCK_PERIOD": 20,
+  "CLOCK_PORT": "clk"
+}
