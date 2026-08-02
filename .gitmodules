@@ -1,3 +1,6 @@
 [submodule "sub/magma"]
 	path = sub/magma
 	url = https://github.com/sirazenkov/magma
+[submodule "sub/sd"]
+	path = sub/sd
+	url = https://github.com/sirazenkov/sd
