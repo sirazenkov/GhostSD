@@ -19,18 +19,19 @@ module ghost_sd #(
   input [255:0] ikey,
   input  [31:0] iiv,
 
-  // SD lines
-  inout       iocmd_sd,  // CMD line
-  inout [3:0] iodata_sd, // D[3:0] line
+  // SDIO
 
-  /*
-  output [AXI_ID_WIDTH-1:0]   m_axi_awid,
+  // CMD line
+  input       icmd_sd,
+  output      ocmd_sd,
+  output      ocmd_sd_en,
+
+  // D lines
+  input  [3:0] idata_sd,
+  output [3:0] odata_sd,
+  output       odata_sd_en,
+/*
   output [AXI_ADDR_WIDTH-1:0] m_axi_awaddr,
-  output [7:0]                m_axi_awlen,
-  output [2:0]                m_axi_awsize,
-  output [1:0]                m_axi_awburst,
-  output                      m_axi_awlock,
-  output [3:0]                m_axi_awcache,
   output [2:0]                m_axi_awprot,
   output                      m_axi_awvalid,
   input                       m_axi_awready,
@@ -39,36 +40,30 @@ module ghost_sd #(
   output                      m_axi_wlast,
   output                      m_axi_wvalid,
   input                       m_axi_wready,
-  input  [AXI_ID_WIDTH-1:0]   m_axi_bid,
   input  [1:0]                m_axi_bresp,
   input                       m_axi_bvalid,
   output                      m_axi_bready,
-  output [AXI_ID_WIDTH-1:0]   m_axi_arid,
   output [AXI_ADDR_WIDTH-1:0] m_axi_araddr,
-  output [7:0]                m_axi_arlen,
-  output [2:0]                m_axi_arsize,
-  output [1:0]                m_axi_arburst,
-  output                      m_axi_arlock,
-  output [3:0]                m_axi_arcache,
   output [2:0]                m_axi_arprot,
   output                      m_axi_arvalid,
   input                       m_axi_arready,
-  input  [AXI_ID_WIDTH-1:0]   m_axi_rid,
   input  [AXI_DATA_WIDTH-1:0] m_axi_rdata,
   input  [1:0]                m_axi_rresp,
   input                       m_axi_rlast,
   input                       m_axi_rvalid,
   output                      m_axi_rready,
-  */
-
+*/
   output osuccess,
   output ofail
 );
 
-  initial begin
-    $dumpfile("wave.vcd");
-    $dumpvars(0, ghost_sd);
-  end
+  `ifdef COCOTB_SIM
+    initial begin
+      $dumpfile("wave.vcd");
+      $dumpvars(0, ghost_sd);
+      #1;
+    end
+  `endif
 
   wire icmd_sd, ocmd_sd, cmd_sd_en, clk_sd;
 
@@ -90,9 +85,6 @@ module ghost_sd #(
 
   wire success, fail;
 
-  assign icmd_sd  = iocmd_sd;
-  assign idata_sd = iodata_sd;
-
   sd #(
     .RAM_BLOCKS(RAM_BLOCKS)
   ) sd_inst (
@@ -101,11 +93,11 @@ module ghost_sd #(
 
     .icmd_sd    (icmd_sd),
     .ocmd_sd    (ocmd_sd),
-    .ocmd_sd_en (cmd_sd_en),
+    .ocmd_sd_en (ocmd_sd_en),
 
     .idata_sd   (idata_sd),
     .odata_sd   (odata_sd),
-    .odata_sd_en(data_sd_en),
+    .odata_sd_en(odata_sd_en),
 
     .istart(istart),
 
@@ -180,12 +172,5 @@ module ghost_sd #(
   assign block_otp = rdata_otp[sel_ram];
 
   assign res_block = block_raw ^ block_otp;
-
-  assign iocmd_sd = cmd_sd_en ? ocmd_sd : 1'bz;
-  generate
-    for(i = 0; i < 4; i = i + 1) begin : d_io
-      assign iodata_sd[i] = data_sd_en ? odata_sd[i] : 1'bz;
-    end
-  endgenerate
 
 endmodule

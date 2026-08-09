@@ -16,18 +16,22 @@ from random import randint
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common import *
+test_dir  = os.path.dirname(__file__)
+rtl_dir   = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
+magma_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'sub', 'magma', 'rtl'))
+sd_dir    = os.path.abspath(os.path.join(test_dir, '..', '..', 'sub', 'sd',    'rtl'))
 
-test_dir = os.path.dirname(__file__)
-rtl_dir = os.path.abspath(os.path.join(test_dir, '..', '..', 'rtl'))
+sys.path.append(os.path.join(test_dir, '../../sub/sd/dv/sim'))
+
+from common import *
 
 RAM_BLOCKS = 8
 
 async def reset(dut):
     await FallingEdge(dut.iclk_sd)
     dut.irst.value = 1 
-    dut.iocmd_sd.value = 1
-    dut.iodata_sd.value = 0xF
+    dut.icmd_sd.value = 1
+    dut.idata_sd.value = 0xF
     dut.istart.value = 0
     await FallingEdge(dut.iclk_sd)
     dut.irst.value = 0
@@ -52,7 +56,7 @@ async def check_cmd_field(dut, field, length):
     field_ok = True
     for i in range(length):
         await FallingEdge(dut.iclk_sd)
-        if(int(int(dut.iocmd_sd.value) == 1) != ((field >> (length-1-i)) & 1)):
+        if(int(int(dut.ocmd_sd.value) == 1) != ((field >> (length-1-i)) & 1)):
             field_ok = False
     return field_ok
 
@@ -60,42 +64,42 @@ async def send_response(dut, index, resp, crc):
     if(index == 15):
         return
     await FallingEdge(dut.iclk_sd)
-    dut.iocmd_sd.value = 0
+    dut.icmd_sd.value = 0
     await ClockCycles(dut.iclk_sd, 2, rising=False)
     if(index == 9):
-        dut.iocmd_sd.value = 1
+        dut.icmd_sd.value = 1
         for i in range(6):
             await FallingEdge(dut.iclk_sd)
         for i in range(127):
             if(i == 44 or i == 47 or i == 80):
-                dut.iocmd_sd.value = 1
+                dut.icmd_sd.value = 1
             else:
-                dut.iocmd_sd.value = 0
+                dut.icmd_sd.value = 0
             await FallingEdge(dut.iclk_sd)
     elif(index == 2):
-        dut.iocmd_sd.value = 1
+        dut.icmd_sd.value = 1
         for i in range(6):
             await FallingEdge(dut.iclk_sd)
-        dut.iocmd_sd.value = 0
+        dut.icmd_sd.value = 0
         for i in range(127):
             await FallingEdge(dut.iclk_sd)
     else:
         for i in range(6):
             if(index == 41):
-                dut.iocmd_sd.value = 1 
+                dut.icmd_sd.value = 1 
             else:
-                dut.iocmd_sd.value = 1 & (index >> (5-i))
+                dut.icmd_sd.value = 1 & (index >> (5-i))
             await FallingEdge(dut.iclk_sd)
         for i in range(32):
-            dut.iocmd_sd.value = 1 & (resp >> (31-i)) 
+            dut.icmd_sd.value = 1 & (resp >> (31-i)) 
             await FallingEdge(dut.iclk_sd)
         for i in range(7):
             if(index == 41):
-                dut.iocmd_sd.value = 1 
+                dut.icmd_sd.value = 1 
             else:
-                dut.iocmd_sd.value = 1 & (crc >> (6-i))
+                dut.icmd_sd.value = 1 & (crc >> (6-i))
             await FallingEdge(dut.iclk_sd)
-    dut.iocmd_sd.value = 1
+    dut.icmd_sd.value = 1
     await FallingEdge(dut.iclk_sd)
     return
 
@@ -103,28 +107,28 @@ async def send_status(dut):
     blocks = [randint(0,15) for i in range(128)]
     crc_packets = gen_crc16_packets(blocks)
     await FallingEdge(dut.iclk_sd)
-    dut.iodata_sd.value = 0 # Start bit
+    dut.idata_sd.value = 0 # Start bit
     await FallingEdge(dut.iclk_sd)
     for i in range(128):
-        dut.iodata_sd.value = blocks[i]
+        dut.idata_sd.value = blocks[i]
         await FallingEdge(dut.iclk_sd)
     for i in range(16):
-        dut.iodata_sd.value = crc_packets[i]
+        dut.idata_sd.value = crc_packets[i]
         await FallingEdge(dut.iclk_sd)
-    dut.iodata_sd.value = 0xF # End bit
+    dut.idata_sd.value = 0xF # End bit
 
 async def send_blocks(dut, blocks, crc_packets):
     for j in range(RAM_BLOCKS):
         await FallingEdge(dut.iclk_sd)
-        dut.iodata_sd.value = 0 # Start bit
+        dut.idata_sd.value = 0 # Start bit
         await FallingEdge(dut.iclk_sd)
         for i in range(1024):
-            dut.iodata_sd.value = blocks[j][i]
+            dut.idata_sd.value = blocks[j][i]
             await FallingEdge(dut.iclk_sd)
         for i in range(16):
-            dut.iodata_sd.value = crc_packets[j][i]
+            dut.idata_sd.value = crc_packets[j][i]
             await FallingEdge(dut.iclk_sd)
-        dut.iodata_sd.value = 0xF # End bit
+        dut.idata_sd.value = 0xF # End bit
 
 async def receive_block(dut):
     block = []
@@ -166,7 +170,7 @@ async def ghost_sd_tb(dut):
         dut.istart.value = 0
 
         for trans in transactions:
-            await FallingEdge(dut.iocmd_sd)
+            await FallingEdge(dut.ocmd_sd)
             await ClockCycles(dut.iclk_sd, 2)
 
             index_ok = await check_cmd_field(dut, trans.index, 6)
@@ -179,7 +183,7 @@ async def ghost_sd_tb(dut):
             assert crc_ok, f"Failed CRC check for (A)CMD{trans.index} during cycle {i}!"
 
             await FallingEdge(dut.iclk_sd)
-            assert int(dut.iocmd_sd.value) == 1, f"End bit not set after (A)CMD{trans.index} during cycle {i}!"
+            assert int(dut.ocmd_sd.value) == 1, f"End bit not set after (A)CMD{trans.index} during cycle {i}!"
 
             await random_delay(dut, 10)
             await send_response(dut, trans.index, trans.resp, trans.resp_crc)
@@ -202,16 +206,18 @@ async def ghost_sd_tb(dut):
 def test_ghost_sd():
     sim = os.getenv("SIM", "icarus")
 
-    verilog_sources = [os.path.join(rtl_dir, 'crc7.v'),
-                       os.path.join(rtl_dir, 'cmd_driver.v'),
-                       os.path.join(rtl_dir, 'crc16.v'),
-                       os.path.join(rtl_dir, 'd_driver.v'),
-                       os.path.join(rtl_dir, 'sd_fsm.v'),
-                       os.path.join(rtl_dir, 'sd.v'),
-                       os.path.join(rtl_dir, 's_box.v'),
-                       os.path.join(rtl_dir, 'round.v'),
-                       os.path.join(rtl_dir, 'gost.v'),
-                       os.path.join(rtl_dir, 'otp_gen.v'),
+    verilog_sources = [os.path.join(sd_dir, 'crc7.v'),
+                       os.path.join(sd_dir, 'cmd_driver.v'),
+                       os.path.join(sd_dir, 'crc16.v'),
+                       os.path.join(sd_dir, 'd_driver.v'),
+                       os.path.join(sd_dir, 'sd_fsm.v'),
+                       os.path.join(sd_dir, 'sd.v'),
+
+                       os.path.join(magma_dir, 's_box.v'),
+                       os.path.join(magma_dir, 'round.v'),
+                       os.path.join(magma_dir, 'gost.v'),
+                       os.path.join(magma_dir, 'otp_gen.v'),
+
                        os.path.join(rtl_dir, 'ram_4k_block.v'),
                        os.path.join(rtl_dir, 'ghost_sd.v')]
 
